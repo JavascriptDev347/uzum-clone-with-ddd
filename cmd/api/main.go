@@ -53,7 +53,7 @@ func main() {
 	r.Mount("/api/v1/auth", identityModule.Router)
 	// ── Server ────────────────────────────────────────────────
 	log.Printf("server started on :%s", cfg.AppPort)
-	if err := http.ListenAndServe(":8080", identityModule.Router); err != nil {
+	if err := http.ListenAndServe(":8080", r); err != nil {
 		log.Fatalf("server error: %v", err)
 	}
 }
