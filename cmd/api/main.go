@@ -6,12 +6,11 @@ import (
 
 	"github.com/JavascriptDev347/uzum-clone-with-ddd.git/pkg/config"
 	"github.com/JavascriptDev347/uzum-clone-with-ddd.git/pkg/database"
-	"github.com/bakhod1r/oneenv"
 )
 
 func main() {
 	// config env variables
-	cfg, err := oneenv.Parse[config.Config]()
+	cfg, err := config.Load()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -22,7 +21,7 @@ func main() {
 		log.Fatal(err)
 	}
 	// load redis
-	rdb, err := database.NewRedisClient(cfg.RedisHost, cfg.RedisPort)
+	rdb, err := database.NewRedisClient(cfg.Redis.Host, cfg.Redis.Port)
 	if err != nil {
 		log.Fatal(err)
 	}
