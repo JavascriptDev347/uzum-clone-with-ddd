@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/url"
 	"sync"
+	"time"
 
 	"github.com/bakhod1r/oneenv"
 )
@@ -20,23 +21,30 @@ var baseOptions = []oneenv.Option{
 }
 
 type DBConfig struct {
-	Host     string `env:"DB_HOST,required"`
-	Port     string `env:"DB_PORT" default:"5432"`
-	User     string `env:"DB_USER,required"`
-	Password string `env:"DB_PASSWORD,required"`
-	Name     string `env:"DB_NAME,required"`
-	SSLMode  string `env:"DB_SSLMODE" default:"disable"`
+	Host     string `env:"HOST,required"`
+	Port     string `env:"PORT" default:"5432"`
+	User     string `env:"USER,required"`
+	Password string `env:"PASSWORD,required"`
+	Name     string `env:"NAME,required"`
+	SSLMode  string `env:"SSLMODE" default:"disable"`
 }
 
 type RedisConfig struct {
-	Host string `env:"REDIS_HOST" default:"localhost"`
-	Port string `env:"REDIS_PORT" default:"6379"`
+	Host string `env:"HOST" default:"localhost"`
+	Port string `env:"PORT" default:"6379"`
+}
+
+type JWTConfig struct {
+	Secret     string        `env:"SECRET,required"`
+	AccessTTL  time.Duration `env:"ACCESS_TTL" default:"15m"`
+	RefreshTTL time.Duration `env:"REFRESH_TTL" default:"168h"` // 7 kun
 }
 
 type Config struct {
-	DB      DBConfig
-	Redis   RedisConfig
-	AppPort int `env:"APP_PORT" default:"8080"`
+	DB      DBConfig    `envPrefix:"DB_"`
+	Redis   RedisConfig `envPrefix:"REDIS_"`
+	JWT     JWTConfig   `envPrefix:"JWT_"`
+	AppPort int         `env:"APP_PORT" default:"8080"`
 }
 
 func (c Config) DSN() string {
