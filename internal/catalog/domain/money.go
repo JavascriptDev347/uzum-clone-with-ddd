@@ -40,10 +40,10 @@ func (m Money) Add(other Money) (Money, error) {
 	}, nil
 }
 
-func (m *Money) Amount() int64 {
+func (m Money) Amount() int64 {
 	return m.amount
 }
 
-func (m *Money) Currency() string {
+func (m Money) Currency() string {
 	return m.currency
 }

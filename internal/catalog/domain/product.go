@@ -17,6 +17,7 @@ type Product struct {
 	categoryID string
 	price      Money
 	createdAt  time.Time
+	deletedAt  *time.Time
 }
 
 func NewProduct(id, name, categoryID string, price Money) (*Product, error) {
@@ -39,13 +40,14 @@ func NewProduct(id, name, categoryID string, price Money) (*Product, error) {
 	}, nil
 }
 
-func NewProductFromRepository(id, name, categoryID string, price Money, createdAt time.Time) *Product {
+func NewProductFromRepository(id, name, categoryID string, price Money, createdAt time.Time, deletedAt *time.Time) *Product {
 	return &Product{
 		id:         id,
 		name:       name,
 		categoryID: categoryID,
 		price:      price,
 		createdAt:  createdAt,
+		deletedAt:  deletedAt,
 	}
 }
 
@@ -59,6 +61,15 @@ func (p *Product) ChangeName(name string) error {
 	}
 	p.name = name
 	return nil
+}
+
+func (p *Product) Delete() {
+	now := time.Now()
+	p.deletedAt = &now
+}
+
+func (p *Product) IsDeleted() bool {
+	return p.deletedAt != nil
 }
 
 // getters
@@ -80,4 +91,8 @@ func (p *Product) Price() Money {
 
 func (p *Product) CreatedAt() time.Time {
 	return p.createdAt
+}
+
+func (p *Product) DeletedAt() *time.Time {
+	return p.deletedAt
 }
