@@ -17,6 +17,10 @@ test:
 	go test ./...
 swagger:
 	swag init -g cmd/api/main.go -o docs
+migrate-up:
+	migrate -path migrations -database "postgres://$(DB_USER):$(DB_PASSWORD)@$(DB_HOST):$(DB_PORT)/$(DB_NAME)?sslmode=disable" up
+migrate-down:
+	migrate -path migrations -database "postgres://$(DB_USER):$(DB_PASSWORD)@$(DB_HOST):$(DB_PORT)/$(DB_NAME)?sslmode=disable" down
 
 help:
 	@echo "Usage:"
@@ -26,3 +30,5 @@ help:
 	@echo "  make run     - Run the application"
 	@echo "  make test    - Run tests"
 	@echo "  make help    - Show this help message"
+	@echo "  make swagger - Generate Swagger documentation"
+	@echo "  make migrate - Run database migrations"
