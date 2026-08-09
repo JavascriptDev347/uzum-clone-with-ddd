@@ -1,0 +1,174 @@
+basePath: /api/v1
+definitions:
+  http.LoginRequest:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    type: object
+  http.RefreshRequest:
+    properties:
+      refresh_token:
+        type: string
+    type: object
+  http.RegisterRequest:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    type: object
+  http.RegisterResponse:
+    properties:
+      email:
+        type: string
+      user_id:
+        type: string
+    type: object
+  http.TokenResponse:
+    properties:
+      access_token:
+        type: string
+      refresh_token:
+        type: string
+    type: object
+  response.Envelope:
+    properties:
+      data: {}
+      error:
+        type: string
+      message:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: DDD asosida qurilgan e-commerce marketplace backend
+  title: Uzum Clone API
+  version: "1.0"
+paths:
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Email va parolni tekshirib, access va refresh tokenlarni qaytaradi
+      parameters:
+      - description: Kirish ma'lumotlari
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/http.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Tokenlar muvaffaqiyatli berildi
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Envelope'
+            - properties:
+                data:
+                  $ref: '#/definitions/http.TokenResponse'
+              type: object
+        "400":
+          description: Noto'g'ri so'rov tanasi
+          schema:
+            $ref: '#/definitions/response.Envelope'
+        "401":
+          description: Email yoki parol noto'g'ri
+          schema:
+            $ref: '#/definitions/response.Envelope'
+        "500":
+          description: Ichki server xatosi
+          schema:
+            $ref: '#/definitions/response.Envelope'
+      summary: Tizimga kirish
+      tags:
+      - auth
+  /auth/refresh:
+    post:
+      consumes:
+      - application/json
+      description: Amaldagi refresh token orqali yangi access va refresh token juftligini
+        oladi
+      parameters:
+      - description: Refresh token
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/http.RefreshRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Yangi tokenlar
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Envelope'
+            - properties:
+                data:
+                  $ref: '#/definitions/http.TokenResponse'
+              type: object
+        "400":
+          description: Noto'g'ri so'rov tanasi
+          schema:
+            $ref: '#/definitions/response.Envelope'
+        "401":
+          description: Refresh token yaroqsiz yoki muddati o'tgan
+          schema:
+            $ref: '#/definitions/response.Envelope'
+        "500":
+          description: Ichki server xatosi
+          schema:
+            $ref: '#/definitions/response.Envelope'
+      summary: Tokenni yangilash
+      tags:
+      - auth
+  /auth/register:
+    post:
+      consumes:
+      - application/json
+      description: Email va parol orqali yangi akkaunt yaratadi
+      parameters:
+      - description: Ro'yxatdan o'tish ma'lumotlari
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/http.RegisterRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Foydalanuvchi yaratildi
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Envelope'
+            - properties:
+                data:
+                  $ref: '#/definitions/http.RegisterResponse'
+              type: object
+        "400":
+          description: Noto'g'ri so'rov yoki email formati
+          schema:
+            $ref: '#/definitions/response.Envelope'
+        "409":
+          description: Email allaqachon band
+          schema:
+            $ref: '#/definitions/response.Envelope'
+        "500":
+          description: Ichki server xatosi
+          schema:
+            $ref: '#/definitions/response.Envelope'
+      summary: Yangi foydalanuvchi ro'yxatdan o'tkazish
+      tags:
+      - auth
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

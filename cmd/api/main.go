@@ -1,14 +1,25 @@
+// @title Uzum Clone API
+// @version 1.0
+// @description DDD asosida qurilgan e-commerce marketplace backend
+// @host localhost:8080
+// @BasePath /api/v1
+// @securityDefinitions.apikey BearerAuth
+// @in header
+// @name Authorization
+
 package main
 
 import (
 	"log"
 	"net/http"
 
+	_ "github.com/JavascriptDev347/uzum-clone-with-ddd.git/docs"
 	"github.com/JavascriptDev347/uzum-clone-with-ddd.git/internal/identity"
 	"github.com/JavascriptDev347/uzum-clone-with-ddd.git/pkg/config"
 	"github.com/JavascriptDev347/uzum-clone-with-ddd.git/pkg/database"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	httpSwagger "github.com/swaggo/http-swagger"
 )
 
 func main() {
@@ -51,6 +62,10 @@ func main() {
 	r.Use(middleware.Recoverer)
 
 	r.Mount("/api/v1/auth", identityModule.Router)
+
+	// ── Swagger UI: http://localhost:8080/swagger/index.html ──
+	r.Get("/swagger/*", httpSwagger.WrapHandler)
+
 	// ── Server ────────────────────────────────────────────────
 	log.Printf("server started on :%s", cfg.AppPort)
 	if err := http.ListenAndServe(":8080", r); err != nil {
