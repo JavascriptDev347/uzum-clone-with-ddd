@@ -14,6 +14,7 @@ import (
 	"net/http"
 
 	_ "github.com/JavascriptDev347/uzum-clone-with-ddd.git/docs"
+	"github.com/JavascriptDev347/uzum-clone-with-ddd.git/internal/catalog"
 	"github.com/JavascriptDev347/uzum-clone-with-ddd.git/internal/identity"
 	"github.com/JavascriptDev347/uzum-clone-with-ddd.git/pkg/config"
 	"github.com/JavascriptDev347/uzum-clone-with-ddd.git/pkg/database"
@@ -50,6 +51,10 @@ func main() {
 		RefreshTTL: cfg.JWT.RefreshTTL,
 	})
 
+	catalogModule := catalog.NewModule(catalog.Config{
+		DB: db,
+	})
+
 	// standart middlewares
 	r := chi.NewRouter()
 	// //X-Request-Id ga uuiddan biriktirib qaytaradi
@@ -62,6 +67,7 @@ func main() {
 	r.Use(middleware.Recoverer)
 
 	r.Mount("/api/v1/auth", identityModule.Router)
+	r.Mount("/api/v1/catalog", catalogModule.Router)
 
 	// ── Swagger UI: http://localhost:8080/swagger/index.html ──
 	r.Get("/swagger/*", httpSwagger.WrapHandler)

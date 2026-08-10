@@ -1,5 +1,31 @@
 basePath: /api/v1
 definitions:
+  http.CreateProductRequest:
+    properties:
+      amount:
+        type: integer
+      category_id:
+        type: string
+      currency:
+        type: string
+      name:
+        type: string
+    type: object
+  http.CreateProductResponse:
+    properties:
+      amount:
+        type: integer
+      category_id:
+        type: string
+      created_at:
+        type: string
+      currency:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+    type: object
   http.LoginRequest:
     properties:
       email:
@@ -166,6 +192,41 @@ paths:
       summary: Yangi foydalanuvchi ro'yxatdan o'tkazish
       tags:
       - auth
+  /products:
+    post:
+      consumes:
+      - application/json
+      description: Nomi, narxi, valyutasi va kategoriyasi orqali yangi mahsulot yaratadi
+      parameters:
+      - description: Mahsulot ma'lumotlari
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/http.CreateProductRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Mahsulot yaratildi
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Envelope'
+            - properties:
+                data:
+                  $ref: '#/definitions/http.CreateProductResponse'
+              type: object
+        "400":
+          description: Noto'g'ri so'rov tanasi yoki validatsiya xatosi
+          schema:
+            $ref: '#/definitions/response.Envelope'
+        "500":
+          description: Ichki server xatosi
+          schema:
+            $ref: '#/definitions/response.Envelope'
+      summary: Yangi mahsulot yaratish
+      tags:
+      - products
 securityDefinitions:
   BearerAuth:
     in: header
