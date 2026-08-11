@@ -7,3 +7,6 @@ CREATE TABLE products (
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     deleted_at TIMESTAMP NULL
 );
+
+create index on products(category_id);
+create index on products(deleted_at);

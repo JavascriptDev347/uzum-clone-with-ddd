@@ -207,6 +207,58 @@ const docTemplate = `{
                 }
             }
         },
+        "/categories": {
+            "post": {
+                "description": "Nomi va boshqa ma'lumotlar orqali yangi kategoriya yaratadi",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "categories"
+                ],
+                "summary": "Yangi kategoriya yaratish",
+                "parameters": [
+                    {
+                        "description": "Kategoriya ma'lumotlari",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/http.CreateCategoryRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Kategoriya yaratildi\"//\t@Failure\t\t400\t\t{object}\tresponse.Envelope\t\"Noto'g'ri so'rov tanasi yoki validatsiya xatosi",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.Envelope"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/http.CreateCategoryResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "500": {
+                        "description": "Ichki server xatosi",
+                        "schema": {
+                            "$ref": "#/definitions/response.Envelope"
+                        }
+                    }
+                }
+            }
+        },
         "/products": {
             "post": {
                 "description": "Nomi, narxi, valyutasi va kategoriyasi orqali yangi mahsulot yaratadi",
@@ -267,6 +319,34 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "http.CreateCategoryRequest": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "parent_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "http.CreateCategoryResponse": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "parent_id": {
+                    "type": "string"
+                }
+            }
+        },
         "http.CreateProductRequest": {
             "type": "object",
             "properties": {

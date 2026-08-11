@@ -139,8 +139,5 @@ func (r *PostgresProductRepository) Update(ctx context.Context, product *domain.
 func (r *PostgresProductRepository) SoftDelete(ctx context.Context, productID string) error {
 	query := `UPDATE products SET deleted_at=$1 WHERE id=$2 AND deleted_at IS NULL`
 	_, err := r.db.ExecContext(ctx, query, time.Now(), productID)
-	if err != nil {
-		return err
-	}
-	return nil
+	return err
 }

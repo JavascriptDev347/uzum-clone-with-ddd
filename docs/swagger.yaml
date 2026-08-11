@@ -1,5 +1,23 @@
 basePath: /api/v1
 definitions:
+  http.CreateCategoryRequest:
+    properties:
+      name:
+        type: string
+      parent_id:
+        type: string
+    type: object
+  http.CreateCategoryResponse:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      parent_id:
+        type: string
+    type: object
   http.CreateProductRequest:
     properties:
       amount:
@@ -192,6 +210,38 @@ paths:
       summary: Yangi foydalanuvchi ro'yxatdan o'tkazish
       tags:
       - auth
+  /categories:
+    post:
+      consumes:
+      - application/json
+      description: Nomi va boshqa ma'lumotlar orqali yangi kategoriya yaratadi
+      parameters:
+      - description: Kategoriya ma'lumotlari
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/http.CreateCategoryRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: "Kategoriya yaratildi\"//\t@Failure\t\t400\t\t{object}\tresponse.Envelope\t\"Noto'g'ri
+            so'rov tanasi yoki validatsiya xatosi"
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Envelope'
+            - properties:
+                data:
+                  $ref: '#/definitions/http.CreateCategoryResponse'
+              type: object
+        "500":
+          description: Ichki server xatosi
+          schema:
+            $ref: '#/definitions/response.Envelope'
+      summary: Yangi kategoriya yaratish
+      tags:
+      - categories
   /products:
     post:
       consumes:

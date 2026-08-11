@@ -67,7 +67,7 @@ func main() {
 	r.Use(middleware.Recoverer)
 
 	r.Mount("/api/v1/auth", identityModule.Router)
-	r.Mount("/api/v1/catalog", catalogModule.Router)
+	r.Mount("/api/v1", catalogModule.Router)
 
 	// ── Swagger UI: http://localhost:8080/swagger/index.html ──
 	r.Get("/swagger/*", httpSwagger.WrapHandler)

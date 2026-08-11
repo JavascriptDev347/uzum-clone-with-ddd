@@ -45,7 +45,7 @@ func (h *ProductHandler) CreateProduct(w http.ResponseWriter, r *http.Request) {
 		CategoryID: req.CategoryID,
 	})
 	if err != nil {
-		writeCatalogError(w, err)
+		writeProductError(w, err)
 		return
 	}
 

@@ -7,6 +7,7 @@ import (
 
 var (
 	ErrorEmptyCategoryName = errors.New("catalog: category nomi bo'sh bo'lishi mumkin emas")
+	ErrCategoryNotFound    = errors.New("catalog: category topilmadi")
 )
 
 type Category struct {

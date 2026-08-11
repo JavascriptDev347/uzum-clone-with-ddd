@@ -9,15 +9,14 @@ import (
 	"github.com/JavascriptDev347/uzum-clone-with-ddd.git/pkg/response"
 )
 
-func writeCatalogError(w http.ResponseWriter, err error) {
+func writeCategoryError(w http.ResponseWriter, err error) {
 	switch {
-	case errors.Is(err, domain.ErrEmptyProductID),
-		errors.Is(err, domain.ErrEmptyProductName),
-		errors.Is(err, domain.ErrEmptyCategoryID),
-		errors.Is(err, domain.ErrNegativeAmount),
-		errors.Is(err, domain.ErrInvalidCurrency),
-		errors.Is(err, domain.ErrCurrencyMismatch):
+	case errors.Is(err, domain.ErrEmptyCategoryID),
+		errors.Is(err, domain.ErrorEmptyCategoryName):
 		response.Error(w, http.StatusBadRequest, err.Error()) // 400
+
+	case errors.Is(err, domain.ErrCategoryNotFound):
+		response.Error(w, http.StatusNotFound, err.Error()) // 404
 
 	default:
 		log.Println(err)
