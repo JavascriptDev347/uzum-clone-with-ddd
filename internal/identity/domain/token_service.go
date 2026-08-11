@@ -12,5 +12,5 @@ type TokenService interface {
 
 	// ValidateToken - tokenni tekshiradi va undan userID'ni chiqarib beradi.
 	// Token yaroqsiz/muddati o'tgan bo'lsa xato qaytaradi.
-	ValidateToken(token string) (userID string, err error)
+	ValidateToken(token string) (userID string, role Role, err error)
 }

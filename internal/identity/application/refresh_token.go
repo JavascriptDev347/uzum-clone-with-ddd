@@ -20,7 +20,7 @@ func NewRefreshTokenUseCase(userRepo domain.UserRepository, tokenService domain.
 
 func (uc *RefreshTokenUseCase) Execute(ctx context.Context, refreshToken string) (LoginUserOutput, error) {
 	// separate the user id from the token
-	id, err := uc.tokenService.ValidateToken(refreshToken)
+	id, _, err := uc.tokenService.ValidateToken(refreshToken)
 	if err != nil {
 		return LoginUserOutput{}, err
 	}

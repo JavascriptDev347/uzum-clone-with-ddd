@@ -24,7 +24,7 @@ func NewJWTTokenService(secret string, accessTTL, refreshTTL time.Duration) *JWT
 
 type tokenClaims struct {
 	UserID string `json:"user_id"`
-	Role   string `json:"role,omitempty"`
+	Role   string `json:"role"`
 	jwt.RegisteredClaims
 }
 
@@ -53,7 +53,7 @@ func (s *JWTTokenService) GenerateRefreshToken(userID string) (string, error) {
 	return token.SignedString(s.secret)
 }
 
-func (s *JWTTokenService) ValidateToken(tokenString string) (string, error) {
+func (s *JWTTokenService) ValidateToken(tokenString string) (userID string, role domain.Role, err error) {
 	claims := &tokenClaims{}
 
 	token, err := jwt.ParseWithClaims(tokenString, claims, func(t *jwt.Token) (interface{}, error) {
@@ -63,10 +63,10 @@ func (s *JWTTokenService) ValidateToken(tokenString string) (string, error) {
 		return s.secret, nil
 	})
 	if err != nil {
-		return "", err
+		return "", "", err
 	}
 	if !token.Valid {
-		return "", errors.New("invalid token")
+		return "", "", errors.New("invalid token")
 	}
-	return claims.UserID, nil
+	return claims.UserID, domain.Role(claims.Role), nil
 }
