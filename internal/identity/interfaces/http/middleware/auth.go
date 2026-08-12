@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"net/http"
+	"strings"
 
 	"github.com/JavascriptDev347/uzum-clone-with-ddd.git/internal/identity/infrastructure/security"
 )
@@ -12,8 +13,16 @@ func Authenticate(tokenService *security.JWTTokenService) func(http.Handler) htt
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			// TODO: "Authorization" header'ni o'qing ("Bearer <token>" formatida)
+			authHeader := r.Header.Get("Authorization")
+
 			// TODO: header bo'sh yoki noto'g'ri formatda bo'lsa - 401 qaytaring
+			if authHeader == "" || !strings.HasPrefix(authHeader, "Bearer ") {
+				http.Error(w, "Authorization header is required", http.StatusUnauthorized)
+				return
+			}
+
 			// TODO: tokenService.ValidateToken(token) chaqiring
+			token := tokenService.ValidateToken()
 			// TODO: xato bo'lsa - 401 qaytaring
 			// TODO: context.WithValue bilan userID va role'ni joylang
 			// TODO: next.ServeHTTP(w, r.WithContext(...)) chaqiring
