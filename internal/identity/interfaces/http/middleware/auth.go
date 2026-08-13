@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"context"
 	"net/http"
 	"strings"
 
@@ -22,10 +23,20 @@ func Authenticate(tokenService *security.JWTTokenService) func(http.Handler) htt
 			}
 
 			// TODO: tokenService.ValidateToken(token) chaqiring
-			token := tokenService.ValidateToken()
-			// TODO: xato bo'lsa - 401 qaytaring
+			userID, role, err := tokenService.ValidateToken(authHeader[7:])
+			if err != nil {
+				http.Error(w, "Invalid token", http.StatusUnauthorized)
+				return
+			}
+
 			// TODO: context.WithValue bilan userID va role'ni joylang
+			ctx := r.Context()
+			ctx = context.WithValue(ctx, UserIDKey, userID)
+			ctx = context.WithValue(ctx, RoleKey, role)
+			r = r.WithContext(ctx)
+
 			// TODO: next.ServeHTTP(w, r.WithContext(...)) chaqiring
+			next.ServeHTTP(w, r)
 		})
 	}
 }
