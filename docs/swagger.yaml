@@ -4,8 +4,6 @@ definitions:
     properties:
       email:
         type: string
-      name:
-        type: string
       user_id:
         type: string
     type: object
@@ -25,6 +23,8 @@ definitions:
       name:
         type: string
       parent_id:
+        type: string
+      updated_at:
         type: string
     type: object
   http.CreateProductResponse:
@@ -270,6 +270,8 @@ paths:
           description: Ichki server xatosi
           schema:
             $ref: '#/definitions/response.Envelope'
+      security:
+      - BearerAuth: []
       summary: Yangi kategoriya yaratish
       tags:
       - categories

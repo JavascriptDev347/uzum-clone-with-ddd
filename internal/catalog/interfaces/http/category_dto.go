@@ -11,6 +11,7 @@ type CreateCategoryResponse struct {
 	ID        string  `json:"id"`
 	Name      string  `json:"name"`
 	ParentID  *string `json:"parent_id,omitempty"`
+	UpdatedAt string  `json:"updated_at"`
 	CreatedAt string  `json:"created_at"`
 }
 
@@ -19,6 +20,7 @@ func ToCategoryResponse(output application.CreateCategoryOutput) application.Cre
 		ID:        output.ID,
 		Name:      output.Name,
 		ParentID:  output.ParentID,
+		UpdatedAt: output.UpdatedAt,
 		CreatedAt: output.CreatedAt,
 	}
 }

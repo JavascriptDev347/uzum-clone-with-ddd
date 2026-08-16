@@ -6,8 +6,9 @@ import (
 )
 
 var (
-	ErrorEmptyCategoryName = errors.New("catalog: category nomi bo'sh bo'lishi mumkin emas")
-	ErrCategoryNotFound    = errors.New("catalog: category topilmadi")
+	ErrorEmptyCategoryName   = errors.New("catalog: category nomi bo'sh bo'lishi mumkin emas")
+	ErrCategoryNotFound      = errors.New("catalog: category topilmadi")
+	ErrCategoryAlreadyExists = errors.New("category with this name already exists under the same parent")
 )
 
 type Category struct {
@@ -15,6 +16,7 @@ type Category struct {
 	name      string
 	parentID  *string
 	createdAt time.Time
+	updatedAt time.Time
 	deletedAt *time.Time
 }
 
@@ -31,17 +33,19 @@ func NewCategory(id, name string, parentID *string) (*Category, error) {
 		name:      name,
 		parentID:  parentID,
 		createdAt: time.Now(),
+		updatedAt: time.Now(),
 		deletedAt: nil,
 	}, nil
 }
 
-func NewCategoryFromRepository(id, name string, parentID *string, createdAt time.Time, deletedAt *time.Time) *Category {
+func NewCategoryFromRepository(id, name string, parentID *string, createdAt time.Time, updatedAt time.Time, deletedAt *time.Time) *Category {
 
 	return &Category{
 		id:        id,
 		name:      name,
 		parentID:  parentID,
 		createdAt: createdAt,
+		updatedAt: updatedAt,
 		deletedAt: deletedAt,
 	}
 }
@@ -57,6 +61,9 @@ func (c *Category) ParentID() *string {
 }
 func (c *Category) CreatedAt() time.Time {
 	return c.createdAt
+}
+func (c *Category) UpdatedAt() time.Time {
+	return c.updatedAt
 }
 func (c *Category) DeletedAt() *time.Time {
 	return c.deletedAt

@@ -18,6 +18,9 @@ func writeCategoryError(w http.ResponseWriter, err error) {
 	case errors.Is(err, domain.ErrCategoryNotFound):
 		response.Error(w, http.StatusNotFound, err.Error()) // 404
 
+	case errors.Is(err, domain.ErrCategoryAlreadyExists):
+		response.Error(w, http.StatusConflict, err.Error()) // 409
+
 	default:
 		log.Println(err)
 		response.Error(w, http.StatusInternalServerError, "internal server error")

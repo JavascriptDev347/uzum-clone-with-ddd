@@ -261,6 +261,11 @@ const docTemplate = `{
         },
         "/categories": {
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Nomi va boshqa ma'lumotlar orqali yangi kategoriya yaratadi",
                 "consumes": [
                     "application/json"
@@ -419,9 +424,6 @@ const docTemplate = `{
                 "email": {
                     "type": "string"
                 },
-                "name": {
-                    "type": "string"
-                },
                 "user_id": {
                     "type": "string"
                 }
@@ -451,6 +453,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "parent_id": {
+                    "type": "string"
+                },
+                "updated_at": {
                     "type": "string"
                 }
             }

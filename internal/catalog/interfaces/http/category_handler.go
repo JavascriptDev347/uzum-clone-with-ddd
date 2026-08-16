@@ -21,15 +21,16 @@ func NewCategoryHandler(createUc CreateCategoryUseCase) *CategoryHandler {
 
 // CreateCategory godoc
 //
-//	@Summary		Yangi kategoriya yaratish
-//	@Description	Nomi va boshqa ma'lumotlar orqali yangi kategoriya yaratadi
-//	@Tags			categories
-//	@Accept			json
-//	@Produce		json
-//	@Param			request	body		CreateCategoryRequest	true	"Kategoriya ma'lumotlari"
-//	@Success		201		{object}	response.Envelope{data=CreateCategoryResponse}	"Kategoriya yaratildi"//	@Failure		400		{object}	response.Envelope	"Noto'g'ri so'rov tanasi yoki validatsiya xatosi"
-//	@Failure		500		{object}	response.Envelope	"Ichki server xatosi"
-//	@Router			/categories [post]
+//		@Summary		Yangi kategoriya yaratish
+//		@Description	Nomi va boshqa ma'lumotlar orqali yangi kategoriya yaratadi
+//		@Tags			categories
+//		@Accept			json
+//	 @Security		BearerAuth
+//		@Produce		json
+//		@Param			request	body		CreateCategoryRequest	true	"Kategoriya ma'lumotlari"
+//		@Success		201		{object}	response.Envelope{data=CreateCategoryResponse}	"Kategoriya yaratildi"//	@Failure		400		{object}	response.Envelope	"Noto'g'ri so'rov tanasi yoki validatsiya xatosi"
+//		@Failure		500		{object}	response.Envelope	"Ichki server xatosi"
+//		@Router			/categories [post]
 func (h *CategoryHandler) CreateCategory(w http.ResponseWriter, r *http.Request) {
 	var req CreateCategoryRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -50,6 +51,7 @@ func (h *CategoryHandler) CreateCategory(w http.ResponseWriter, r *http.Request)
 		ID:        output.ID,
 		Name:      output.Name,
 		ParentID:  output.ParentID,
+		UpdatedAt: output.UpdatedAt.Format(time.RFC3339),
 		CreatedAt: output.CreatedAt.Format(time.RFC3339),
 	})
 }
