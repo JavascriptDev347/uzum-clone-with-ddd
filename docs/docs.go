@@ -266,9 +266,9 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "Nomi, narxi, valyutasi va kategoriyasi orqali yangi mahsulot yaratadi. Faqat admin huquqiga ega foydalanuvchi uchun.",
+                "description": "Nomi, narxi, valyutasi, kategoriyasi va rasmi orqali yangi mahsulot yaratadi. Faqat admin huquqiga ega foydalanuvchi uchun.",
                 "consumes": [
-                    "application/json"
+                    "multipart/form-data"
                 ],
                 "produces": [
                     "application/json"
@@ -279,13 +279,38 @@ const docTemplate = `{
                 "summary": "Yangi mahsulot yaratish",
                 "parameters": [
                     {
-                        "description": "Mahsulot ma'lumotlari",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/http.CreateProductRequest"
-                        }
+                        "type": "string",
+                        "description": "Mahsulot nomi",
+                        "name": "name",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Narx (tiyin/kopeykada)",
+                        "name": "amount",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Valyuta (masalan: UZS)",
+                        "name": "currency",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Kategoriya ID",
+                        "name": "categoryId",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "Mahsulot rasmi",
+                        "name": "image",
+                        "in": "formData"
                     }
                 ],
                 "responses": {
@@ -360,23 +385,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "parent_id": {
-                    "type": "string"
-                }
-            }
-        },
-        "http.CreateProductRequest": {
-            "type": "object",
-            "properties": {
-                "amount": {
-                    "type": "integer"
-                },
-                "category_id": {
-                    "type": "string"
-                },
-                "currency": {
-                    "type": "string"
-                },
-                "name": {
                     "type": "string"
                 }
             }

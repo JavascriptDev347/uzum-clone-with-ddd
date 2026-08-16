@@ -12,6 +12,7 @@ type CreateProductResponse struct {
 	Name       string `json:"name"`
 	CategoryID string `json:"category_id"`
 	Amount     int64  `json:"amount"`
+	ImageURL   string `json:"image_url"`
 	Currency   string `json:"currency"`
 	CreatedAt  string `json:"created_at"`
 }

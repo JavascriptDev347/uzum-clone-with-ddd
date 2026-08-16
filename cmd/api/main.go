@@ -16,6 +16,7 @@ import (
 	_ "github.com/JavascriptDev347/uzum-clone-with-ddd.git/docs"
 	"github.com/JavascriptDev347/uzum-clone-with-ddd.git/internal/catalog"
 	"github.com/JavascriptDev347/uzum-clone-with-ddd.git/internal/identity"
+	"github.com/JavascriptDev347/uzum-clone-with-ddd.git/internal/shared/media"
 	"github.com/JavascriptDev347/uzum-clone-with-ddd.git/pkg/config"
 	"github.com/JavascriptDev347/uzum-clone-with-ddd.git/pkg/database"
 	"github.com/go-chi/chi/v5"
@@ -51,9 +52,21 @@ func main() {
 		RefreshTTL: cfg.JWT.RefreshTTL,
 	})
 
+	cloudinaryUploader, err := media.NewCloudinaryUploader(media.CloudinaryConfig{
+		CloudName: cfg.Cloudinary.CloudName,
+		APIKey:    cfg.Cloudinary.APIKey,
+		APISecret: cfg.Cloudinary.APISecret,
+		Folder:    cfg.Cloudinary.Folder,
+	})
+	if err != nil {
+		log.Fatalf("cloudinary init error: %v", err)
+	}
+
 	catalogModule := catalog.NewModule(catalog.Config{
-		DB:           db,
-		TokenService: identityModule.TokenService})
+		DB:            db,
+		TokenService:  identityModule.TokenService,
+		MediaUploader: cloudinaryUploader,
+	})
 
 	// standart middlewares
 	r := chi.NewRouter()

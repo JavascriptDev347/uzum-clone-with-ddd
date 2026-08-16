@@ -3,17 +3,21 @@ package application
 import "time"
 
 type CreateProductInput struct {
-	Name       string `json:"name"`
-	Amount     int64  `json:"amount"`
-	Currency   string `json:"currency"`
-	CategoryID string `json:"category_id"`
+	Name             string
+	Amount           int64
+	Currency         string
+	CategoryID       string
+	ImageData        []byte
+	ImageContentType string
+	ImageFileName    string
 }
 
 type CreateProductOutput struct {
-	ID            string    `json:"id"`
-	Name          string    `json:"name"`
-	PriceAmount   int64     `json:"price_amount"`
-	PriceCurrency string    `json:"price_currency"`
-	CategoryID    string    `json:"category_id"`
-	CreatedAt     time.Time `json:"created_at"`
+	ID            string
+	Name          string
+	PriceAmount   int64
+	PriceCurrency string
+	CategoryID    string
+	ImageURL      string
+	CreatedAt     time.Time
 }

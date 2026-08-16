@@ -6,6 +6,7 @@ import (
 	"github.com/JavascriptDev347/uzum-clone-with-ddd.git/internal/catalog/interfaces/http"
 	producthttp "github.com/JavascriptDev347/uzum-clone-with-ddd.git/internal/catalog/interfaces/http"
 	"github.com/JavascriptDev347/uzum-clone-with-ddd.git/internal/identity/infrastructure/security"
+	"github.com/JavascriptDev347/uzum-clone-with-ddd.git/internal/shared/media"
 	"github.com/go-chi/chi/v5"
 	"github.com/jmoiron/sqlx"
 )
@@ -15,8 +16,9 @@ type Module struct {
 }
 
 type Config struct {
-	DB           *sqlx.DB
-	TokenService *security.JWTTokenService
+	DB            *sqlx.DB
+	TokenService  *security.JWTTokenService
+	MediaUploader media.Uploader
 }
 
 func NewModule(cfg Config) *Module {
@@ -25,7 +27,7 @@ func NewModule(cfg Config) *Module {
 	categoryRepo := postgres.NewPostgresCategoryRepository(cfg.DB)
 
 	// application
-	createProductUC := application.NewCreateProductUseCase(productRepo)
+	createProductUC := application.NewCreateProductUseCase(productRepo, cfg.MediaUploader)
 	createCategoryUC := application.NewCreateCategoryUseCase(categoryRepo)
 
 	// interfaces

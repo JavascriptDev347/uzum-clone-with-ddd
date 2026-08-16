@@ -12,15 +12,17 @@ var (
 )
 
 type Product struct {
-	id         string
-	name       string
-	categoryID string
-	price      Money
-	createdAt  time.Time
-	deletedAt  *time.Time
+	id            string
+	name          string
+	categoryID    string
+	price         Money
+	imageURL      string
+	imagePublicID string
+	createdAt     time.Time
+	deletedAt     *time.Time
 }
 
-func NewProduct(id, name, categoryID string, price Money) (*Product, error) {
+func NewProduct(id, name, categoryID string, price Money, imageURL, imagePublicID string) (*Product, error) {
 	if id == "" {
 		return nil, ErrEmptyProductID
 	}
@@ -32,22 +34,26 @@ func NewProduct(id, name, categoryID string, price Money) (*Product, error) {
 	}
 
 	return &Product{
-		id:         id,
-		name:       name,
-		categoryID: categoryID,
-		price:      price,
-		createdAt:  time.Now(),
+		id:            id,
+		name:          name,
+		categoryID:    categoryID,
+		price:         price,
+		imageURL:      imageURL,
+		imagePublicID: imagePublicID,
+		createdAt:     time.Now(),
 	}, nil
 }
 
-func NewProductFromRepository(id, name, categoryID string, price Money, createdAt time.Time, deletedAt *time.Time) *Product {
+func NewProductFromRepository(id, name, categoryID string, price Money, imageURL, imagePublicID string, createdAt time.Time, deletedAt *time.Time) *Product {
 	return &Product{
-		id:         id,
-		name:       name,
-		categoryID: categoryID,
-		price:      price,
-		createdAt:  createdAt,
-		deletedAt:  deletedAt,
+		id:            id,
+		name:          name,
+		categoryID:    categoryID,
+		price:         price,
+		imageURL:      imageURL,
+		imagePublicID: imagePublicID,
+		createdAt:     createdAt,
+		deletedAt:     deletedAt,
 	}
 }
 
@@ -61,6 +67,11 @@ func (p *Product) ChangeName(name string) error {
 	}
 	p.name = name
 	return nil
+}
+
+func (p *Product) ChangeImage(imageURL, imagePublicID string) {
+	p.imageURL = imageURL
+	p.imagePublicID = imagePublicID
 }
 
 func (p *Product) Delete() {
@@ -96,3 +107,6 @@ func (p *Product) CreatedAt() time.Time {
 func (p *Product) DeletedAt() *time.Time {
 	return p.deletedAt
 }
+
+func (p Product) ImageURL() string      { return p.imageURL }
+func (p Product) ImagePublicID() string { return p.imagePublicID }

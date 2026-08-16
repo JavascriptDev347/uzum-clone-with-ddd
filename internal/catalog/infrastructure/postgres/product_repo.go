@@ -19,23 +19,25 @@ func NewPostgresProductRepository(db *sqlx.DB) *PostgresProductRepository {
 }
 
 func (r *PostgresProductRepository) Save(ctx context.Context, product *domain.Product) error {
+	query := `INSERT INTO products (id, name, category_id, price_amount, price_currency, image_url, image_public_id, created_at, deleted_at)
+	VALUES (:id, :name, :category_id, :price_amount, :price_currency, :image_url, :image_public_id, :created_at, :deleted_at)`
 
-	query := `INSERT INTO products (id, name, category_id, price, created_at, deleted_at)
-	VALUES ($1, $2, $3, $4, $5, $6)`
-
-	_, err := r.db.ExecContext(ctx, query,
-		product.ID(),
-		product.Name(),
-		product.CategoryID(),
-		product.Price(),
-		product.CreatedAt(),
-		product.DeletedAt(),
-	)
+	_, err := r.db.NamedExecContext(ctx, query, map[string]interface{}{
+		"id":              product.ID(),
+		"name":            product.Name(),
+		"category_id":     product.CategoryID(),
+		"price_amount":    product.Price().Amount(),
+		"price_currency":  product.Price().Currency(),
+		"image_url":       product.ImageURL(),
+		"image_public_id": product.ImagePublicID(),
+		"created_at":      product.CreatedAt(),
+		"deleted_at":      product.DeletedAt(),
+	})
 	return err
 }
 
 func (r *PostgresProductRepository) FindByID(ctx context.Context, id string) (*domain.Product, error) {
-	query := `SELECT id, name, category_id, price_amount, price_currency, created_at, deleted_at
+	query := `SELECT id, name, category_id, price_amount, price_currency, image_url, image_public_id, created_at, deleted_at
 			FROM products
 			WHERE id = $1 AND deleted_at IS NULL`
 
@@ -45,11 +47,14 @@ func (r *PostgresProductRepository) FindByID(ctx context.Context, id string) (*d
 		categoryID    string
 		priceAmount   int64
 		priceCurrency string
+		imageURL      sql.NullString
+		imagePublicID sql.NullString
 		createdAt     time.Time
 		deletedAt     sql.NullTime
 	)
+
 	row := r.db.QueryRowContext(ctx, query, id)
-	err := row.Scan(&productID, &name, &categoryID, &priceAmount, &priceCurrency, &createdAt, &deletedAt)
+	err := row.Scan(&productID, &name, &categoryID, &priceAmount, &priceCurrency, &imageURL, &imagePublicID, &createdAt, &deletedAt)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, domain.ErrProductNotFound
@@ -67,15 +72,19 @@ func (r *PostgresProductRepository) FindByID(ctx context.Context, id string) (*d
 		deletedAtPtr = &deletedAt.Time
 	}
 
-	return domain.NewProductFromRepository(productID, name, categoryID, price, createdAt, deletedAtPtr), nil
+	return domain.NewProductFromRepository(
+		productID, name, categoryID, price,
+		imageURL.String, imagePublicID.String,
+		createdAt, deletedAtPtr,
+	), nil
 }
 
 func (r *PostgresProductRepository) FindAll(ctx context.Context) ([]*domain.Product, error) {
-
-	query := `SELECT id,name,category_id,price_amount,price_currency,created_at,deleted_at
+	query := `SELECT id, name, category_id, price_amount, price_currency, image_url, image_public_id, created_at, deleted_at
 			FROM products
 			WHERE deleted_at IS NULL
 			ORDER BY created_at DESC`
+
 	rows, err := r.db.QueryContext(ctx, query)
 	if err != nil {
 		return nil, err
@@ -83,7 +92,6 @@ func (r *PostgresProductRepository) FindAll(ctx context.Context) ([]*domain.Prod
 	defer rows.Close()
 
 	products := []*domain.Product{}
-
 	for rows.Next() {
 		var (
 			productID     string
@@ -91,10 +99,13 @@ func (r *PostgresProductRepository) FindAll(ctx context.Context) ([]*domain.Prod
 			categoryID    string
 			priceAmount   int64
 			priceCurrency string
+			imageURL      sql.NullString
+			imagePublicID sql.NullString
 			createdAt     time.Time
 			deletedAt     sql.NullTime
 		)
-		err := rows.Scan(&productID, &name, &categoryID, &priceAmount, &priceCurrency, &createdAt, &deletedAt)
+
+		err := rows.Scan(&productID, &name, &categoryID, &priceAmount, &priceCurrency, &imageURL, &imagePublicID, &createdAt, &deletedAt)
 		if err != nil {
 			return nil, err
 		}
@@ -109,9 +120,12 @@ func (r *PostgresProductRepository) FindAll(ctx context.Context) ([]*domain.Prod
 			deletedAtPtr = &deletedAt.Time
 		}
 
-		products = append(products, domain.NewProductFromRepository(productID, name, categoryID, price, createdAt, deletedAtPtr))
+		products = append(products, domain.NewProductFromRepository(
+			productID, name, categoryID, price,
+			imageURL.String, imagePublicID.String,
+			createdAt, deletedAtPtr,
+		))
 	}
-
 	if err := rows.Err(); err != nil {
 		return nil, err
 	}
@@ -119,9 +133,20 @@ func (r *PostgresProductRepository) FindAll(ctx context.Context) ([]*domain.Prod
 }
 
 func (r *PostgresProductRepository) Update(ctx context.Context, product *domain.Product) error {
-	query := `UPDATE products SET name=$1, category_id=$2, price_amount=$3, price_currency=$4 WHERE id=$5 AND deleted_at IS NULL`
-	result, err := r.db.ExecContext(ctx, query, product.Name(), product.CategoryID(), product.Price().Amount(), product.Price().Currency(), product.ID)
+	query := `UPDATE products
+			SET name=:name, category_id=:category_id, price_amount=:price_amount, price_currency=:price_currency,
+				image_url=:image_url, image_public_id=:image_public_id
+			WHERE id=:id AND deleted_at IS NULL`
 
+	result, err := r.db.NamedExecContext(ctx, query, map[string]interface{}{
+		"id":              product.ID(),
+		"name":            product.Name(),
+		"category_id":     product.CategoryID(),
+		"price_amount":    product.Price().Amount(),
+		"price_currency":  product.Price().Currency(),
+		"image_url":       product.ImageURL(),
+		"image_public_id": product.ImagePublicID(),
+	})
 	if err != nil {
 		return err
 	}
