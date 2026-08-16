@@ -246,7 +246,8 @@ paths:
     post:
       consumes:
       - application/json
-      description: Nomi, narxi, valyutasi va kategoriyasi orqali yangi mahsulot yaratadi
+      description: Nomi, narxi, valyutasi va kategoriyasi orqali yangi mahsulot yaratadi.
+        Faqat admin huquqiga ega foydalanuvchi uchun.
       parameters:
       - description: Mahsulot ma'lumotlari
         in: body
@@ -270,10 +271,20 @@ paths:
           description: Noto'g'ri so'rov tanasi yoki validatsiya xatosi
           schema:
             $ref: '#/definitions/response.Envelope'
+        "401":
+          description: Autentifikatsiyadan o'tilmagan
+          schema:
+            $ref: '#/definitions/response.Envelope'
+        "403":
+          description: Huquq yetarli emas
+          schema:
+            $ref: '#/definitions/response.Envelope'
         "500":
           description: Ichki server xatosi
           schema:
             $ref: '#/definitions/response.Envelope'
+      security:
+      - BearerAuth: []
       summary: Yangi mahsulot yaratish
       tags:
       - products

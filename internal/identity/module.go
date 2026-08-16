@@ -13,7 +13,8 @@ import (
 )
 
 type Module struct {
-	Router chi.Router
+	Router       chi.Router
+	TokenService *security.JWTTokenService
 }
 
 type Config struct {
@@ -24,6 +25,7 @@ type Config struct {
 }
 
 func NewModule(cfg Config) *Module {
+
 	// Infrastructure
 	userRepo := postgres.NewPostgresUserRepository(cfg.DB)
 	hasher := security.NewBcryptHasher()
@@ -38,6 +40,7 @@ func NewModule(cfg Config) *Module {
 	handler := http.NewIdentityHandler(registerUC, loginUC, refreshUC)
 
 	return &Module{
-		Router: identityhttp.NewRouter(handler),
+		Router:       identityhttp.NewRouter(handler),
+		TokenService: tokenService,
 	}
 }

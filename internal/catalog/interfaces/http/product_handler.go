@@ -22,13 +22,16 @@ func NewProductHandler(createUc CreateUseCase) *ProductHandler {
 // CreateProduct godoc
 //
 //	@Summary		Yangi mahsulot yaratish
-//	@Description	Nomi, narxi, valyutasi va kategoriyasi orqali yangi mahsulot yaratadi
+//	@Description	Nomi, narxi, valyutasi va kategoriyasi orqali yangi mahsulot yaratadi. Faqat admin huquqiga ega foydalanuvchi uchun.
 //	@Tags			products
 //	@Accept			json
 //	@Produce		json
+//	@Security		BearerAuth
 //	@Param			request	body		CreateProductRequest	true	"Mahsulot ma'lumotlari"
 //	@Success		201		{object}	response.Envelope{data=CreateProductResponse}	"Mahsulot yaratildi"
 //	@Failure		400		{object}	response.Envelope	"Noto'g'ri so'rov tanasi yoki validatsiya xatosi"
+//	@Failure		401		{object}	response.Envelope	"Autentifikatsiyadan o'tilmagan"
+//	@Failure		403		{object}	response.Envelope	"Huquq yetarli emas"
 //	@Failure		500		{object}	response.Envelope	"Ichki server xatosi"
 //	@Router			/products [post]
 func (h *ProductHandler) CreateProduct(w http.ResponseWriter, r *http.Request) {

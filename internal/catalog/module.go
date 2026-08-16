@@ -5,6 +5,7 @@ import (
 	"github.com/JavascriptDev347/uzum-clone-with-ddd.git/internal/catalog/infrastructure/postgres"
 	"github.com/JavascriptDev347/uzum-clone-with-ddd.git/internal/catalog/interfaces/http"
 	producthttp "github.com/JavascriptDev347/uzum-clone-with-ddd.git/internal/catalog/interfaces/http"
+	"github.com/JavascriptDev347/uzum-clone-with-ddd.git/internal/identity/infrastructure/security"
 	"github.com/go-chi/chi/v5"
 	"github.com/jmoiron/sqlx"
 )
@@ -14,7 +15,8 @@ type Module struct {
 }
 
 type Config struct {
-	DB *sqlx.DB
+	DB           *sqlx.DB
+	TokenService *security.JWTTokenService
 }
 
 func NewModule(cfg Config) *Module {
@@ -31,6 +33,6 @@ func NewModule(cfg Config) *Module {
 	categoryHandler := http.NewCategoryHandler(createCategoryUC)
 
 	return &Module{
-		Router: producthttp.NewRouter(productHandler, categoryHandler),
+		Router: producthttp.NewRouter(productHandler, categoryHandler, cfg.TokenService),
 	}
 }

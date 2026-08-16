@@ -261,7 +261,12 @@ const docTemplate = `{
         },
         "/products": {
             "post": {
-                "description": "Nomi, narxi, valyutasi va kategoriyasi orqali yangi mahsulot yaratadi",
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Nomi, narxi, valyutasi va kategoriyasi orqali yangi mahsulot yaratadi. Faqat admin huquqiga ega foydalanuvchi uchun.",
                 "consumes": [
                     "application/json"
                 ],
@@ -304,6 +309,18 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Noto'g'ri so'rov tanasi yoki validatsiya xatosi",
+                        "schema": {
+                            "$ref": "#/definitions/response.Envelope"
+                        }
+                    },
+                    "401": {
+                        "description": "Autentifikatsiyadan o'tilmagan",
+                        "schema": {
+                            "$ref": "#/definitions/response.Envelope"
+                        }
+                    },
+                    "403": {
+                        "description": "Huquq yetarli emas",
                         "schema": {
                             "$ref": "#/definitions/response.Envelope"
                         }

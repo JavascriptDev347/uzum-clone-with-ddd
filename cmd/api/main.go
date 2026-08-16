@@ -52,8 +52,8 @@ func main() {
 	})
 
 	catalogModule := catalog.NewModule(catalog.Config{
-		DB: db,
-	})
+		DB:           db,
+		TokenService: identityModule.TokenService})
 
 	// standart middlewares
 	r := chi.NewRouter()
