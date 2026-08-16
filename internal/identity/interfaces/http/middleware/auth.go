@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/JavascriptDev347/uzum-clone-with-ddd.git/internal/identity/infrastructure/security"
+	"github.com/JavascriptDev347/uzum-clone-with-ddd.git/pkg/response"
 )
 
 // Authenticate - Authorization header'dan JWT'ni oladi, tekshiradi,
@@ -18,14 +19,14 @@ func Authenticate(tokenService *security.JWTTokenService) func(http.Handler) htt
 
 			// TODO: header bo'sh yoki noto'g'ri formatda bo'lsa - 401 qaytaring
 			if authHeader == "" || !strings.HasPrefix(authHeader, "Bearer ") {
-				http.Error(w, "Authorization header is required", http.StatusUnauthorized)
+				response.Error(w, http.StatusUnauthorized, "Authorization header is required")
 				return
 			}
 
 			// TODO: tokenService.ValidateToken(token) chaqiring
 			userID, role, err := tokenService.ValidateToken(authHeader[7:])
 			if err != nil {
-				http.Error(w, "Invalid token", http.StatusUnauthorized)
+				response.Error(w, http.StatusUnauthorized, "Invalid or expired token")
 				return
 			}
 

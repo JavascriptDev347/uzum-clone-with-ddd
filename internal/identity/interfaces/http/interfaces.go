@@ -17,3 +17,7 @@ type LoginUseCase interface {
 type RefreshUseCase interface {
 	Execute(ctx context.Context, input string) (application.LoginUserOutput, error)
 }
+
+type GetMeUseCase interface {
+	Execute(ctx context.Context, userID string) (*application.GetMeOutput, error)
+}

@@ -1,5 +1,14 @@
 basePath: /api/v1
 definitions:
+  application.GetMeOutput:
+    properties:
+      email:
+        type: string
+      name:
+        type: string
+      user_id:
+        type: string
+    type: object
   http.CreateCategoryRequest:
     properties:
       name:
@@ -29,6 +38,8 @@ definitions:
       currency:
         type: string
       id:
+        type: string
+      image_url:
         type: string
       name:
         type: string
@@ -118,6 +129,37 @@ paths:
           schema:
             $ref: '#/definitions/response.Envelope'
       summary: Tizimga kirish
+      tags:
+      - auth
+  /auth/me:
+    get:
+      consumes:
+      - application/json
+      description: Token orqali autentifikatsiya qilingan foydalanuvchi ma'lumotlarini
+        qaytaradi
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Foydalanuvchi
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Envelope'
+            - properties:
+                data:
+                  $ref: '#/definitions/application.GetMeOutput'
+              type: object
+        "401":
+          description: Token yaroqsiz yoki mavjud emas
+          schema:
+            $ref: '#/definitions/response.Envelope'
+        "500":
+          description: Ichki server xatosi
+          schema:
+            $ref: '#/definitions/response.Envelope'
+      security:
+      - BearerAuth: []
+      summary: Joriy foydalanuvchini olish
       tags:
       - auth
   /auth/refresh:

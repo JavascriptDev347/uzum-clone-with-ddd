@@ -27,3 +27,8 @@ type RefreshRequest struct {
 type ErrorResponse struct {
 	Error string `json:"error"`
 }
+
+type GetMeOutput struct {
+	UserID string `json:"user_id"`
+	Email  string `json:"email"`
+}

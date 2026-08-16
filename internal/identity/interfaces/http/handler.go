@@ -5,6 +5,8 @@ import (
 	"net/http"
 
 	"github.com/JavascriptDev347/uzum-clone-with-ddd.git/internal/identity/application"
+	"github.com/JavascriptDev347/uzum-clone-with-ddd.git/internal/identity/domain"
+	"github.com/JavascriptDev347/uzum-clone-with-ddd.git/internal/identity/interfaces/http/middleware"
 	"github.com/JavascriptDev347/uzum-clone-with-ddd.git/pkg/response"
 )
 
@@ -12,13 +14,15 @@ type IdentityHandler struct {
 	registerUc RegisterUseCase
 	loginUc    LoginUseCase
 	refreshUc  RefreshUseCase
+	getMeUc    GetMeUseCase
 }
 
-func NewIdentityHandler(registerUc RegisterUseCase, loginUc LoginUseCase, refreshUc RefreshUseCase) *IdentityHandler {
+func NewIdentityHandler(registerUc RegisterUseCase, loginUc LoginUseCase, refreshUc RefreshUseCase, getMeUc GetMeUseCase) *IdentityHandler {
 	return &IdentityHandler{
 		registerUc: registerUc,
 		loginUc:    loginUc,
 		refreshUc:  refreshUc,
+		getMeUc:    getMeUc,
 	}
 }
 
@@ -125,4 +129,31 @@ func (h *IdentityHandler) Refresh(w http.ResponseWriter, r *http.Request) {
 		AccessToken:  output.AccessToken,
 		RefreshToken: output.RefreshToken,
 	})
+}
+
+// GetMe godoc
+//
+//	@Summary		Joriy foydalanuvchini olish
+//	@Description	Token orqali autentifikatsiya qilingan foydalanuvchi ma'lumotlarini qaytaradi
+//	@Tags			auth
+//	@Accept			json
+//	@Security		BearerAuth
+//	@Produce		json
+//	@Success		200	{object}	response.Envelope{data=application.GetMeOutput}	"Foydalanuvchi"
+//	@Failure		401	{object}	response.Envelope	"Token yaroqsiz yoki mavjud emas"
+//	@Failure		500	{object}	response.Envelope	"Ichki server xatosi"
+//	@Router			/auth/me [get]
+func (h *IdentityHandler) GetMe(w http.ResponseWriter, r *http.Request) {
+	userID, ok := middleware.UserIDFromContext(r.Context())
+	if !ok {
+		writeIdentityError(w, domain.ErrUnauthorized) // yoki mos error
+		return
+	}
+	output, err := h.getMeUc.Execute(r.Context(), userID)
+	if err != nil {
+		writeIdentityError(w, err)
+		return
+	}
+
+	response.Success(w, http.StatusOK, output)
 }

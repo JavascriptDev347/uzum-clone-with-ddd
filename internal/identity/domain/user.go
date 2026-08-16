@@ -8,6 +8,7 @@ import (
 var (
 	ErrEmptyUserID       = errors.New("identity: user id bo'sh bo'lishi mumkin emas")
 	ErrEmptyPasswordHash = errors.New("identity: password hash bo'sh bo'lishi mumkin emas")
+	ErrUnauthorized      = errors.New("identity: unauthorized")
 )
 
 // User - Identity context'ining Entity'i. Identity - ID orqali aniqlanadi.

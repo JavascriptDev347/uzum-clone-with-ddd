@@ -35,12 +35,13 @@ func NewModule(cfg Config) *Module {
 	registerUC := application.NewRegisterUserUseCase(userRepo, hasher)
 	loginUC := application.NewLoginUserUseCase(userRepo, hasher, tokenService)
 	refreshUC := application.NewRefreshTokenUseCase(userRepo, tokenService)
+	getMeUC := application.NewGetMeUseCase(userRepo)
 
 	// Interfaces
-	handler := http.NewIdentityHandler(registerUC, loginUC, refreshUC)
+	handler := http.NewIdentityHandler(registerUC, loginUC, refreshUC, getMeUC)
 
 	return &Module{
-		Router:       identityhttp.NewRouter(handler),
+		Router:       identityhttp.NewRouter(handler, tokenService),
 		TokenService: tokenService,
 	}
 }
