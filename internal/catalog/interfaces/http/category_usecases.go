@@ -9,3 +9,7 @@ import (
 type CreateCategoryUseCase interface {
 	Execute(ctx context.Context, category application.CreateCategoryInput) (application.CreateCategoryOutput, error)
 }
+
+type GetCategoriesUseCase interface {
+	Execute(ctx context.Context, search string) ([]*application.CategoryOutput, error)
+}

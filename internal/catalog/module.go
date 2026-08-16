@@ -29,10 +29,11 @@ func NewModule(cfg Config) *Module {
 	// application
 	createProductUC := application.NewCreateProductUseCase(productRepo, cfg.MediaUploader)
 	createCategoryUC := application.NewCreateCategoryUseCase(categoryRepo)
+	getCategoriesUC := application.NewGetCategoriesUseCase(categoryRepo)
 
 	// interfaces
 	productHandler := http.NewProductHandler(createProductUC)
-	categoryHandler := http.NewCategoryHandler(createCategoryUC)
+	categoryHandler := http.NewCategoryHandler(createCategoryUC, getCategoriesUC)
 
 	return &Module{
 		Router: producthttp.NewRouter(productHandler, categoryHandler, cfg.TokenService),

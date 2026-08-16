@@ -11,11 +11,13 @@ import (
 
 type CategoryHandler struct {
 	createUc CreateCategoryUseCase
+	getUc    GetCategoriesUseCase
 }
 
-func NewCategoryHandler(createUc CreateCategoryUseCase) *CategoryHandler {
+func NewCategoryHandler(createUc CreateCategoryUseCase, getUc GetCategoriesUseCase) *CategoryHandler {
 	return &CategoryHandler{
 		createUc: createUc,
+		getUc:    getUc,
 	}
 }
 
@@ -54,4 +56,26 @@ func (h *CategoryHandler) CreateCategory(w http.ResponseWriter, r *http.Request)
 		UpdatedAt: output.UpdatedAt.Format(time.RFC3339),
 		CreatedAt: output.CreatedAt.Format(time.RFC3339),
 	})
+}
+
+// GetCategories godoc
+//
+//	@Summary		Kategoriyalarni olish
+//	@Description	Kategoriyalarni nomi bo'yicha qidirish
+//	@Tags			categories
+//	@Accept			json
+//	@Produce		json
+//	@Param			search	query		string	false	"Kategoriya nomi"
+//	@Success		200		{object}	response.Envelope{data=[]CreateCategoryResponse}	"Kategoriyalar olish muvaffaqiyatli"
+//	@Failure		500		{object}	response.Envelope	"Ichki server xatosi"
+//	@Router			/categories [get]
+func (h *CategoryHandler) GetCategories(w http.ResponseWriter, r *http.Request) {
+	search := r.URL.Query().Get("search")
+	categories, err := h.getUc.Execute(r.Context(), search)
+	if err != nil {
+		writeCategoryError(w, err)
+		return
+	}
+
+	response.Success(w, http.StatusOK, categories)
 }

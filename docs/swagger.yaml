@@ -242,6 +242,36 @@ paths:
       tags:
       - auth
   /categories:
+    get:
+      consumes:
+      - application/json
+      description: Kategoriyalarni nomi bo'yicha qidirish
+      parameters:
+      - description: Kategoriya nomi
+        in: query
+        name: search
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Kategoriyalar olish muvaffaqiyatli
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Envelope'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/http.CreateCategoryResponse'
+                  type: array
+              type: object
+        "500":
+          description: Ichki server xatosi
+          schema:
+            $ref: '#/definitions/response.Envelope'
+      summary: Kategoriyalarni olish
+      tags:
+      - categories
     post:
       consumes:
       - application/json

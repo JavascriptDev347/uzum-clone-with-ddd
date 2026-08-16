@@ -13,9 +13,12 @@ func NewRouter(h *ProductHandler, c *CategoryHandler, tokenService *security.JWT
 	r.With(middleware.Authenticate(tokenService), middleware.RequireRole(domain.RoleAdmin)).
 		Post("/products", h.CreateProduct)
 
-	// categories
+	// categories (protected)
 	r.With(middleware.Authenticate(tokenService), middleware.RequireRole(domain.RoleAdmin)).
 		Post("/categories", c.CreateCategory)
+
+	// get categories
+	r.Get("/categories", c.GetCategories)
 
 	return r
 }
