@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/JavascriptDev347/uzum-clone-with-ddd.git/internal/identity/domain"
+	"github.com/JavascriptDev347/uzum-clone-with-ddd.git/pkg/response"
 )
 
 func RequireRole(allowed ...domain.Role) func(http.Handler) http.Handler {
@@ -11,7 +12,7 @@ func RequireRole(allowed ...domain.Role) func(http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			role, ok := RoleFromContext(r.Context())
 			if !ok {
-				http.Error(w, "Forbidden", http.StatusForbidden)
+				response.Error(w, http.StatusForbidden, "Forbidden!!! you don't have access to this resource")
 				return
 			}
 
@@ -22,7 +23,7 @@ func RequireRole(allowed ...domain.Role) func(http.Handler) http.Handler {
 				}
 			}
 
-			http.Error(w, "Forbidden", http.StatusForbidden)
+			response.Error(w, http.StatusForbidden, "Forbidden!!! you don't have access to this resource")
 		})
 	}
 }
