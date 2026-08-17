@@ -11,7 +11,7 @@ type ValidationRules struct {
 // DefaultImageRules - rasm fayllar uchun standart qoidalar (5MB, jpeg/png/webp).
 func DefaultImageRules() ValidationRules {
 	return ValidationRules{
-		MaxSizeBytes:     5 * 1024 * 1024, // 5MB
+		MaxSizeBytes:     3 * 1024 * 1024, // 3MB
 		AllowedMimeTypes: []string{"image/jpeg", "image/png", "image/webp"},
 	}
 }
