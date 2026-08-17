@@ -3,8 +3,7 @@ package http
 import "github.com/JavascriptDev347/uzum-clone-with-ddd.git/internal/catalog/application"
 
 type CreateCategoryRequest struct {
-	Name     string  `json:"name"`
-	ParentID *string `json:"parent_id,omitempty"`
+	Name string `json:"name"`
 }
 
 type CreateCategoryResponse struct {
@@ -19,7 +18,6 @@ func ToCategoryResponse(output application.CreateCategoryOutput) application.Cre
 	return application.CreateCategoryOutput{
 		ID:        output.ID,
 		Name:      output.Name,
-		ParentID:  output.ParentID,
 		UpdatedAt: output.UpdatedAt,
 		CreatedAt: output.CreatedAt,
 	}

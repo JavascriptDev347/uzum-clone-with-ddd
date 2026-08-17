@@ -30,10 +30,12 @@ func NewModule(cfg Config) *Module {
 	createProductUC := application.NewCreateProductUseCase(productRepo, cfg.MediaUploader)
 	createCategoryUC := application.NewCreateCategoryUseCase(categoryRepo)
 	getCategoriesUC := application.NewGetCategoriesUseCase(categoryRepo)
+	getCategoryByIDUC := application.NewGetCategoryUseCase(categoryRepo)
+	updateCategoryUC := application.NewUpdateCategoryUseCase(categoryRepo)
 
 	// interfaces
 	productHandler := http.NewProductHandler(createProductUC)
-	categoryHandler := http.NewCategoryHandler(createCategoryUC, getCategoriesUC)
+	categoryHandler := http.NewCategoryHandler(createCategoryUC, getCategoriesUC, getCategoryByIDUC, updateCategoryUC)
 
 	return &Module{
 		Router: producthttp.NewRouter(productHandler, categoryHandler, cfg.TokenService),

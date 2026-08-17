@@ -366,6 +366,106 @@ const docTemplate = `{
                 }
             }
         },
+        "/categories/{id}": {
+            "get": {
+                "description": "Kategoriyani ID bo'yicha olish",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "categories"
+                ],
+                "summary": "Kategoriyani olish",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Kategoriya ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Kategoriya olish muvaffaqiyatli",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.Envelope"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/http.CreateCategoryResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "500": {
+                        "description": "Ichki server xatosi",
+                        "schema": {
+                            "$ref": "#/definitions/response.Envelope"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Kategoriyani ID bo'yicha yangilash",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "categories"
+                ],
+                "summary": "Kategoriyani yangilash",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Kategoriya ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Yangilash uchun kategoriya ma'lumotlari",
+                        "name": "category",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/application.UpdateCategoryInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Kategoriya yangilash muvaffaqiyatli",
+                        "schema": {
+                            "$ref": "#/definitions/response.Envelope"
+                        }
+                    },
+                    "500": {
+                        "description": "Ichki server xatosi",
+                        "schema": {
+                            "$ref": "#/definitions/response.Envelope"
+                        }
+                    }
+                }
+            }
+        },
         "/products": {
             "post": {
                 "security": [
@@ -479,13 +579,21 @@ const docTemplate = `{
                 }
             }
         },
+        "application.UpdateCategoryInput": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
         "http.CreateCategoryRequest": {
             "type": "object",
             "properties": {
                 "name": {
-                    "type": "string"
-                },
-                "parent_id": {
                     "type": "string"
                 }
             }

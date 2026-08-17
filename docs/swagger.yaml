@@ -7,11 +7,16 @@ definitions:
       user_id:
         type: string
     type: object
+  application.UpdateCategoryInput:
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+    type: object
   http.CreateCategoryRequest:
     properties:
       name:
-        type: string
-      parent_id:
         type: string
     type: object
   http.CreateCategoryResponse:
@@ -303,6 +308,68 @@ paths:
       security:
       - BearerAuth: []
       summary: Yangi kategoriya yaratish
+      tags:
+      - categories
+  /categories/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Kategoriyani ID bo'yicha olish
+      parameters:
+      - description: Kategoriya ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Kategoriya olish muvaffaqiyatli
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Envelope'
+            - properties:
+                data:
+                  $ref: '#/definitions/http.CreateCategoryResponse'
+              type: object
+        "500":
+          description: Ichki server xatosi
+          schema:
+            $ref: '#/definitions/response.Envelope'
+      summary: Kategoriyani olish
+      tags:
+      - categories
+    put:
+      consumes:
+      - application/json
+      description: Kategoriyani ID bo'yicha yangilash
+      parameters:
+      - description: Kategoriya ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Yangilash uchun kategoriya ma'lumotlari
+        in: body
+        name: category
+        required: true
+        schema:
+          $ref: '#/definitions/application.UpdateCategoryInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Kategoriya yangilash muvaffaqiyatli
+          schema:
+            $ref: '#/definitions/response.Envelope'
+        "500":
+          description: Ichki server xatosi
+          schema:
+            $ref: '#/definitions/response.Envelope'
+      security:
+      - BearerAuth: []
+      summary: Kategoriyani yangilash
       tags:
       - categories
   /products:

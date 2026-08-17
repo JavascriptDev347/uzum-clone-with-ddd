@@ -13,3 +13,15 @@ type CreateCategoryUseCase interface {
 type GetCategoriesUseCase interface {
 	Execute(ctx context.Context, search string) ([]*application.CategoryOutput, error)
 }
+
+type GetCategoryUseCase interface {
+	Execute(ctx context.Context, id string) (application.CategoryOutput, error)
+}
+
+type GetCategoryChildUseCase interface {
+	Execute(ctx context.Context, parentID string) ([]*application.CategoryOutput, error)
+}
+
+type UpdateCategoryUseCase interface {
+	Execute(ctx context.Context, input application.UpdateCategoryInput) error
+}
