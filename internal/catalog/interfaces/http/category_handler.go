@@ -19,15 +19,22 @@ type CategoryHandler struct {
 	getByIdUc GetCategoryUseCase
 	updateUc  UpdateCategoryUseCase
 	deleteUc  DeleteCategoryUseCase
+	getAllUc  GetAllCategoriesIncludingDeletedUseCase
 }
 
-func NewCategoryHandler(createUc CreateCategoryUseCase, getUc GetCategoriesUseCase, getByIdUc GetCategoryUseCase, updateUc UpdateCategoryUseCase, deleteUc DeleteCategoryUseCase) *CategoryHandler {
+func NewCategoryHandler(createUc CreateCategoryUseCase,
+	getUc GetCategoriesUseCase,
+	getByIdUc GetCategoryUseCase,
+	updateUc UpdateCategoryUseCase,
+	deleteUc DeleteCategoryUseCase,
+	getAllUc GetAllCategoriesIncludingDeletedUseCase) *CategoryHandler {
 	return &CategoryHandler{
 		createUc:  createUc,
 		getUc:     getUc,
 		getByIdUc: getByIdUc,
 		updateUc:  updateUc,
 		deleteUc:  deleteUc,
+		getAllUc:  getAllUc,
 	}
 }
 
@@ -178,4 +185,27 @@ func (h *CategoryHandler) DeleteCategory(w http.ResponseWriter, r *http.Request)
 	}
 
 	response.Success(w, http.StatusOK, "Kategoriya o'chirildi")
+}
+
+// GetAllCategories godoc
+//
+//		@Summary		Kategoriyalarni olish
+//		@Description	Kategoriyalarni olish
+//		@Tags			categories
+//		@Accept			json
+//	 @Security		BearerAuth
+//		@Produce		json
+//		@Param			search	query		string	false	"Kategoriyalarni qidirish"
+//		@Success		200		{object}	response.Envelope	"Kategoriyalar olish muvaffaqiyatli"
+//		@Failure		500		{object}	response.Envelope	"Ichki server xatosi"
+//		@Router			/categories/admin [get]
+func (h *CategoryHandler) GetAllCategories(w http.ResponseWriter, r *http.Request) {
+	search := r.URL.Query().Get("search")
+	categories, err := h.getAllUc.Execute(r.Context(), search)
+	if err != nil {
+		writeCategoryError(w, err)
+		return
+	}
+
+	response.Success(w, http.StatusOK, categories)
 }

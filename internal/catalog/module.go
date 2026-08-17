@@ -33,10 +33,11 @@ func NewModule(cfg Config) *Module {
 	getCategoryByIDUC := application.NewGetCategoryUseCase(categoryRepo)
 	updateCategoryUC := application.NewUpdateCategoryUseCase(categoryRepo)
 	deleteCategoryUC := application.NewDeleteCategoryUseCase(categoryRepo)
+	getAllCategoriesUC := application.NewGetAllCategoriesIncludingDeletedUseCase(categoryRepo)
 
 	// interfaces
 	productHandler := http.NewProductHandler(createProductUC)
-	categoryHandler := http.NewCategoryHandler(createCategoryUC, getCategoriesUC, getCategoryByIDUC, updateCategoryUC, deleteCategoryUC)
+	categoryHandler := http.NewCategoryHandler(createCategoryUC, getCategoriesUC, getCategoryByIDUC, updateCategoryUC, deleteCategoryUC, getAllCategoriesUC)
 
 	return &Module{
 		Router: producthttp.NewRouter(productHandler, categoryHandler, cfg.TokenService),

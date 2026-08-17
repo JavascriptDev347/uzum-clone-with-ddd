@@ -6,7 +6,6 @@
         "contact": {},
         "version": "1.0"
     },
-    "host": "localhost:8080",
     "basePath": "/api/v1",
     "paths": {
         "/auth/login": {
@@ -358,6 +357,48 @@
                     },
                     "400": {
                         "description": "Noto'g'ri so'rov tanasi yoki validatsiya xatosi",
+                        "schema": {
+                            "$ref": "#/definitions/response.Envelope"
+                        }
+                    },
+                    "500": {
+                        "description": "Ichki server xatosi",
+                        "schema": {
+                            "$ref": "#/definitions/response.Envelope"
+                        }
+                    }
+                }
+            }
+        },
+        "/categories/admin": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Kategoriyalarni olish",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "categories"
+                ],
+                "summary": "Kategoriyalarni olish",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Kategoriyalarni qidirish",
+                        "name": "search",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Kategoriyalar olish muvaffaqiyatli",
                         "schema": {
                             "$ref": "#/definitions/response.Envelope"
                         }

@@ -1,7 +1,7 @@
 // @title Uzum Clone API
 // @version 1.0
 // @description DDD asosida qurilgan e-commerce marketplace backend
-// @host localhost:8080
+// @host
 // @BasePath /api/v1
 // @securityDefinitions.apikey BearerAuth
 // @in header
@@ -21,6 +21,7 @@ import (
 	"github.com/JavascriptDev347/uzum-clone-with-ddd.git/pkg/database"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/go-chi/cors"
 	httpSwagger "github.com/swaggo/http-swagger"
 )
 
@@ -70,6 +71,15 @@ func main() {
 
 	// standart middlewares
 	r := chi.NewRouter()
+	// cors
+	r.Use(cors.Handler(cors.Options{
+		AllowedOrigins:   []string{"*"}, // dev uchun barchasi, production'da aniq domainlar yozish kerak
+		AllowedMethods:   []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
+		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-Requested-With"},
+		ExposedHeaders:   []string{"Link"},
+		AllowCredentials: false, // agar cookie/credentials ishlatilsa true qil, lekin unda AllowedOrigins "*" bo'la olmaydi
+		MaxAge:           300,
+	}))
 	// //X-Request-Id ga uuiddan biriktirib qaytaradi
 	r.Use(middleware.RequestID)
 	//haqiqiy IP-manzilini aniqlaydi.

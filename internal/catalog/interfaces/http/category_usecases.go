@@ -18,14 +18,13 @@ type GetCategoryUseCase interface {
 	Execute(ctx context.Context, id string) (application.CategoryOutput, error)
 }
 
-type GetCategoryChildUseCase interface {
-	Execute(ctx context.Context, parentID string) ([]*application.CategoryOutput, error)
-}
-
 type UpdateCategoryUseCase interface {
 	Execute(ctx context.Context, input application.UpdateCategoryInput) error
 }
 
 type DeleteCategoryUseCase interface {
 	Execute(ctx context.Context, id string) error
+}
+type GetAllCategoriesIncludingDeletedUseCase interface {
+	Execute(ctx context.Context, search string) ([]*application.CategoryOutputForAdmin, error)
 }

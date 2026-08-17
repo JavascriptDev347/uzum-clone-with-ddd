@@ -35,6 +35,11 @@ type CategoryOutput struct {
 	UpdatedAt     time.Time `json:"updated_at"`
 }
 
+type CategoryOutputForAdmin struct {
+	CategoryOutput
+	DeletedAt *time.Time `json:"deleted_at"`
+}
+
 func ToCategoryOutput(c *domain.Category) *CategoryOutput {
 	return &CategoryOutput{
 		ID:            c.ID(),

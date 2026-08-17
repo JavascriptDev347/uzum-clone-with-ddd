@@ -6,6 +6,7 @@ require (
 	github.com/bakhod1r/oneenv v1.10.1
 	github.com/cloudinary/cloudinary-go/v2 v2.16.0
 	github.com/go-chi/chi/v5 v5.3.1
+	github.com/go-chi/cors v1.2.2
 	github.com/golang-jwt/jwt/v4 v4.5.2
 	github.com/google/uuid v1.6.0
 	github.com/jmoiron/sqlx v1.4.0

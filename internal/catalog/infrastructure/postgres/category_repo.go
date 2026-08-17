@@ -94,6 +94,38 @@ func (r *PostgresCategoryRepository) FindAll(ctx context.Context, search string)
 	return categories, nil
 }
 
+func (r *PostgresCategoryRepository) FindAllIncludingDeleted(ctx context.Context, search string) ([]*domain.Category, error) {
+	query := `SELECT id, name, image_url, image_public_id, created_at, updated_at, deleted_at
+	          FROM categories
+	          WHERE name ILIKE :search
+	          ORDER BY created_at DESC`
+	params := map[string]any{
+		"search": "%" + search + "%",
+	}
+	stmt, err := r.db.PrepareNamedContext(ctx, query)
+	if err != nil {
+		return nil, err
+	}
+	defer stmt.Close()
+
+	var rows []categoryRow
+	if err := stmt.SelectContext(ctx, &rows, params); err != nil {
+		return nil, err
+	}
+
+	categories := make([]*domain.Category, 0, len(rows))
+	for _, row := range rows {
+		var deletedAtPtr *time.Time
+		if row.DeletedAt.Valid {
+			deletedAtPtr = &row.DeletedAt.Time
+		}
+		categories = append(categories, domain.NewCategoryFromRepository(
+			row.ID, row.Name, row.ImageURL, row.ImagePublicID, row.CreatedAt, row.UpdatedAt, deletedAtPtr,
+		))
+	}
+	return categories, nil
+}
+
 func (r *PostgresCategoryRepository) Update(ctx context.Context, category *domain.Category) error {
 	query := `
 			UPDATE categories

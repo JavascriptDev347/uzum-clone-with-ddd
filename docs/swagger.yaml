@@ -85,7 +85,6 @@ definitions:
       message:
         type: string
     type: object
-host: localhost:8080
 info:
   contact: {}
   description: DDD asosida qurilgan e-commerce marketplace backend
@@ -398,6 +397,32 @@ paths:
       security:
       - BearerAuth: []
       summary: Kategoriyani yangilash
+      tags:
+      - categories
+  /categories/admin:
+    get:
+      consumes:
+      - application/json
+      description: Kategoriyalarni olish
+      parameters:
+      - description: Kategoriyalarni qidirish
+        in: query
+        name: search
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Kategoriyalar olish muvaffaqiyatli
+          schema:
+            $ref: '#/definitions/response.Envelope'
+        "500":
+          description: Ichki server xatosi
+          schema:
+            $ref: '#/definitions/response.Envelope'
+      security:
+      - BearerAuth: []
+      summary: Kategoriyalarni olish
       tags:
       - categories
   /products:

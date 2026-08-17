@@ -19,6 +19,7 @@ type CategoryRepository interface {
 	Save(ctx context.Context, category *Category) error
 	FindByID(ctx context.Context, id string) (*Category, error)
 	FindAll(ctx context.Context, search string) ([]*Category, error)
+	FindAllIncludingDeleted(ctx context.Context, search string) ([]*Category, error)
 	Update(ctx context.Context, category *Category) error
 	SoftDelete(ctx context.Context, id string) error
 }
