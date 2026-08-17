@@ -25,3 +25,7 @@ type GetCategoryChildUseCase interface {
 type UpdateCategoryUseCase interface {
 	Execute(ctx context.Context, input application.UpdateCategoryInput) error
 }
+
+type DeleteCategoryUseCase interface {
+	Execute(ctx context.Context, id string) error
+}

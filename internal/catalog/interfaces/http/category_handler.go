@@ -18,14 +18,16 @@ type CategoryHandler struct {
 	getUc     GetCategoriesUseCase
 	getByIdUc GetCategoryUseCase
 	updateUc  UpdateCategoryUseCase
+	deleteUc  DeleteCategoryUseCase
 }
 
-func NewCategoryHandler(createUc CreateCategoryUseCase, getUc GetCategoriesUseCase, getByIdUc GetCategoryUseCase, updateUc UpdateCategoryUseCase) *CategoryHandler {
+func NewCategoryHandler(createUc CreateCategoryUseCase, getUc GetCategoriesUseCase, getByIdUc GetCategoryUseCase, updateUc UpdateCategoryUseCase, deleteUc DeleteCategoryUseCase) *CategoryHandler {
 	return &CategoryHandler{
 		createUc:  createUc,
 		getUc:     getUc,
 		getByIdUc: getByIdUc,
 		updateUc:  updateUc,
+		deleteUc:  deleteUc,
 	}
 }
 
@@ -154,4 +156,26 @@ func (h *CategoryHandler) UpdateCategory(w http.ResponseWriter, r *http.Request)
 	}
 
 	response.Success(w, http.StatusOK, nil)
+}
+
+// DeleteCategory godoc
+//
+//		@Summary		Kategoriyani o'chirish
+//		@Description	Kategoriyani ID bo'yicha o'chirish
+//		@Tags			categories
+//		@Accept			json
+//	 @Security		BearerAuth
+//		@Produce		json
+//		@Param			id	path		string	true	"Kategoriya ID"
+//		@Success		200		{object}	response.Envelope	"Kategoriya o'chirish muvaffaqiyatli"
+//		@Failure		500		{object}	response.Envelope	"Ichki server xatosi"
+//		@Router			/categories/{id} [delete]
+func (h *CategoryHandler) DeleteCategory(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "id")
+	if err := h.deleteUc.Execute(r.Context(), id); err != nil {
+		writeCategoryError(w, err)
+		return
+	}
+
+	response.Success(w, http.StatusOK, "Kategoriya o'chirildi")
 }

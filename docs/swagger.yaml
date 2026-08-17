@@ -313,6 +313,32 @@ paths:
       tags:
       - categories
   /categories/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Kategoriyani ID bo'yicha o'chirish
+      parameters:
+      - description: Kategoriya ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Kategoriya o'chirish muvaffaqiyatli
+          schema:
+            $ref: '#/definitions/response.Envelope'
+        "500":
+          description: Ichki server xatosi
+          schema:
+            $ref: '#/definitions/response.Envelope'
+      security:
+      - BearerAuth: []
+      summary: Kategoriyani o'chirish
+      tags:
+      - categories
     get:
       consumes:
       - application/json
