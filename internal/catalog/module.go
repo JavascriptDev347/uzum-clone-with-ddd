@@ -28,7 +28,7 @@ func NewModule(cfg Config) *Module {
 
 	// application
 	createProductUC := application.NewCreateProductUseCase(productRepo, cfg.MediaUploader)
-	createCategoryUC := application.NewCreateCategoryUseCase(categoryRepo)
+	createCategoryUC := application.NewCreateCategoryUseCase(categoryRepo, cfg.MediaUploader)
 	getCategoriesUC := application.NewGetCategoriesUseCase(categoryRepo)
 	getCategoryByIDUC := application.NewGetCategoryUseCase(categoryRepo)
 	updateCategoryUC := application.NewUpdateCategoryUseCase(categoryRepo)

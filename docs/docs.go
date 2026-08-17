@@ -316,9 +316,9 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "Nomi va boshqa ma'lumotlar orqali yangi kategoriya yaratadi",
+                "description": "Nomi va rasm orqali yangi kategoriya yaratadi",
                 "consumes": [
-                    "application/json"
+                    "multipart/form-data"
                 ],
                 "produces": [
                     "application/json"
@@ -329,18 +329,23 @@ const docTemplate = `{
                 "summary": "Yangi kategoriya yaratish",
                 "parameters": [
                     {
-                        "description": "Kategoriya ma'lumotlari",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/http.CreateCategoryRequest"
-                        }
+                        "type": "string",
+                        "description": "Kategoriya nomi",
+                        "name": "name",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "Kategoriya rasmi",
+                        "name": "image",
+                        "in": "formData",
+                        "required": true
                     }
                 ],
                 "responses": {
                     "201": {
-                        "description": "Kategoriya yaratildi\"//\t@Failure\t\t400\t\t{object}\tresponse.Envelope\t\"Noto'g'ri so'rov tanasi yoki validatsiya xatosi",
+                        "description": "Kategoriya yaratildi",
                         "schema": {
                             "allOf": [
                                 {
@@ -355,6 +360,12 @@ const docTemplate = `{
                                     }
                                 }
                             ]
+                        }
+                    },
+                    "400": {
+                        "description": "Noto'g'ri so'rov tanasi yoki validatsiya xatosi",
+                        "schema": {
+                            "$ref": "#/definitions/response.Envelope"
                         }
                     },
                     "500": {
@@ -585,14 +596,6 @@ const docTemplate = `{
                 "id": {
                     "type": "string"
                 },
-                "name": {
-                    "type": "string"
-                }
-            }
-        },
-        "http.CreateCategoryRequest": {
-            "type": "object",
-            "properties": {
                 "name": {
                     "type": "string"
                 }

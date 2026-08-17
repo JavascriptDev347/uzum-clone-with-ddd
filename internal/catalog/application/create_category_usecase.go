@@ -2,35 +2,46 @@ package application
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/JavascriptDev347/uzum-clone-with-ddd.git/internal/catalog/domain"
+	"github.com/JavascriptDev347/uzum-clone-with-ddd.git/internal/shared/media"
 	"github.com/google/uuid"
 )
 
 type CreateCategoryUseCase struct {
-	repo domain.CategoryRepository
+	repo     domain.CategoryRepository
+	uploader media.Uploader
 }
 
-func NewCreateCategoryUseCase(repo domain.CategoryRepository) *CreateCategoryUseCase {
-	return &CreateCategoryUseCase{repo: repo}
+func NewCreateCategoryUseCase(repo domain.CategoryRepository, uploader media.Uploader) *CreateCategoryUseCase {
+	return &CreateCategoryUseCase{repo: repo, uploader: uploader}
 }
 
-func (uc *CreateCategoryUseCase) Execute(ctx context.Context, input CreateCategoryInput) (CreateCategoryOutput, error) {
-	var id string = uuid.New().String()
-	newCategory, err := domain.NewCategory(id, input.Name)
+func (uc *CreateCategoryUseCase) Execute(ctx context.Context, input CreateCategoryInput) (*CreateCategoryOutput, error) {
+	uploadResult, err := uc.uploader.Upload(ctx, input.Image)
 	if err != nil {
-		return CreateCategoryOutput{}, err
+		return nil, fmt.Errorf("category image upload failed: %w", err)
 	}
 
-	err = uc.repo.Save(ctx, newCategory)
+	id := uuid.New().String()
+
+	category, err := domain.NewCategory(id, input.Name, uploadResult.URL, uploadResult.PublicID)
 	if err != nil {
-		return CreateCategoryOutput{}, err
+		_ = uc.uploader.Delete(ctx, uploadResult.PublicID)
+		return nil, err
 	}
 
-	return CreateCategoryOutput{
-		ID:        newCategory.ID(),
-		Name:      newCategory.Name(),
-		UpdatedAt: newCategory.UpdatedAt(),
-		CreatedAt: newCategory.CreatedAt(),
+	if err := uc.repo.Save(ctx, category); err != nil {
+		_ = uc.uploader.Delete(ctx, uploadResult.PublicID)
+		return nil, err
+	}
+
+	return &CreateCategoryOutput{
+		ID:            category.ID(),
+		Name:          category.Name(),
+		ImageURL:      category.ImageURL(),
+		ImagePublicID: category.ImagePublicID(),
+		CreatedAt:     category.CreatedAt(),
 	}, nil
 }

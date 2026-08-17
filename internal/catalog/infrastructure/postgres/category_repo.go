@@ -19,33 +19,37 @@ func NewPostgresCategoryRepository(db *sqlx.DB) *PostgresCategoryRepository {
 }
 
 type categoryRow struct {
-	ID        string       `db:"id"`
-	Name      string       `db:"name"`
-	CreatedAt time.Time    `db:"created_at"`
-	UpdatedAt time.Time    `db:"updated_at"`
-	DeletedAt sql.NullTime `db:"deleted_at"`
+	ID            string       `db:"id"`
+	Name          string       `db:"name"`
+	ImageURL      string       `db:"image_url"`
+	ImagePublicID string       `db:"image_public_id"`
+	CreatedAt     time.Time    `db:"created_at"`
+	UpdatedAt     time.Time    `db:"updated_at"`
+	DeletedAt     sql.NullTime `db:"deleted_at"`
 }
 
 func (r *PostgresCategoryRepository) Save(ctx context.Context, category *domain.Category) error {
-	query := `INSERT INTO categories (id, name, created_at, updated_at, deleted_at) VALUES ($1, $2, $3, $4, $5)`
+	query := `INSERT INTO categories (id, name, image_url, image_public_id, created_at, updated_at, deleted_at) VALUES ($1, $2, $3, $4, $5, $6, $7)`
 
-	_, err := r.db.ExecContext(ctx, query, category.ID(), category.Name(), category.CreatedAt(), category.UpdatedAt(), category.DeletedAt())
+	_, err := r.db.ExecContext(ctx, query, category.ID(), category.Name(), category.ImageURL(), category.ImagePublicID(), category.CreatedAt(), category.UpdatedAt(), category.DeletedAt())
 	return err
 }
 
 func (r *PostgresCategoryRepository) FindByID(ctx context.Context, id string) (*domain.Category, error) {
-	query := `SELECT id, name, created_at, updated_at, deleted_at FROM categories WHERE id = $1 AND deleted_at IS NULL`
+	query := `SELECT id, name, image_url, image_public_id, created_at, updated_at, deleted_at FROM categories WHERE id = $1 AND deleted_at IS NULL`
 
 	var (
-		categoryID string
-		name       string
-		createdAt  time.Time
-		updatedAt  time.Time
-		deletedAt  *time.Time
+		categoryID    string
+		name          string
+		imageURL      string
+		imagePublicID string
+		createdAt     time.Time
+		updatedAt     time.Time
+		deletedAt     *time.Time
 	)
 
 	row := r.db.QueryRowContext(ctx, query, id)
-	err := row.Scan(&categoryID, &name, &createdAt, &updatedAt, &deletedAt)
+	err := row.Scan(&categoryID, &name, &imageURL, &imagePublicID, &createdAt, &updatedAt, &deletedAt)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, domain.ErrCategoryNotFound
@@ -53,12 +57,11 @@ func (r *PostgresCategoryRepository) FindByID(ctx context.Context, id string) (*
 		return nil, err
 	}
 
-	return domain.NewCategoryFromRepository(id, name, createdAt, updatedAt, deletedAt), nil
+	return domain.NewCategoryFromRepository(id, name, imageURL, imagePublicID, createdAt, updatedAt, deletedAt), nil
 }
 
-// FindAll returns all categories that are not deleted and have no parent.
 func (r *PostgresCategoryRepository) FindAll(ctx context.Context, search string) ([]*domain.Category, error) {
-	query := `SELECT id, name, created_at, updated_at, deleted_at
+	query := `SELECT id, name, image_url, image_public_id, created_at, updated_at, deleted_at
 		          FROM categories
 		          WHERE deleted_at IS NULL AND name ILIKE :search
 		          ORDER BY created_at DESC`
@@ -85,7 +88,7 @@ func (r *PostgresCategoryRepository) FindAll(ctx context.Context, search string)
 			deletedAtPtr = &row.DeletedAt.Time
 		}
 		categories = append(categories, domain.NewCategoryFromRepository(
-			row.ID, row.Name, row.CreatedAt, row.UpdatedAt, deletedAtPtr,
+			row.ID, row.Name, row.ImageURL, row.ImagePublicID, row.CreatedAt, row.UpdatedAt, deletedAtPtr,
 		))
 	}
 	return categories, nil

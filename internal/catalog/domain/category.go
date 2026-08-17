@@ -12,14 +12,16 @@ var (
 )
 
 type Category struct {
-	id        string
-	name      string
-	createdAt time.Time
-	updatedAt time.Time
-	deletedAt *time.Time
+	id            string
+	name          string
+	imageURL      string
+	imagePublicID string
+	createdAt     time.Time
+	updatedAt     time.Time
+	deletedAt     *time.Time
 }
 
-func NewCategory(id, name string) (*Category, error) {
+func NewCategory(id, name, imageURL, imagePublicID string) (*Category, error) {
 	if id == "" {
 		return nil, ErrEmptyCategoryID
 	}
@@ -28,22 +30,26 @@ func NewCategory(id, name string) (*Category, error) {
 	}
 
 	return &Category{
-		id:        id,
-		name:      name,
-		createdAt: time.Now(),
-		updatedAt: time.Now(),
-		deletedAt: nil,
+		id:            id,
+		name:          name,
+		imageURL:      imageURL,
+		imagePublicID: imagePublicID,
+		createdAt:     time.Now(),
+		updatedAt:     time.Now(),
+		deletedAt:     nil,
 	}, nil
 }
 
-func NewCategoryFromRepository(id, name string, createdAt time.Time, updatedAt time.Time, deletedAt *time.Time) *Category {
+func NewCategoryFromRepository(id, name, imageURL, imagePublicID string, createdAt time.Time, updatedAt time.Time, deletedAt *time.Time) *Category {
 
 	return &Category{
-		id:        id,
-		name:      name,
-		createdAt: createdAt,
-		updatedAt: updatedAt,
-		deletedAt: deletedAt,
+		id:            id,
+		name:          name,
+		imageURL:      imageURL,
+		imagePublicID: imagePublicID,
+		createdAt:     createdAt,
+		updatedAt:     updatedAt,
+		deletedAt:     deletedAt,
 	}
 }
 
@@ -61,6 +67,12 @@ func (c *Category) UpdatedAt() time.Time {
 }
 func (c *Category) DeletedAt() *time.Time {
 	return c.deletedAt
+}
+func (c *Category) ImageURL() string {
+	return c.imageURL
+}
+func (c *Category) ImagePublicID() string {
+	return c.imagePublicID
 }
 
 func (c *Category) IsDeleted() bool {

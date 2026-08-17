@@ -2,12 +2,15 @@ package http
 
 import (
 	"encoding/json"
+	"io"
 	"net/http"
-	"time"
+	"path/filepath"
 
 	"github.com/JavascriptDev347/uzum-clone-with-ddd.git/internal/catalog/application"
+	"github.com/JavascriptDev347/uzum-clone-with-ddd.git/internal/shared/media"
 	"github.com/JavascriptDev347/uzum-clone-with-ddd.git/pkg/response"
 	"github.com/go-chi/chi/v5"
+	"github.com/google/uuid"
 )
 
 type CategoryHandler struct {
@@ -29,36 +32,55 @@ func NewCategoryHandler(createUc CreateCategoryUseCase, getUc GetCategoriesUseCa
 // CreateCategory godoc
 //
 //		@Summary		Yangi kategoriya yaratish
-//		@Description	Nomi va boshqa ma'lumotlar orqali yangi kategoriya yaratadi
+//		@Description	Nomi va rasm orqali yangi kategoriya yaratadi
 //		@Tags			categories
-//		@Accept			json
-//	 @Security		BearerAuth
+//		@Accept			multipart/form-data
+//	    @Security		BearerAuth
 //		@Produce		json
-//		@Param			request	body		CreateCategoryRequest	true	"Kategoriya ma'lumotlari"
-//		@Success		201		{object}	response.Envelope{data=CreateCategoryResponse}	"Kategoriya yaratildi"//	@Failure		400		{object}	response.Envelope	"Noto'g'ri so'rov tanasi yoki validatsiya xatosi"
+//		@Param			name	formData	string	true	"Kategoriya nomi"
+//		@Param			image	formData	file	true	"Kategoriya rasmi"
+//		@Success		201		{object}	response.Envelope{data=CreateCategoryResponse}	"Kategoriya yaratildi"
+//		@Failure		400		{object}	response.Envelope	"Noto'g'ri so'rov tanasi yoki validatsiya xatosi"
 //		@Failure		500		{object}	response.Envelope	"Ichki server xatosi"
 //		@Router			/categories [post]
 func (h *CategoryHandler) CreateCategory(w http.ResponseWriter, r *http.Request) {
-	var req CreateCategoryRequest
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+	if err := r.ParseMultipartForm(10 << 20); err != nil {
+		response.Error(w, http.StatusBadRequest, "fayl hajmi juda katta yoki noto'g'ri format")
 		return
 	}
 
-	output, err := h.createUc.Execute(r.Context(), application.CreateCategoryInput{
-		Name: req.Name,
-	})
+	name := r.FormValue("name")
+
+	file, header, err := r.FormFile("image")
+	if err != nil {
+		response.Error(w, http.StatusBadRequest, "rasm yuklanmadi")
+		return
+	}
+	defer file.Close()
+
+	data, err := io.ReadAll(file)
+	if err != nil {
+		response.Error(w, http.StatusInternalServerError, "rasmni o'qishda xatolik")
+		return
+	}
+
+	ext := filepath.Ext(header.Filename) // ".png"
+	uniqueFileName := uuid.New().String() + ext
+	input := application.CreateCategoryInput{
+		Name: name,
+		Image: media.UploadInput{
+			Data:     data,
+			FileName: uniqueFileName,
+		},
+	}
+
+	output, err := h.createUc.Execute(r.Context(), input)
 	if err != nil {
 		writeCategoryError(w, err)
 		return
 	}
 
-	response.Success(w, http.StatusCreated, CreateCategoryResponse{
-		ID:        output.ID,
-		Name:      output.Name,
-		UpdatedAt: output.UpdatedAt.Format(time.RFC3339),
-		CreatedAt: output.CreatedAt.Format(time.RFC3339),
-	})
+	response.Success(w, http.StatusCreated, output)
 }
 
 // GetCategories godoc

@@ -7,7 +7,7 @@ import (
 )
 
 type CreateCategoryUseCase interface {
-	Execute(ctx context.Context, category application.CreateCategoryInput) (application.CreateCategoryOutput, error)
+	Execute(ctx context.Context, category application.CreateCategoryInput) (*application.CreateCategoryOutput, error)
 }
 
 type GetCategoriesUseCase interface {

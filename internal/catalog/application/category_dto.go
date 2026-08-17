@@ -4,17 +4,21 @@ import (
 	"time"
 
 	"github.com/JavascriptDev347/uzum-clone-with-ddd.git/internal/catalog/domain"
+	"github.com/JavascriptDev347/uzum-clone-with-ddd.git/internal/shared/media"
 )
 
 type CreateCategoryInput struct {
-	Name string `json:"name"`
+	Name  string            `json:"name"`
+	Image media.UploadInput `json:"image"`
 }
 
 type CreateCategoryOutput struct {
-	ID        string    `json:"id"`
-	Name      string    `json:"name"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	ID            string    `json:"id"`
+	Name          string    `json:"name"`
+	ImageURL      string    `json:"image_url"`
+	ImagePublicID string    `json:"image_public_id"`
+	CreatedAt     time.Time `json:"created_at"`
+	UpdatedAt     time.Time `json:"updated_at"`
 }
 
 type UpdateCategoryInput struct {
@@ -23,18 +27,22 @@ type UpdateCategoryInput struct {
 }
 
 type CategoryOutput struct {
-	ID        string    `json:"id"`
-	Name      string    `json:"name"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	ID            string    `json:"id"`
+	Name          string    `json:"name"`
+	ImageURL      string    `json:"image_url"`
+	ImagePublicID string    `json:"image_public_id"`
+	CreatedAt     time.Time `json:"created_at"`
+	UpdatedAt     time.Time `json:"updated_at"`
 }
 
 func ToCategoryOutput(c *domain.Category) *CategoryOutput {
 	return &CategoryOutput{
-		ID:        c.ID(),
-		Name:      c.Name(),
-		CreatedAt: c.CreatedAt(),
-		UpdatedAt: c.UpdatedAt(),
+		ID:            c.ID(),
+		Name:          c.Name(),
+		ImageURL:      c.ImageURL(),
+		ImagePublicID: c.ImagePublicID(),
+		CreatedAt:     c.CreatedAt(),
+		UpdatedAt:     c.UpdatedAt(),
 	}
 }
 
