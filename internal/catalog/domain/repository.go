@@ -23,3 +23,12 @@ type CategoryRepository interface {
 	Update(ctx context.Context, category *Category) error
 	SoftDelete(ctx context.Context, id string) error
 }
+
+type EventRepository interface {
+	Save(ctx context.Context, event *Event) error
+	FindByID(ctx context.Context, id string) (*Event, error)
+	FindAll(ctx context.Context) ([]*Event, error)
+	FindAllIncludingDeleted(ctx context.Context) ([]*Event, error)
+	Update(ctx context.Context, event *Event) error
+	SoftDelete(ctx context.Context, id string) error
+}

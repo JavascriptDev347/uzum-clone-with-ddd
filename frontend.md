@@ -397,28 +397,241 @@ POST /api/v1/products
 
 ---
 
-## 5. Fayl yuklash haqida umumiy qoidalar
+## 5. Eventlar (Events)
 
-Categories va Products ikkalasida ham rasm quyidagi qoidalarga bo'ysunadi:
+Bosh sahifadagi banner/aksiya bloklari (masalan "Bugungi taklif — Sevimlilar uchun gullar") uchun. Prefiks: **`/api/v1/events`**
 
-- **Maksimal hajm:** 3 MB (`multipart` form umumiy hajm chegarasi ham 10MB, lekin rasm faylining o'zi 3MB dan oshmasligi kerak)
-- **Ruxsat etilgan formatlar:** `image/jpeg`, `image/png`, `image/webp`
-- Rasmlar **Cloudinary**'ga yuklanadi, qaytadigan `image_url` — to'liq CDN havolasi (frontendda to'g'ridan-to'g'ri `<img src>` sifatida ishlatavering).
+### Event obyekti (response shakli)
+
+```json
+{
+  "id": "uuid",
+  "eyebrow": "Bugungi taklif",
+  "title": "Sevimlilar uchun gullar",
+  "subtitle": "Bugun buyurtma bering, bugun yetkazamiz",
+  "cta": "Mahsulotlarni ko'rish",
+  "image": "https://res.cloudinary.com/.../event-images/....jpg",
+  "category_id": "uuid",
+  "is_root": true,
+  "created_at": "2026-08-18T10:00:00Z",
+  "updated_at": "2026-08-18T10:00:00Z"
+}
+```
+
+- `image` — Cloudinary'ga yuklangan rasmning to'liq CDN URL'i (local `/images/...` fayl yo'li emas — bu maydonga to'g'ridan-to'g'ri backenddan qaytgan URL keladi, frontendda `<img src>` sifatida shuni ishlating).
+- `category_id` — event qaysi kategoriyaga tegishli ekanligi. **Create va update paytida backend bu ID chindan mavjud kategoriyaga tegishli ekanligini tekshiradi** — mavjud bo'lmagan/noto'g'ri `category_id` yuborilsa `400` xato qaytadi.
+- `is_root` — `true` bo'lsa, `GET /events` va `GET /events/admin` ro'yxatlarida **birinchi bo'lib** chiqadi (backendda `ORDER BY is_root DESC, created_at DESC`). Bir nechta event `is_root: true` bo'lishi mumkin — ular orasida eng yangisi birinchi keladi.
 
 ---
 
-## 6. Rollar (Roles)
+### 5.1 Eventlar ro'yxatini olish (public)
+
+```
+GET /api/v1/events
+```
+
+- Auth talab qilinmaydi.
+- Faqat **o'chirilmagan** (`deleted_at IS NULL`) eventlarni qaytaradi — bosh sahifada shundan foydalaning.
+
+**Javob — `200 OK`:**
+```json
+{
+  "data": [
+    {
+      "id": "uuid",
+      "eyebrow": "Bugungi taklif",
+      "title": "Sevimlilar uchun gullar",
+      "subtitle": "Bugun buyurtma bering, bugun yetkazamiz",
+      "cta": "Mahsulotlarni ko'rish",
+      "image": "https://res.cloudinary.com/.../gul2.jpg",
+      "category_id": "uuid",
+      "is_root": true,
+      "created_at": "...",
+      "updated_at": "..."
+    }
+  ]
+}
+```
+
+---
+
+### 5.2 Bitta eventni olish
+
+```
+GET /api/v1/events/{id}
+```
+
+- Auth talab qilinmaydi.
+
+**Javob — `200 OK`:**
+```json
+{ "data": { "id": "uuid", "eyebrow": "...", "title": "...", "...": "..." } }
+```
+
+**Xatoliklar:** `404` — event topilmadi (yoki o'chirilgan)
+
+---
+
+### 5.3 Eventlarni olish — admin (o'chirilganlar bilan birga)
+
+```
+GET /api/v1/events/admin
+```
+
+🔒 **Faqat admin**
+
+- Oddiy `/events`dan farqi: soft-delete qilingan eventlarni ham qaytaradi. Har bir elementda qo'shimcha `deleted_at` maydoni bo'ladi (o'chirilmagan bo'lsa `null`, o'chirilgan bo'lsa sana).
+
+**Javob — `200 OK`:**
+```json
+{
+  "data": [
+    {
+      "id": "uuid",
+      "eyebrow": "...", "title": "...", "subtitle": "...", "cta": "...",
+      "image": "...", "category_id": "uuid", "is_root": false,
+      "created_at": "...", "updated_at": "...",
+      "deleted_at": null
+    }
+  ]
+}
+```
+
+**Xatoliklar:** `401` (token yo'q), `403` (admin emas)
+
+---
+
+### 5.4 Yangi event yaratish
+
+```
+POST /api/v1/events
+```
+
+🔒 **Faqat admin**
+
+**Content-Type:** `multipart/form-data`
+
+| Maydon | Turi | Majburiymi | Izoh |
+|---|---|---|---|
+| `eyebrow` | string | ❌ yo'q | Kichik ustki matn |
+| `title` | string | ✅ ha | Sarlavha |
+| `subtitle` | string | ❌ yo'q | Sarlavha ostidagi matn |
+| `cta` | string | ❌ yo'q | Tugma matni (masalan "Mahsulotlarni ko'rish") |
+| `category_id` | string (uuid) | ✅ ha | Mavjud kategoriya ID'si — backend tekshiradi |
+| `is_root` | `"true"` / `"false"` | ❌ yo'q | Berilmasa `false` deb olinadi |
+| `image` | file | ✅ ha | Event rasmi — majburiy |
+
+**Rasm cheklovi:** maks. 3MB, formatlar `jpeg`/`png`/`webp` (categories/products bilan bir xil — [5-bo'lim](#6-fayl-yuklash-haqida-umumiy-qoidalar)ga qarang).
+
+**Muvaffaqiyatli javob — `201 Created`:**
+```json
+{
+  "data": {
+    "id": "uuid",
+    "eyebrow": "Bugungi taklif",
+    "title": "Sevimlilar uchun gullar",
+    "subtitle": "Bugun buyurtma bering, bugun yetkazamiz",
+    "cta": "Mahsulotlarni ko'rish",
+    "image": "https://res.cloudinary.com/.../event-images/....jpg",
+    "category_id": "uuid",
+    "is_root": true,
+    "created_at": "2026-08-18T10:00:00Z",
+    "updated_at": "2026-08-18T10:00:00Z"
+  }
+}
+```
+
+**Xatoliklar:**
+| Status | Sabab |
+|---|---|
+| 400 | `title` bo'sh, `category_id` bo'sh/mavjud bo'lmagan kategoriyaga ishora qilyapti, `image` yuborilmagan yoki formati/hajmi noto'g'ri |
+| 401 | token yo'q |
+| 403 | admin emas |
+| 500 | server xatosi |
+
+---
+
+### 5.5 Eventni yangilash
+
+```
+PUT /api/v1/events/{id}
+```
+
+🔒 **Faqat admin**
+
+**Content-Type:** `application/json`
+
+**Body** (barcha maydonlar ixtiyoriy — faqat yubormoqchi bo'lgan maydonlarni jo'nating, qolganlari o'zgarmaydi):
+```json
+{
+  "eyebrow": "Yangi eyebrow",
+  "title": "Yangi sarlavha",
+  "subtitle": "Yangi subtitle",
+  "cta": "Yangi tugma matni",
+  "category_id": "boshqa-uuid",
+  "is_root": false
+}
+```
+
+> Diqqat: bu endpoint **JSON body** qabul qiladi. Rasmni bu orqali yangilab bo'lmaydi (hozircha rasmni yangilash uchun alohida endpoint yo'q). `category_id` yuborilsa, backend uni ham mavjudligiga tekshiradi.
+
+**Javob — `200 OK`:**
+```json
+{ "data": null }
+```
+
+**Xatoliklar:**
+| Status | Sabab |
+|---|---|
+| 400 | `title` bo'sh string sifatida yuborilgan, yoki `category_id` mavjud bo'lmagan kategoriyaga ishora qilyapti |
+| 401 | token yo'q |
+| 403 | admin emas |
+| 404 | event topilmadi |
+| 500 | server xatosi |
+
+---
+
+### 5.6 Eventni o'chirish
+
+```
+DELETE /api/v1/events/{id}
+```
+
+🔒 **Faqat admin**
+
+- Bu **soft delete** — `deleted_at` belgilanadi, yozuv bazadan o'chmaydi. O'chirilgan event oddiy `GET /events` ro'yxatida chiqmaydi, lekin `GET /events/admin` orqali (o'chirilgan holatda, `deleted_at` sana bilan) ko'rinadi.
+
+**Javob — `200 OK`:**
+```json
+{ "data": "Event o'chirildi" }
+```
+
+**Xatoliklar:** `401`, `403`, `404` (event topilmadi), `500`
+
+---
+
+## 6. Fayl yuklash haqida umumiy qoidalar
+
+Categories, Products va Events — barchasida rasm quyidagi qoidalarga bo'ysunadi:
+
+- **Maksimal hajm:** 3 MB (`multipart` form umumiy hajm chegarasi ham 10MB, lekin rasm faylining o'zi 3MB dan oshmasligi kerak)
+- **Ruxsat etilgan formatlar:** `image/jpeg`, `image/png`, `image/webp`
+- Rasmlar **Cloudinary**'ga yuklanadi, qaytadigan URL — to'liq CDN havolasi (frontendda to'g'ridan-to'g'ri `<img src>` sifatida ishlatavering).
+
+---
+
+## 7. Rollar (Roles)
 
 | Rol | Qanday beriladi | Nima qila oladi |
 |---|---|---|
-| `customer` | Har bir yangi `register` shu rolda yaratiladi (default) | Faqat public GET endpointlar (`/categories`, `/categories/{id}`, `/auth/me`) |
-| `admin` | Faqat DB orqali qo'lda beriladi, frontendda tanlash yo'q | Category/Product yaratish-o'chirish-yangilash, `/categories/admin` |
+| `customer` | Har bir yangi `register` shu rolda yaratiladi (default) | Faqat public GET endpointlar (`/categories`, `/events`, `/auth/me`) |
+| `admin` | Faqat DB orqali qo'lda beriladi, frontendda tanlash yo'q | Category/Product/Event yaratish-o'chirish-yangilash, `/categories/admin`, `/events/admin` |
 
 Frontendda: login qilingandan keyin `GET /auth/me` chaqirib, javobdagi `role` maydoniga qarab admin panelni ko'rsatish/yashirishni belgilang.
 
 ---
 
-## 7. Tezkor cheat-sheet
+## 8. Tezkor cheat-sheet
 
 | Endpoint | Method | Auth | Rol |
 |---|---|---|---|
@@ -433,10 +646,16 @@ Frontendda: login qilingandan keyin `GET /auth/me` chaqirib, javobdagi `role` ma
 | `/api/v1/categories/{id}` | DELETE | ✅ | admin |
 | `/api/v1/categories/admin` | GET | ✅ | admin |
 | `/api/v1/products` | POST | ✅ | admin |
+| `/api/v1/events` | GET | ❌ | — |
+| `/api/v1/events/{id}` | GET | ❌ | — |
+| `/api/v1/events` | POST | ✅ | admin |
+| `/api/v1/events/{id}` | PUT | ✅ | admin |
+| `/api/v1/events/{id}` | DELETE | ✅ | admin |
+| `/api/v1/events/admin` | GET | ✅ | admin |
 
 ---
 
-## 8. Hali tayyor bo'lmagan (backendda yo'q) narsalar
+## 9. Hali tayyor bo'lmagan (backendda yo'q) narsalar
 
 Frontend ishini rejalashtirishda hisobga oling:
 
@@ -446,5 +665,6 @@ Frontend ishini rejalashtirishda hisobga oling:
 - ❌ `DELETE /products/{id}` — mahsulot o'chirish
 - ❌ Kategoriya ierarxiyasi (parent/child daraxti) — `parent_id` maydoni bor, lekin ishlamaydi
 - ❌ Category rasm URL'i response'da yo'q
+- ❌ Event rasmini alohida yangilash (PUT eventda faqat matn maydonlari o'zgaradi, rasm emas)
 - ❌ Savat, buyurtma (order) — `internal/ordering` papkasi mavjud, lekin ichida hali HTTP endpoint yo'q
 - ❌ Parolni tiklash / o'zgartirish, logout endpointi

@@ -7,7 +7,7 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
-func NewRouter(h *ProductHandler, c *CategoryHandler, tokenService *security.JWTTokenService) chi.Router {
+func NewRouter(h *ProductHandler, c *CategoryHandler, e *EventHandler, tokenService *security.JWTTokenService) chi.Router {
 	r := chi.NewRouter()
 	// Define routes
 	r.With(middleware.Authenticate(tokenService), middleware.RequireRole(domain.RoleAdmin)).
@@ -25,6 +25,19 @@ func NewRouter(h *ProductHandler, c *CategoryHandler, tokenService *security.JWT
 
 	r.Get("/categories", c.GetCategories)
 	r.Get("/categories/{id}", c.GetCategory)
+
+	// events (protected)
+	r.With(middleware.Authenticate(tokenService), middleware.RequireRole(domain.RoleAdmin)).
+		Post("/events", e.CreateEvent)
+	r.With(middleware.Authenticate(tokenService), middleware.RequireRole(domain.RoleAdmin)).
+		Put("/events/{id}", e.UpdateEvent)
+	r.With(middleware.Authenticate(tokenService), middleware.RequireRole(domain.RoleAdmin)).
+		Delete("/events/{id}", e.DeleteEvent)
+	r.With(middleware.Authenticate(tokenService), middleware.RequireRole(domain.RoleAdmin)).
+		Get("/events/admin", e.GetAllEvents)
+
+	r.Get("/events", e.GetEvents)
+	r.Get("/events/{id}", e.GetEvent)
 
 	return r
 }

@@ -1,5 +1,53 @@
 basePath: /api/v1
 definitions:
+  application.EventOutput:
+    properties:
+      category_id:
+        type: string
+      created_at:
+        type: string
+      cta:
+        type: string
+      eyebrow:
+        type: string
+      id:
+        type: string
+      image:
+        type: string
+      is_root:
+        type: boolean
+      subtitle:
+        type: string
+      title:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  application.EventOutputForAdmin:
+    properties:
+      category_id:
+        type: string
+      created_at:
+        type: string
+      cta:
+        type: string
+      deleted_at:
+        type: string
+      eyebrow:
+        type: string
+      id:
+        type: string
+      image:
+        type: string
+      is_root:
+        type: boolean
+      subtitle:
+        type: string
+      title:
+        type: string
+      updated_at:
+        type: string
+    type: object
   application.GetMeOutput:
     properties:
       email:
@@ -14,6 +62,21 @@ definitions:
       id:
         type: string
       name:
+        type: string
+    type: object
+  application.UpdateEventInput:
+    properties:
+      category_id:
+        type: string
+      cta:
+        type: string
+      eyebrow:
+        type: string
+      is_root:
+        type: boolean
+      subtitle:
+        type: string
+      title:
         type: string
     type: object
   http.CreateCategoryResponse:
@@ -427,6 +490,227 @@ paths:
       summary: Kategoriyalarni olish
       tags:
       - categories
+  /events:
+    get:
+      description: Faol (o'chirilmagan) eventlar ro'yxati. is_root=true bo'lganlar
+        birinchi chiqadi
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Eventlar
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Envelope'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/application.EventOutput'
+                  type: array
+              type: object
+        "500":
+          description: Ichki server xatosi
+          schema:
+            $ref: '#/definitions/response.Envelope'
+      summary: Eventlarni olish
+      tags:
+      - events
+    post:
+      consumes:
+      - multipart/form-data
+      description: Eyebrow, title, subtitle, cta, category_id va rasm orqali yangi
+        event yaratadi
+      parameters:
+      - description: Kichik ustki matn
+        in: formData
+        name: eyebrow
+        type: string
+      - description: Sarlavha
+        in: formData
+        name: title
+        required: true
+        type: string
+      - description: Kichik matn (subtitle)
+        in: formData
+        name: subtitle
+        type: string
+      - description: Tugma matni
+        in: formData
+        name: cta
+        type: string
+      - description: Kategoriya ID
+        in: formData
+        name: category_id
+        required: true
+        type: string
+      - description: true bo'lsa, ro'yxatda birinchi chiqadi
+        in: formData
+        name: is_root
+        type: boolean
+      - description: Event rasmi
+        in: formData
+        name: image
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Event yaratildi
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Envelope'
+            - properties:
+                data:
+                  $ref: '#/definitions/application.EventOutput'
+              type: object
+        "400":
+          description: Noto'g'ri so'rov tanasi yoki validatsiya xatosi
+          schema:
+            $ref: '#/definitions/response.Envelope'
+        "401":
+          description: Autentifikatsiyadan o'tilmagan
+          schema:
+            $ref: '#/definitions/response.Envelope'
+        "403":
+          description: Huquq yetarli emas
+          schema:
+            $ref: '#/definitions/response.Envelope'
+        "500":
+          description: Ichki server xatosi
+          schema:
+            $ref: '#/definitions/response.Envelope'
+      security:
+      - BearerAuth: []
+      summary: Yangi event (banner) yaratish
+      tags:
+      - events
+  /events/{id}:
+    delete:
+      description: Eventni ID bo'yicha o'chirish (soft delete)
+      parameters:
+      - description: Event ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Event o'chirish muvaffaqiyatli
+          schema:
+            $ref: '#/definitions/response.Envelope'
+        "404":
+          description: Event topilmadi
+          schema:
+            $ref: '#/definitions/response.Envelope'
+        "500":
+          description: Ichki server xatosi
+          schema:
+            $ref: '#/definitions/response.Envelope'
+      security:
+      - BearerAuth: []
+      summary: Eventni o'chirish
+      tags:
+      - events
+    get:
+      description: Eventni ID bo'yicha olish
+      parameters:
+      - description: Event ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Event
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Envelope'
+            - properties:
+                data:
+                  $ref: '#/definitions/application.EventOutput'
+              type: object
+        "404":
+          description: Event topilmadi
+          schema:
+            $ref: '#/definitions/response.Envelope'
+        "500":
+          description: Ichki server xatosi
+          schema:
+            $ref: '#/definitions/response.Envelope'
+      summary: Eventni olish
+      tags:
+      - events
+    put:
+      consumes:
+      - application/json
+      description: Eventni ID bo'yicha yangilash (JSON body, rasm bu yerda o'zgartirilmaydi)
+      parameters:
+      - description: Event ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Yangilash uchun event ma'lumotlari
+        in: body
+        name: event
+        required: true
+        schema:
+          $ref: '#/definitions/application.UpdateEventInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Event yangilash muvaffaqiyatli
+          schema:
+            $ref: '#/definitions/response.Envelope'
+        "400":
+          description: Validatsiya xatosi
+          schema:
+            $ref: '#/definitions/response.Envelope'
+        "404":
+          description: Event topilmadi
+          schema:
+            $ref: '#/definitions/response.Envelope'
+        "500":
+          description: Ichki server xatosi
+          schema:
+            $ref: '#/definitions/response.Envelope'
+      security:
+      - BearerAuth: []
+      summary: Eventni yangilash
+      tags:
+      - events
+  /events/admin:
+    get:
+      description: Barcha eventlarni (o'chirilganlarni ham) qaytaradi
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Eventlar
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Envelope'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/application.EventOutputForAdmin'
+                  type: array
+              type: object
+        "500":
+          description: Ichki server xatosi
+          schema:
+            $ref: '#/definitions/response.Envelope'
+      security:
+      - BearerAuth: []
+      summary: Eventlarni olish - admin (o'chirilganlar bilan birga)
+      tags:
+      - events
   /products:
     post:
       consumes:

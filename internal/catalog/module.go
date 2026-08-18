@@ -25,6 +25,7 @@ func NewModule(cfg Config) *Module {
 
 	productRepo := postgres.NewPostgresProductRepository(cfg.DB)
 	categoryRepo := postgres.NewPostgresCategoryRepository(cfg.DB)
+	eventRepo := postgres.NewPostgresEventRepository(cfg.DB)
 
 	// application
 	createProductUC := application.NewCreateProductUseCase(productRepo, cfg.MediaUploader)
@@ -35,11 +36,19 @@ func NewModule(cfg Config) *Module {
 	deleteCategoryUC := application.NewDeleteCategoryUseCase(categoryRepo)
 	getAllCategoriesUC := application.NewGetAllCategoriesIncludingDeletedUseCase(categoryRepo)
 
+	createEventUC := application.NewCreateEventUseCase(eventRepo, categoryRepo, cfg.MediaUploader)
+	getEventsUC := application.NewGetEventsUseCase(eventRepo)
+	getEventByIDUC := application.NewGetEventUseCase(eventRepo)
+	updateEventUC := application.NewUpdateEventUseCase(eventRepo, categoryRepo)
+	deleteEventUC := application.NewDeleteEventUseCase(eventRepo)
+	getAllEventsUC := application.NewGetAllEventsIncludingDeletedUseCase(eventRepo)
+
 	// interfaces
 	productHandler := http.NewProductHandler(createProductUC)
 	categoryHandler := http.NewCategoryHandler(createCategoryUC, getCategoriesUC, getCategoryByIDUC, updateCategoryUC, deleteCategoryUC, getAllCategoriesUC)
+	eventHandler := http.NewEventHandler(createEventUC, getEventsUC, getEventByIDUC, updateEventUC, deleteEventUC, getAllEventsUC)
 
 	return &Module{
-		Router: producthttp.NewRouter(productHandler, categoryHandler, cfg.TokenService),
+		Router: producthttp.NewRouter(productHandler, categoryHandler, eventHandler, cfg.TokenService),
 	}
 }
