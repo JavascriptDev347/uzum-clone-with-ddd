@@ -668,6 +668,9 @@ const docTemplate = `{
                 "email": {
                     "type": "string"
                 },
+                "role": {
+                    "type": "string"
+                },
                 "user_id": {
                     "type": "string"
                 }

@@ -24,5 +24,6 @@ func (uc *GetMeUseCase) Execute(ctx context.Context, userID string) (*GetMeOutpu
 	return &GetMeOutput{
 		UserID: user.ID(),
 		Email:  user.Email().String(),
+		Role:   string(user.Role()),
 	}, nil
 }
