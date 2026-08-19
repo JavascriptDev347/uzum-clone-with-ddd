@@ -57,6 +57,138 @@ definitions:
       user_id:
         type: string
     type: object
+  application.ProductOutput:
+    properties:
+      allow_custom_card:
+        type: boolean
+      care_instructions:
+        type: string
+      category_id:
+        type: string
+      color:
+        type: string
+      compatible_addons:
+        items:
+          type: string
+        type: array
+      created_at:
+        type: string
+      description:
+        type: string
+      discount_amount:
+        type: integer
+      final_price_amount:
+        type: integer
+      flower_types:
+        items:
+          type: string
+        type: array
+      freshness_lifespan:
+        type: integer
+      id:
+        type: string
+      images:
+        items:
+          type: string
+        type: array
+      is_available:
+        type: boolean
+      name:
+        type: string
+      occasions:
+        items:
+          type: string
+        type: array
+      packaging_type:
+        type: string
+      price_amount:
+        type: integer
+      price_currency:
+        type: string
+      rating:
+        type: number
+      slug:
+        type: string
+      sold_count:
+        type: integer
+      stem_count:
+        type: integer
+      stock:
+        type: integer
+      updated_at:
+        type: string
+      video_url_instagram:
+        type: string
+      video_url_youtube:
+        type: string
+    type: object
+  application.ProductOutputForAdmin:
+    properties:
+      allow_custom_card:
+        type: boolean
+      care_instructions:
+        type: string
+      category_id:
+        type: string
+      color:
+        type: string
+      compatible_addons:
+        items:
+          type: string
+        type: array
+      created_at:
+        type: string
+      deleted_at:
+        type: string
+      description:
+        type: string
+      discount_amount:
+        type: integer
+      final_price_amount:
+        type: integer
+      flower_types:
+        items:
+          type: string
+        type: array
+      freshness_lifespan:
+        type: integer
+      id:
+        type: string
+      images:
+        items:
+          type: string
+        type: array
+      is_available:
+        type: boolean
+      name:
+        type: string
+      occasions:
+        items:
+          type: string
+        type: array
+      packaging_type:
+        type: string
+      price_amount:
+        type: integer
+      price_currency:
+        type: string
+      rating:
+        type: number
+      slug:
+        type: string
+      sold_count:
+        type: integer
+      stem_count:
+        type: integer
+      stock:
+        type: integer
+      updated_at:
+        type: string
+      video_url_instagram:
+        type: string
+      video_url_youtube:
+        type: string
+    type: object
   application.UpdateCategoryInput:
     properties:
       id:
@@ -79,6 +211,61 @@ definitions:
       title:
         type: string
     type: object
+  application.UpdateProductInput:
+    properties:
+      amount:
+        type: integer
+      care_instructions:
+        type: string
+      category_id:
+        type: string
+      clear_care_instructions:
+        type: boolean
+      clear_discount:
+        type: boolean
+      color:
+        type: string
+      compatible_addons:
+        items:
+          type: string
+        type: array
+      currency:
+        type: string
+      description:
+        type: string
+      discount_amount:
+        type: integer
+      flower_types:
+        items:
+          type: string
+        type: array
+      freshness_lifespan:
+        type: integer
+      is_available:
+        type: boolean
+      name:
+        type: string
+      occasions:
+        items:
+          type: string
+        type: array
+      packaging_type:
+        type: string
+      rating:
+        type: number
+      slug:
+        type: string
+      sold_count:
+        type: integer
+      stem_count:
+        type: integer
+      stock:
+        type: integer
+      video_url_instagram:
+        type: string
+      video_url_youtube:
+        type: string
+    type: object
   http.CreateCategoryResponse:
     properties:
       created_at:
@@ -90,23 +277,6 @@ definitions:
       parent_id:
         type: string
       updated_at:
-        type: string
-    type: object
-  http.CreateProductResponse:
-    properties:
-      amount:
-        type: integer
-      category_id:
-        type: string
-      created_at:
-        type: string
-      currency:
-        type: string
-      id:
-        type: string
-      image_url:
-        type: string
-      name:
         type: string
     type: object
   http.LoginRequest:
@@ -464,6 +634,41 @@ paths:
       summary: Kategoriyani yangilash
       tags:
       - categories
+  /categories/{id}/products:
+    get:
+      description: Berilgan category_id ga tegishli faol (o'chirilmagan) mahsulotlar
+        ro'yxati
+      parameters:
+      - description: Kategoriya ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Mahsulot nomi bo'yicha qidirish
+        in: query
+        name: search
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Mahsulotlar
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Envelope'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/application.ProductOutput'
+                  type: array
+              type: object
+        "500":
+          description: Ichki server xatosi
+          schema:
+            $ref: '#/definitions/response.Envelope'
+      summary: Kategoriya bo'yicha mahsulotlarni olish
+      tags:
+      - products
   /categories/admin:
     get:
       consumes:
@@ -712,15 +917,57 @@ paths:
       tags:
       - events
   /products:
+    get:
+      description: Faol (o'chirilmagan) mahsulotlar ro'yxati, nomi va/yoki category_id
+        bo'yicha filtrlash mumkin
+      parameters:
+      - description: Mahsulot nomi bo'yicha qidirish
+        in: query
+        name: search
+        type: string
+      - description: Kategoriya ID bo'yicha filtrlash
+        in: query
+        name: category_id
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Mahsulotlar
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Envelope'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/application.ProductOutput'
+                  type: array
+              type: object
+        "500":
+          description: Ichki server xatosi
+          schema:
+            $ref: '#/definitions/response.Envelope'
+      summary: Mahsulotlarni olish
+      tags:
+      - products
     post:
       consumes:
       - multipart/form-data
-      description: Nomi, narxi, valyutasi, kategoriyasi va rasmi orqali yangi mahsulot
-        yaratadi. Faqat admin huquqiga ega foydalanuvchi uchun.
+      description: Gullar do'koni mahsulotini barcha xususiyatlari (narx, chegirma,
+        rasmlar, qadoqlash va h.k.) bilan yaratadi. Faqat admin uchun.
       parameters:
       - description: Mahsulot nomi
         in: formData
         name: name
+        required: true
+        type: string
+      - description: Tavsif
+        in: formData
+        name: description
+        type: string
+      - description: Kategoriya ID
+        in: formData
+        name: category_id
         required: true
         type: string
       - description: Narx (tiyin/kopeykada)
@@ -733,14 +980,70 @@ paths:
         name: currency
         required: true
         type: string
-      - description: Kategoriya ID
+      - description: Chegirma narxi (ixtiyoriy)
         in: formData
-        name: categoryId
+        name: discount_amount
+        type: integer
+      - description: Slug (bo'sh bo'lsa nomidan avtomatik yasaladi)
+        in: formData
+        name: slug
+        type: string
+      - description: YouTube video URL
+        in: formData
+        name: video_url_youtube
+        type: string
+      - description: Instagram video URL
+        in: formData
+        name: video_url_instagram
+        type: string
+      - description: Sotuvda bor yoki yo'qligi (default true)
+        in: formData
+        name: is_available
+        type: boolean
+      - description: Reyting 1-5 (default 1)
+        in: formData
+        name: rating
+        type: number
+      - description: Ombordagi soni
+        in: formData
+        name: stock
+        type: integer
+      - description: Gullar turi, vergul bilan
+        in: formData
+        name: flower_types
+        type: string
+      - description: Rangi
+        in: formData
+        name: color
+        type: string
+      - description: Buketdagi gullar soni
+        in: formData
+        name: stem_count
+        type: integer
+      - description: 'Qadoqlash turi: bucket, box yoki vase'
+        in: formData
+        name: packaging_type
         required: true
         type: string
-      - description: Mahsulot rasmi
+      - description: Saqlanish muddati (kunlarda, 1-7, default 1)
         in: formData
-        name: image
+        name: freshness_lifespan
+        type: integer
+      - description: Parvarish bo'yicha ko'rsatma
+        in: formData
+        name: care_instructions
+        type: string
+      - description: Bayramlar/holatlar (tag), vergul bilan
+        in: formData
+        name: occasions
+        type: string
+      - description: Mos qo'shimchalar, vergul bilan
+        in: formData
+        name: compatible_addons
+        type: string
+      - description: Mahsulot rasmlari (eng ko'pi bilan 5 ta)
+        in: formData
+        name: images
         type: file
       produces:
       - application/json
@@ -752,7 +1055,7 @@ paths:
             - $ref: '#/definitions/response.Envelope'
             - properties:
                 data:
-                  $ref: '#/definitions/http.CreateProductResponse'
+                  $ref: '#/definitions/application.ProductOutput'
               type: object
         "400":
           description: Noto'g'ri so'rov tanasi yoki validatsiya xatosi
@@ -766,6 +1069,10 @@ paths:
           description: Huquq yetarli emas
           schema:
             $ref: '#/definitions/response.Envelope'
+        "409":
+          description: Slug band
+          schema:
+            $ref: '#/definitions/response.Envelope'
         "500":
           description: Ichki server xatosi
           schema:
@@ -773,6 +1080,177 @@ paths:
       security:
       - BearerAuth: []
       summary: Yangi mahsulot yaratish
+      tags:
+      - products
+  /products/{id}:
+    delete:
+      description: Mahsulotni ID bo'yicha o'chirish (soft delete)
+      parameters:
+      - description: Mahsulot ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Mahsulot o'chirish muvaffaqiyatli
+          schema:
+            $ref: '#/definitions/response.Envelope'
+        "404":
+          description: Mahsulot topilmadi
+          schema:
+            $ref: '#/definitions/response.Envelope'
+        "500":
+          description: Ichki server xatosi
+          schema:
+            $ref: '#/definitions/response.Envelope'
+      security:
+      - BearerAuth: []
+      summary: Mahsulotni o'chirish
+      tags:
+      - products
+    get:
+      description: Mahsulotni ID bo'yicha olish
+      parameters:
+      - description: Mahsulot ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Mahsulot
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Envelope'
+            - properties:
+                data:
+                  $ref: '#/definitions/application.ProductOutput'
+              type: object
+        "404":
+          description: Mahsulot topilmadi
+          schema:
+            $ref: '#/definitions/response.Envelope'
+        "500":
+          description: Ichki server xatosi
+          schema:
+            $ref: '#/definitions/response.Envelope'
+      summary: Mahsulotni olish
+      tags:
+      - products
+    put:
+      consumes:
+      - application/json
+      description: Mahsulotni ID bo'yicha yangilash (JSON body, rasmlar bu yerda o'zgartirilmaydi)
+      parameters:
+      - description: Mahsulot ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Yangilash uchun mahsulot ma'lumotlari
+        in: body
+        name: product
+        required: true
+        schema:
+          $ref: '#/definitions/application.UpdateProductInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Mahsulot yangilash muvaffaqiyatli
+          schema:
+            $ref: '#/definitions/response.Envelope'
+        "400":
+          description: Validatsiya xatosi
+          schema:
+            $ref: '#/definitions/response.Envelope'
+        "404":
+          description: Mahsulot topilmadi
+          schema:
+            $ref: '#/definitions/response.Envelope'
+        "409":
+          description: Slug band
+          schema:
+            $ref: '#/definitions/response.Envelope'
+        "500":
+          description: Ichki server xatosi
+          schema:
+            $ref: '#/definitions/response.Envelope'
+      security:
+      - BearerAuth: []
+      summary: Mahsulotni yangilash
+      tags:
+      - products
+  /products/admin:
+    get:
+      description: Barcha mahsulotlarni (o'chirilganlarni ham) qaytaradi
+      parameters:
+      - description: Mahsulot nomi bo'yicha qidirish
+        in: query
+        name: search
+        type: string
+      - description: Kategoriya ID bo'yicha filtrlash
+        in: query
+        name: category_id
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Mahsulotlar
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Envelope'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/application.ProductOutputForAdmin'
+                  type: array
+              type: object
+        "500":
+          description: Ichki server xatosi
+          schema:
+            $ref: '#/definitions/response.Envelope'
+      security:
+      - BearerAuth: []
+      summary: Mahsulotlarni olish - admin (o'chirilganlar bilan birga)
+      tags:
+      - products
+  /products/slug/{slug}:
+    get:
+      description: Mahsulot sahifasi uchun SEO-friendly slug bo'yicha olish
+      parameters:
+      - description: Mahsulot slug
+        in: path
+        name: slug
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Mahsulot
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Envelope'
+            - properties:
+                data:
+                  $ref: '#/definitions/application.ProductOutput'
+              type: object
+        "404":
+          description: Mahsulot topilmadi
+          schema:
+            $ref: '#/definitions/response.Envelope'
+        "500":
+          description: Ichki server xatosi
+          schema:
+            $ref: '#/definitions/response.Envelope'
+      summary: Mahsulotni slug bo'yicha olish
       tags:
       - products
 securityDefinitions:

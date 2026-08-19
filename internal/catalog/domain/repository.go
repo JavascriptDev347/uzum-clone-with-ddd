@@ -10,7 +10,9 @@ var ErrProductNotFound = errors.New("catalog: product topilmadi")
 type ProductRepository interface {
 	Save(ctx context.Context, product *Product) error
 	FindByID(ctx context.Context, id string) (*Product, error)
-	FindAll(ctx context.Context) ([]*Product, error)
+	FindBySlug(ctx context.Context, slug string) (*Product, error)
+	FindAll(ctx context.Context, search string, categoryID string) ([]*Product, error)
+	FindAllIncludingDeleted(ctx context.Context, search string, categoryID string) ([]*Product, error)
 	Update(ctx context.Context, product *Product) error
 	SoftDelete(ctx context.Context, id string) error
 }

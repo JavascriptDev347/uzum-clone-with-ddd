@@ -9,60 +9,99 @@ import (
 )
 
 type CreateProductUseCase struct {
-	repo     domain.ProductRepository
-	uploader media.Uploader
+	repo         domain.ProductRepository
+	categoryRepo domain.CategoryRepository
+	uploader     media.Uploader
 }
 
-func NewCreateProductUseCase(repo domain.ProductRepository, uploader media.Uploader) *CreateProductUseCase {
-	return &CreateProductUseCase{repo: repo, uploader: uploader}
+func NewCreateProductUseCase(repo domain.ProductRepository, categoryRepo domain.CategoryRepository, uploader media.Uploader) *CreateProductUseCase {
+	return &CreateProductUseCase{repo: repo, categoryRepo: categoryRepo, uploader: uploader}
 }
 
-func (uc *CreateProductUseCase) Execute(ctx context.Context, product CreateProductInput) (CreateProductOutput, error) {
-	var id string = uuid.New().String()
-
-	newMoney, err := domain.NewMoney(product.Amount, product.Currency)
-	if err != nil {
-		return CreateProductOutput{}, err
+func (uc *CreateProductUseCase) Execute(ctx context.Context, input CreateProductInput) (*ProductOutput, error) {
+	if _, err := uc.categoryRepo.FindByID(ctx, input.CategoryID); err != nil {
+		return nil, err
 	}
 
-	var imageURL, imagePublicID string
-	if len(product.ImageData) > 0 {
-		if err := media.Validate(media.UploadInput{
-			ContentType: product.ImageContentType,
-			Data:        product.ImageData,
-		}, media.DefaultImageRules()); err != nil {
-			return CreateProductOutput{}, err
-		}
+	if len(input.Images) > domain.MaxProductImages {
+		return nil, domain.ErrTooManyProductImages
+	}
 
-		result, err := uc.uploader.Upload(ctx, media.UploadInput{
-			FileName:    product.ImageFileName,
-			ContentType: product.ImageContentType,
-			Data:        product.ImageData,
-		})
+	price, err := domain.NewMoney(input.Amount, input.Currency)
+	if err != nil {
+		return nil, err
+	}
+
+	var discountPrice *domain.Money
+	if input.DiscountAmount != nil {
+		dp, err := domain.NewMoney(*input.DiscountAmount, input.Currency)
 		if err != nil {
-			return CreateProductOutput{}, err
+			return nil, err
 		}
-
-		imageURL = result.URL
-		imagePublicID = result.PublicID
+		discountPrice = &dp
 	}
 
-	newProduct, err := domain.NewProduct(id, product.Name, product.CategoryID, newMoney, imageURL, imagePublicID)
+	uploaded := make([]domain.ProductImage, 0, len(input.Images))
+	rollback := func() {
+		for _, img := range uploaded {
+			_ = uc.uploader.Delete(ctx, img.PublicID)
+		}
+	}
+
+	for _, img := range input.Images {
+		if err := media.Validate(img, media.DefaultImageRules()); err != nil {
+			rollback()
+			return nil, err
+		}
+		result, err := uc.uploader.Upload(ctx, img)
+		if err != nil {
+			rollback()
+			return nil, err
+		}
+		uploaded = append(uploaded, domain.ProductImage{URL: result.URL, PublicID: result.PublicID})
+	}
+
+	slug := input.Slug
+	if slug == "" {
+		slug = domain.GenerateSlug(input.Name)
+	}
+	if slug == "" {
+		slug = uuid.New().String()
+	}
+
+	id := uuid.New().String()
+	product, err := domain.NewProduct(domain.NewProductParams{
+		ID:                id,
+		Name:              input.Name,
+		Description:       input.Description,
+		Images:            uploaded,
+		VideoURLYoutube:   input.VideoURLYoutube,
+		VideoURLInstagram: input.VideoURLInstagram,
+		CategoryID:        input.CategoryID,
+		Price:             price,
+		DiscountPrice:     discountPrice,
+		Slug:              slug,
+		IsAvailable:       input.IsAvailable,
+		Rating:            input.Rating,
+		Stock:             input.Stock,
+		FlowerTypes:       input.FlowerTypes,
+		Color:             input.Color,
+		StemCount:         input.StemCount,
+		PackagingType:     domain.PackagingType(input.PackagingType),
+		FreshnessLifespan: domain.FreshnessLifespan(input.FreshnessLifespan),
+		CareInstructions:  input.CareInstructions,
+		Occasions:         input.Occasions,
+		CompatibleAddons:  input.CompatibleAddons,
+	})
 	if err != nil {
-		return CreateProductOutput{}, err
+		rollback()
+		return nil, err
 	}
 
-	if err := uc.repo.Save(ctx, newProduct); err != nil {
-		return CreateProductOutput{}, err
+	if err := uc.repo.Save(ctx, product); err != nil {
+		rollback()
+		return nil, err
 	}
 
-	return CreateProductOutput{
-		ID:            newProduct.ID(),
-		Name:          newProduct.Name(),
-		PriceAmount:   newProduct.Price().Amount(),
-		PriceCurrency: newProduct.Price().Currency(),
-		CategoryID:    newProduct.CategoryID(),
-		ImageURL:      newProduct.ImageURL(),
-		CreatedAt:     newProduct.CreatedAt(),
-	}, nil
+	return ToProductOutput(product), nil
 }

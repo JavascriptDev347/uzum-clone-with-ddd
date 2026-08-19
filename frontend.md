@@ -348,9 +348,133 @@ DELETE /api/v1/categories/{id}
 
 Prefiks: **`/api/v1/products`**
 
-> ⚠️ **Muhim eslatma frontendchi uchun:** Hozircha backendda **faqat mahsulot yaratish (`POST`)** endpointi tayyor. Mahsulotlar ro'yxatini olish, bitta mahsulotni olish, yangilash va o'chirish endpointlari **hali yozilmagan**. Ya'ni katalog/vitrina sahifasi (mahsulotlarni ko'rsatish) uchun hozircha API yo'q — bu backend tomonda navbatda turgan ish. Iltimos buni backend jamoasi bilan kelishib oling.
+Gullar do'koni mahsuloti — narx, chegirma, rasmlar (5 tagacha), Instagram video, buket xususiyatlari (rang, poya soni, qadoqlash, saqlanish muddati) va h.k. bilan.
 
-### 4.1 Yangi mahsulot yaratish
+### Product obyekti (response shakli)
+
+```json
+{
+  "id": "uuid",
+  "name": "51 ta qizil atirgul",
+  "description": "Premium Ekvador atirgullaridan yig'ilgan buket",
+  "images": [
+    "https://res.cloudinary.com/.../product-images/....jpg",
+    "https://res.cloudinary.com/.../product-images/....jpg"
+  ],
+  "video_url_youtube": "https://www.youtube.com/watch?v=xxxxxxx",
+  "video_url_instagram": "https://www.instagram.com/reel/xxxxxxx/",
+  "category_id": "uuid",
+  "price_amount": 15000000,
+  "price_currency": "UZS",
+  "discount_amount": 12000000,
+  "final_price_amount": 12000000,
+  "slug": "51-ta-qizil-atirgul",
+  "is_available": true,
+  "rating": 4.5,
+  "stock": 12,
+  "sold_count": 34,
+  "flower_types": ["rose"],
+  "color": "qizil",
+  "stem_count": 51,
+  "packaging_type": "box",
+  "freshness_lifespan": 5,
+  "care_instructions": "Har kuni suvini almashtiring",
+  "occasions": ["tug'ilgan kun", "yubiley"],
+  "allow_custom_card": null,
+  "compatible_addons": ["shokolad qutisi"],
+  "created_at": "2026-08-18T10:00:00Z",
+  "updated_at": "2026-08-18T10:00:00Z"
+}
+```
+
+Muhim izohlar:
+- **`images`** — Cloudinay CDN URL'lari ro'yxati, **eng ko'pi bilan 5 ta**. Bo'sh bo'lishi ham mumkin (`[]`) — hozircha rasm majburiy emas.
+- **`video_url_youtube`** / **`video_url_instagram`** — ikkalasi ham ixtiyoriy va bir-biridan mustaqil (bittasi, ikkalasi ham yoki hech biri bo'lmasligi mumkin). YouTube havolasi va Instagram video (reel/post) havolasi frontendda mos `<iframe>`/embed orqali ko'rsatiladi. Backend bu URL'larni tekshirmaydi va o'zgartirmaydi, xom string sifatida saqlaydi/qaytaradi. Berilmagan bo'lsa bo'sh string (`""`) qaytadi, `null` emas.
+- **`price_amount` / `discount_amount` / `final_price_amount`** — hammasi eng kichik pul birligida (tiyin). `discount_amount` bo'lmasa, javobda bu maydon umuman ko'rinmaydi (`omitempty`) va `final_price_amount` = `price_amount` bilan teng bo'ladi. `discount_amount` bo'lsa, u har doim `price_amount`dan kichik bo'ladi (backend buni yaratish/yangilashda tekshiradi) va **narxni ko'rsatishda `final_price_amount`dan foydalaning** — u chegirma bor-yo'qligidan qat'iy nazar "hozir to'lanadigan narx"ni bildiradi.
+- **`slug`** — URL uchun (masalan `/product/51-ta-qizil-atirgul`). Yaratishda yubormasangiz, backend `name`dan avtomatik hosil qiladi. Har bir mahsulotda **unikal** bo'lishi shart — band bo'lgan slug yuborilsa `409` qaytadi.
+- **`rating`** — 1 dan 5 gacha, default `1`. Hozircha foydalanuvchi sharhlaridan avtomatik hisoblanmaydi — admin qo'lda kiritadi (izoh/sharh tizimi hali yo'q, pastga qarang).
+- **`stock`** / **`sold_count`** — ombordagi son va sotilganlar soni. `is_available` bilan bir xil narsa emas: `stock=0` bo'lsa ham `is_available` alohida `true`/`false` bo'lishi mumkin — frontendda ikkalasini alohida hisobga oling ("tugadi" belgisi uchun `is_available`ni ishlating).
+- **`flower_types`**, **`occasions`**, **`compatible_addons`** — tag ro'yxatlari (JSON massiv). Bo'lmasa `[]` bo'lib qaytadi, hech qachon `null` emas.
+- **`packaging_type`** — enum: `"bucket"`, `"box"`, `"vase"`.
+- **`freshness_lifespan`** — butun son, kunlarda, `1` dan `7` gacha, default `1`.
+- **`care_instructions`** — ixtiyoriy, berilmasa `null`.
+- **`allow_custom_card`** — hozircha **doim `null`** qaytadi. Bu — buyurtmaga tabrik kartochkasi qo'shish imkoniyati, keyinroq qo'shiladi. Frontendda hozircha bu maydonga tayanmang.
+- **Sharhlar/izohlar (comments)** — hali backendda yo'q, product obyektida ham yo'q. Sotib olgan foydalanuvchilar tomonidan izoh yozish funksiyasi kelajakda alohida endpoint sifatida qo'shiladi.
+- `category_id` — **backend create/update paytida bu ID chindan mavjud kategoriyaga tegishli ekanligini tekshiradi** (events bilan bir xil qoida) — mavjud bo'lmagan `category_id` yuborilsa `400`/`404` qaytishi mumkin (pastga qarang).
+
+---
+
+### 4.1 Mahsulotlar ro'yxatini olish (public)
+
+```
+GET /api/v1/products?search=<matn>&category_id=<uuid>
+```
+
+- Auth talab qilinmaydi.
+- `search` — ixtiyoriy, nom bo'yicha qidirish (`ILIKE`).
+- `category_id` — ixtiyoriy, faqat shu kategoriyaga tegishli mahsulotlarni qaytaradi. Ikkalasini birga ham berish mumkin.
+- Faqat **o'chirilmagan** (`deleted_at IS NULL`) mahsulotlarni qaytaradi. `is_available=false` bo'lgan mahsulotlar ham shu ro'yxatda keladi (yashirilmaydi) — "tugagan" holatini frontendda `is_available` orqali ko'rsating.
+
+**Javob — `200 OK`:** `{ "data": [ <Product obyekti>, ... ] }`
+
+---
+
+### 4.2 Kategoriya bo'yicha mahsulotlarni olish (public)
+
+```
+GET /api/v1/categories/{id}/products?search=<matn>
+```
+
+- Auth talab qilinmaydi.
+- Xuddi `GET /products?category_id={id}` bilan bir xil natija — kategoriya sahifasida (masalan "Atirgullar" kategoriyasi) qulay bo'lishi uchun alohida yo'l sifatida ham ochilgan.
+
+**Javob — `200 OK`:** `{ "data": [ <Product obyekti>, ... ] }`
+
+---
+
+### 4.3 Bitta mahsulotni olish (ID bo'yicha)
+
+```
+GET /api/v1/products/{id}
+```
+
+- Auth talab qilinmaydi.
+
+**Javob — `200 OK`:** `{ "data": <Product obyekti> }`
+
+**Xatoliklar:** `404` — mahsulot topilmadi (yoki o'chirilgan)
+
+---
+
+### 4.4 Bitta mahsulotni olish (slug bo'yicha)
+
+```
+GET /api/v1/products/slug/{slug}
+```
+
+- Auth talab qilinmaydi. Mahsulot sahifasi (`/product/51-ta-qizil-atirgul`) uchun SEO-friendly URL'da shundan foydalaning.
+
+**Javob — `200 OK`:** `{ "data": <Product obyekti> }`
+
+**Xatoliklar:** `404` — mahsulot topilmadi
+
+---
+
+### 4.5 Mahsulotlarni olish — admin (o'chirilganlar bilan birga)
+
+```
+GET /api/v1/products/admin?search=<matn>&category_id=<uuid>
+```
+
+🔒 **Faqat admin**
+
+- Oddiy `/products`dan farqi: soft-delete qilingan mahsulotlarni ham qaytaradi. Har bir elementda qo'shimcha `deleted_at` maydoni bo'ladi (o'chirilmagan bo'lsa `null`).
+
+**Xatoliklar:** `401` (token yo'q), `403` (admin emas)
+
+---
+
+### 4.6 Yangi mahsulot yaratish
 
 ```
 POST /api/v1/products
@@ -363,37 +487,117 @@ POST /api/v1/products
 | Maydon | Turi | Majburiymi | Izoh |
 |---|---|---|---|
 | `name` | string | ✅ ha | Mahsulot nomi |
-| `amount` | integer | ✅ ha | Narx — **tiyin/kopeykada** (masalan 150000 so'm bo'lsa `15000000` deb yuboriladi, chunki `amount` eng kichik pul birligida saqlanadi — bu haqda backend jamoasidan tasdiqlab oling, chunki hozircha aniq koeffitsient kod ichida izohlangan emas) |
+| `description` | string | ❌ yo'q | Tavsif |
+| `category_id` | string (uuid) | ✅ ha | Mavjud kategoriya ID'si — backend tekshiradi |
+| `amount` | integer | ✅ ha | Narx, **tiyinda** (eng kichik pul birligi) |
 | `currency` | string | ✅ ha | Valyuta kodi, masalan `"UZS"` |
-| `categoryId` | string (uuid) | ✅ ha | Mahsulot tegishli kategoriya ID'si |
-| `image` | file | ❌ yo'q | Mahsulot rasmi — **ixtiyoriy** (categorydan farqli o'laroq, bu yerda rasm shart emas) |
+| `discount_amount` | integer | ❌ yo'q | Chegirma narxi, tiyinda. Berilsa `amount`dan kichik va bir xil valyutada bo'lishi shart |
+| `slug` | string | ❌ yo'q | Bo'sh qoldirilsa `name`dan avtomatik hosil qilinadi |
+| `video_url_youtube` | string | ❌ yo'q | YouTube video havolasi |
+| `video_url_instagram` | string | ❌ yo'q | Instagram video havolasi |
+| `is_available` | `"true"`/`"false"` | ❌ yo'q | Berilmasa `true` deb olinadi |
+| `rating` | number | ❌ yo'q | 1–5, berilmasa `1` |
+| `stock` | integer | ❌ yo'q | Berilmasa `0` |
+| `flower_types` | string | ❌ yo'q | Vergul bilan ajratilgan (masalan `"rose,tulip"`) |
+| `color` | string | ❌ yo'q | Rangi |
+| `stem_count` | integer | ❌ yo'q | Buketdagi gullar soni |
+| `packaging_type` | string | ✅ ha | `"bucket"` \| `"box"` \| `"vase"` |
+| `freshness_lifespan` | integer | ❌ yo'q | 1–7 kun, berilmasa `1` |
+| `care_instructions` | string | ❌ yo'q | Parvarish ko'rsatmasi |
+| `occasions` | string | ❌ yo'q | Vergul bilan ajratilgan tag'lar (masalan `"tug'ilgan kun,to'y"`) |
+| `compatible_addons` | string | ❌ yo'q | Vergul bilan ajratilgan (masalan `"shokolad qutisi,otkritka"`) |
+| `images` | file (bir nechta) | ❌ yo'q | Bir nechta faylni **bir xil `images` maydon nomi bilan** yuboring; eng ko'pi bilan 5 ta |
 
-**Rasm cheklovi:** yuklansa — maks. 3MB, formatlar: `jpeg`/`png`/`webp` (categorydagi bilan bir xil).
+> Ko'p faylni bitta form-data maydonida yuborish: `FormData.append('images', file1); FormData.append('images', file2); ...` (brauzer/`fetch`da bir nechta marta shu nomda `append` qiling — array belgisi `images[]` shart emas, backend `images` nomidagi barcha fayllarni oladi).
 
-**Muvaffaqiyatli javob — `201 Created`:**
-```json
-{
-  "data": {
-    "id": "uuid",
-    "name": "iPhone 15",
-    "category_id": "uuid",
-    "amount": 15000000,
-    "image_url": "https://res.cloudinary.com/.../product-images/....jpg",
-    "currency": "UZS",
-    "created_at": "2026-08-18T10:00:00Z"
-  }
-}
-```
+**Rasm cheklovi:** har bir rasm — maks. 3MB, formatlar: `jpeg`/`png`/`webp` (categorydagi bilan bir xil).
 
-- Rasm yuklanmasa `image_url` bo'sh string bo'lib qaytadi.
+**Muvaffaqiyatli javob — `201 Created`:** `{ "data": <Product obyekti> }`
 
 **Xatoliklar:**
 | Status | Sabab |
 |---|---|
-| 400 | `name`/`categoryId` bo'sh, `amount` manfiy yoki raqam emas, `currency` bo'sh, rasm formati/hajmi noto'g'ri |
+| 400 | `name`/`category_id`/`packaging_type` bo'sh yoki noto'g'ri, `amount`/`discount_amount` noto'g'ri yoki chegirma asosiy narxdan katta, `rating`/`freshness_lifespan` diapazondan tashqari, 5 tadan ortiq rasm, rasm formati/hajmi noto'g'ri |
 | 401 | token yo'q |
 | 403 | admin emas |
+| 409 | shu `slug` allaqachon band |
 | 500 | server xatosi |
+
+---
+
+### 4.7 Mahsulotni yangilash
+
+```
+PUT /api/v1/products/{id}
+```
+
+🔒 **Faqat admin**
+
+**Content-Type:** `application/json`
+
+**Body** (barcha maydonlar ixtiyoriy — faqat yubormoqchi bo'lgan maydonlarni jo'nating, qolganlari o'zgarmaydi):
+```json
+{
+  "name": "Yangi nom",
+  "description": "Yangi tavsif",
+  "video_url_youtube": "https://www.youtube.com/watch?v=yyyyyyy",
+  "video_url_instagram": "https://www.instagram.com/reel/yyyyyyy/",
+  "category_id": "boshqa-uuid",
+  "amount": 16000000,
+  "currency": "UZS",
+  "discount_amount": 13000000,
+  "clear_discount": false,
+  "slug": "yangi-slug",
+  "is_available": true,
+  "rating": 4.8,
+  "stock": 20,
+  "sold_count": 40,
+  "flower_types": ["rose", "peony"],
+  "color": "pushti",
+  "stem_count": 25,
+  "packaging_type": "vase",
+  "freshness_lifespan": 6,
+  "care_instructions": "Sovuq joyda saqlang",
+  "clear_care_instructions": false,
+  "occasions": ["yubiley"],
+  "compatible_addons": ["shokolad qutisi"]
+}
+```
+
+> Diqqat: bu endpoint **JSON body** qabul qiladi (rasm yangilash uchun `multipart/form-data` emas — hozircha rasmlarni yangilash uchun alohida endpoint yo'q). `category_id` yuborilsa, backend uni ham mavjudligiga tekshiradi.
+>
+> Ikkita maxsus bayroq bor: `clear_discount: true` — chegirmani butunlay o'chiradi (`discount_amount`ni yubormasdan); `clear_care_instructions: true` — parvarish ko'rsatmasini `null` qiladi. Bu ikkisi berilmasa, mos `*_amount`/`care_instructions` maydoni yuborilgan taqdirdagina o'zgaradi.
+
+**Javob — `200 OK`:** `{ "data": null }`
+
+**Xatoliklar:**
+| Status | Sabab |
+|---|---|
+| 400 | validatsiya xatosi (bo'sh nom, noto'g'ri narx/chegirma, noto'g'ri enum qiymati va h.k.) |
+| 401 | token yo'q |
+| 403 | admin emas |
+| 404 | mahsulot topilmadi |
+| 409 | yangi `slug` allaqachon band |
+| 500 | server xatosi |
+
+---
+
+### 4.8 Mahsulotni o'chirish
+
+```
+DELETE /api/v1/products/{id}
+```
+
+🔒 **Faqat admin**
+
+- Bu **soft delete** — `deleted_at` belgilanadi, yozuv bazadan o'chmaydi. O'chirilgan mahsulot oddiy `GET /products` ro'yxatida chiqmaydi, lekin `GET /products/admin` orqali ko'rish mumkin.
+
+**Javob — `200 OK`:**
+```json
+{ "data": "Mahsulot o'chirildi" }
+```
+
+**Xatoliklar:** `401`, `403`, `500`
 
 ---
 
@@ -645,7 +849,14 @@ Frontendda: login qilingandan keyin `GET /auth/me` chaqirib, javobdagi `role` ma
 | `/api/v1/categories/{id}` | PUT | ✅ | admin |
 | `/api/v1/categories/{id}` | DELETE | ✅ | admin |
 | `/api/v1/categories/admin` | GET | ✅ | admin |
+| `/api/v1/categories/{id}/products` | GET | ❌ | — |
+| `/api/v1/products` | GET | ❌ | — |
+| `/api/v1/products/{id}` | GET | ❌ | — |
+| `/api/v1/products/slug/{slug}` | GET | ❌ | — |
 | `/api/v1/products` | POST | ✅ | admin |
+| `/api/v1/products/{id}` | PUT | ✅ | admin |
+| `/api/v1/products/{id}` | DELETE | ✅ | admin |
+| `/api/v1/products/admin` | GET | ✅ | admin |
 | `/api/v1/events` | GET | ❌ | — |
 | `/api/v1/events/{id}` | GET | ❌ | — |
 | `/api/v1/events` | POST | ✅ | admin |
@@ -659,10 +870,9 @@ Frontendda: login qilingandan keyin `GET /auth/me` chaqirib, javobdagi `role` ma
 
 Frontend ishini rejalashtirishda hisobga oling:
 
-- ❌ `GET /products` — mahsulotlar ro'yxati
-- ❌ `GET /products/{id}` — bitta mahsulot
-- ❌ `PUT /products/{id}` — mahsulot yangilash
-- ❌ `DELETE /products/{id}` — mahsulot o'chirish
+- ❌ Mahsulotga izoh/sharh (comments) — foydalanuvchi sotib olgandan keyin izoh qoldirishi kelajakda qo'shiladi, hozircha yo'q
+- ❌ `allow_custom_card` (buyurtmaga tabrik kartochkasi) — product obyektida maydon bor, lekin har doim `null`, hali to'liq funksiya emas
+- ❌ Mahsulot rasmlarini alohida yangilash (PUT productda faqat matn/raqam maydonlari o'zgaradi, `images` emas — rasmlarni o'zgartirish uchun alohida endpoint hali yo'q)
 - ❌ Kategoriya ierarxiyasi (parent/child daraxti) — `parent_id` maydoni bor, lekin ishlamaydi
 - ❌ Category rasm URL'i response'da yo'q
 - ❌ Event rasmini alohida yangilash (PUT eventda faqat matn maydonlari o'zgaradi, rasm emas)

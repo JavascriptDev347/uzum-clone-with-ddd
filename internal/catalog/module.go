@@ -28,7 +28,14 @@ func NewModule(cfg Config) *Module {
 	eventRepo := postgres.NewPostgresEventRepository(cfg.DB)
 
 	// application
-	createProductUC := application.NewCreateProductUseCase(productRepo, cfg.MediaUploader)
+	createProductUC := application.NewCreateProductUseCase(productRepo, categoryRepo, cfg.MediaUploader)
+	getProductsUC := application.NewGetProductsUseCase(productRepo)
+	getProductByIDUC := application.NewGetProductUseCase(productRepo)
+	getProductBySlugUC := application.NewGetProductBySlugUseCase(productRepo)
+	updateProductUC := application.NewUpdateProductUseCase(productRepo, categoryRepo)
+	deleteProductUC := application.NewDeleteProductUseCase(productRepo)
+	getAllProductsUC := application.NewGetAllProductsIncludingDeletedUseCase(productRepo)
+
 	createCategoryUC := application.NewCreateCategoryUseCase(categoryRepo, cfg.MediaUploader)
 	getCategoriesUC := application.NewGetCategoriesUseCase(categoryRepo)
 	getCategoryByIDUC := application.NewGetCategoryUseCase(categoryRepo)
@@ -44,7 +51,7 @@ func NewModule(cfg Config) *Module {
 	getAllEventsUC := application.NewGetAllEventsIncludingDeletedUseCase(eventRepo)
 
 	// interfaces
-	productHandler := http.NewProductHandler(createProductUC)
+	productHandler := http.NewProductHandler(createProductUC, getProductsUC, getProductByIDUC, getProductBySlugUC, updateProductUC, deleteProductUC, getAllProductsUC)
 	categoryHandler := http.NewCategoryHandler(createCategoryUC, getCategoriesUC, getCategoryByIDUC, updateCategoryUC, deleteCategoryUC, getAllCategoriesUC)
 	eventHandler := http.NewEventHandler(createEventUC, getEventsUC, getEventByIDUC, updateEventUC, deleteEventUC, getAllEventsUC)
 

@@ -10,8 +10,20 @@ import (
 func NewRouter(h *ProductHandler, c *CategoryHandler, e *EventHandler, tokenService *security.JWTTokenService) chi.Router {
 	r := chi.NewRouter()
 	// Define routes
+
+	// products (protected)
 	r.With(middleware.Authenticate(tokenService), middleware.RequireRole(domain.RoleAdmin)).
 		Post("/products", h.CreateProduct)
+	r.With(middleware.Authenticate(tokenService), middleware.RequireRole(domain.RoleAdmin)).
+		Put("/products/{id}", h.UpdateProduct)
+	r.With(middleware.Authenticate(tokenService), middleware.RequireRole(domain.RoleAdmin)).
+		Delete("/products/{id}", h.DeleteProduct)
+	r.With(middleware.Authenticate(tokenService), middleware.RequireRole(domain.RoleAdmin)).
+		Get("/products/admin", h.GetAllProducts)
+
+	r.Get("/products", h.GetProducts)
+	r.Get("/products/{id}", h.GetProduct)
+	r.Get("/products/slug/{slug}", h.GetProductBySlug)
 
 	// categories (protected)
 	r.With(middleware.Authenticate(tokenService), middleware.RequireRole(domain.RoleAdmin)).
@@ -25,6 +37,7 @@ func NewRouter(h *ProductHandler, c *CategoryHandler, e *EventHandler, tokenServ
 
 	r.Get("/categories", c.GetCategories)
 	r.Get("/categories/{id}", c.GetCategory)
+	r.Get("/categories/{id}/products", h.GetProductsByCategory)
 
 	// events (protected)
 	r.With(middleware.Authenticate(tokenService), middleware.RequireRole(domain.RoleAdmin)).

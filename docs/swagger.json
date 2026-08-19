@@ -553,6 +553,62 @@
                 }
             }
         },
+        "/categories/{id}/products": {
+            "get": {
+                "description": "Berilgan category_id ga tegishli faol (o'chirilmagan) mahsulotlar ro'yxati",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "products"
+                ],
+                "summary": "Kategoriya bo'yicha mahsulotlarni olish",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Kategoriya ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Mahsulot nomi bo'yicha qidirish",
+                        "name": "search",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Mahsulotlar",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.Envelope"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/application.ProductOutput"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "500": {
+                        "description": "Ichki server xatosi",
+                        "schema": {
+                            "$ref": "#/definitions/response.Envelope"
+                        }
+                    }
+                }
+            }
+        },
         "/events": {
             "get": {
                 "description": "Faol (o'chirilmagan) eventlar ro'yxati. is_root=true bo'lganlar birinchi chiqadi",
@@ -909,13 +965,66 @@
             }
         },
         "/products": {
+            "get": {
+                "description": "Faol (o'chirilmagan) mahsulotlar ro'yxati, nomi va/yoki category_id bo'yicha filtrlash mumkin",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "products"
+                ],
+                "summary": "Mahsulotlarni olish",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Mahsulot nomi bo'yicha qidirish",
+                        "name": "search",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Kategoriya ID bo'yicha filtrlash",
+                        "name": "category_id",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Mahsulotlar",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.Envelope"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/application.ProductOutput"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "500": {
+                        "description": "Ichki server xatosi",
+                        "schema": {
+                            "$ref": "#/definitions/response.Envelope"
+                        }
+                    }
+                }
+            },
             "post": {
                 "security": [
                     {
                         "BearerAuth": []
                     }
                 ],
-                "description": "Nomi, narxi, valyutasi, kategoriyasi va rasmi orqali yangi mahsulot yaratadi. Faqat admin huquqiga ega foydalanuvchi uchun.",
+                "description": "Gullar do'koni mahsulotini barcha xususiyatlari (narx, chegirma, rasmlar, qadoqlash va h.k.) bilan yaratadi. Faqat admin uchun.",
                 "consumes": [
                     "multipart/form-data"
                 ],
@@ -935,6 +1044,19 @@
                         "required": true
                     },
                     {
+                        "type": "string",
+                        "description": "Tavsif",
+                        "name": "description",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Kategoriya ID",
+                        "name": "category_id",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
                         "type": "integer",
                         "description": "Narx (tiyin/kopeykada)",
                         "name": "amount",
@@ -949,16 +1071,100 @@
                         "required": true
                     },
                     {
+                        "type": "integer",
+                        "description": "Chegirma narxi (ixtiyoriy)",
+                        "name": "discount_amount",
+                        "in": "formData"
+                    },
+                    {
                         "type": "string",
-                        "description": "Kategoriya ID",
-                        "name": "categoryId",
+                        "description": "Slug (bo'sh bo'lsa nomidan avtomatik yasaladi)",
+                        "name": "slug",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "YouTube video URL",
+                        "name": "video_url_youtube",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Instagram video URL",
+                        "name": "video_url_instagram",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "Sotuvda bor yoki yo'qligi (default true)",
+                        "name": "is_available",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "number",
+                        "description": "Reyting 1-5 (default 1)",
+                        "name": "rating",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Ombordagi soni",
+                        "name": "stock",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Gullar turi, vergul bilan",
+                        "name": "flower_types",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Rangi",
+                        "name": "color",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Buketdagi gullar soni",
+                        "name": "stem_count",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Qadoqlash turi: bucket, box yoki vase",
+                        "name": "packaging_type",
                         "in": "formData",
                         "required": true
                     },
                     {
+                        "type": "integer",
+                        "description": "Saqlanish muddati (kunlarda, 1-7, default 1)",
+                        "name": "freshness_lifespan",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Parvarish bo'yicha ko'rsatma",
+                        "name": "care_instructions",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Bayramlar/holatlar (tag), vergul bilan",
+                        "name": "occasions",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Mos qo'shimchalar, vergul bilan",
+                        "name": "compatible_addons",
+                        "in": "formData"
+                    },
+                    {
                         "type": "file",
-                        "description": "Mahsulot rasmi",
-                        "name": "image",
+                        "description": "Mahsulot rasmlari (eng ko'pi bilan 5 ta)",
+                        "name": "images",
                         "in": "formData"
                     }
                 ],
@@ -974,7 +1180,7 @@
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/http.CreateProductResponse"
+                                            "$ref": "#/definitions/application.ProductOutput"
                                         }
                                     }
                                 }
@@ -995,6 +1201,290 @@
                     },
                     "403": {
                         "description": "Huquq yetarli emas",
+                        "schema": {
+                            "$ref": "#/definitions/response.Envelope"
+                        }
+                    },
+                    "409": {
+                        "description": "Slug band",
+                        "schema": {
+                            "$ref": "#/definitions/response.Envelope"
+                        }
+                    },
+                    "500": {
+                        "description": "Ichki server xatosi",
+                        "schema": {
+                            "$ref": "#/definitions/response.Envelope"
+                        }
+                    }
+                }
+            }
+        },
+        "/products/admin": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Barcha mahsulotlarni (o'chirilganlarni ham) qaytaradi",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "products"
+                ],
+                "summary": "Mahsulotlarni olish - admin (o'chirilganlar bilan birga)",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Mahsulot nomi bo'yicha qidirish",
+                        "name": "search",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Kategoriya ID bo'yicha filtrlash",
+                        "name": "category_id",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Mahsulotlar",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.Envelope"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/application.ProductOutputForAdmin"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "500": {
+                        "description": "Ichki server xatosi",
+                        "schema": {
+                            "$ref": "#/definitions/response.Envelope"
+                        }
+                    }
+                }
+            }
+        },
+        "/products/slug/{slug}": {
+            "get": {
+                "description": "Mahsulot sahifasi uchun SEO-friendly slug bo'yicha olish",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "products"
+                ],
+                "summary": "Mahsulotni slug bo'yicha olish",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Mahsulot slug",
+                        "name": "slug",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Mahsulot",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.Envelope"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/application.ProductOutput"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "404": {
+                        "description": "Mahsulot topilmadi",
+                        "schema": {
+                            "$ref": "#/definitions/response.Envelope"
+                        }
+                    },
+                    "500": {
+                        "description": "Ichki server xatosi",
+                        "schema": {
+                            "$ref": "#/definitions/response.Envelope"
+                        }
+                    }
+                }
+            }
+        },
+        "/products/{id}": {
+            "get": {
+                "description": "Mahsulotni ID bo'yicha olish",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "products"
+                ],
+                "summary": "Mahsulotni olish",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Mahsulot ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Mahsulot",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.Envelope"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/application.ProductOutput"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "404": {
+                        "description": "Mahsulot topilmadi",
+                        "schema": {
+                            "$ref": "#/definitions/response.Envelope"
+                        }
+                    },
+                    "500": {
+                        "description": "Ichki server xatosi",
+                        "schema": {
+                            "$ref": "#/definitions/response.Envelope"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Mahsulotni ID bo'yicha yangilash (JSON body, rasmlar bu yerda o'zgartirilmaydi)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "products"
+                ],
+                "summary": "Mahsulotni yangilash",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Mahsulot ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Yangilash uchun mahsulot ma'lumotlari",
+                        "name": "product",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/application.UpdateProductInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Mahsulot yangilash muvaffaqiyatli",
+                        "schema": {
+                            "$ref": "#/definitions/response.Envelope"
+                        }
+                    },
+                    "400": {
+                        "description": "Validatsiya xatosi",
+                        "schema": {
+                            "$ref": "#/definitions/response.Envelope"
+                        }
+                    },
+                    "404": {
+                        "description": "Mahsulot topilmadi",
+                        "schema": {
+                            "$ref": "#/definitions/response.Envelope"
+                        }
+                    },
+                    "409": {
+                        "description": "Slug band",
+                        "schema": {
+                            "$ref": "#/definitions/response.Envelope"
+                        }
+                    },
+                    "500": {
+                        "description": "Ichki server xatosi",
+                        "schema": {
+                            "$ref": "#/definitions/response.Envelope"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Mahsulotni ID bo'yicha o'chirish (soft delete)",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "products"
+                ],
+                "summary": "Mahsulotni o'chirish",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Mahsulot ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Mahsulot o'chirish muvaffaqiyatli",
+                        "schema": {
+                            "$ref": "#/definitions/response.Envelope"
+                        }
+                    },
+                    "404": {
+                        "description": "Mahsulot topilmadi",
                         "schema": {
                             "$ref": "#/definitions/response.Envelope"
                         }
@@ -1097,6 +1587,205 @@
                 }
             }
         },
+        "application.ProductOutput": {
+            "type": "object",
+            "properties": {
+                "allow_custom_card": {
+                    "type": "boolean"
+                },
+                "care_instructions": {
+                    "type": "string"
+                },
+                "category_id": {
+                    "type": "string"
+                },
+                "color": {
+                    "type": "string"
+                },
+                "compatible_addons": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "discount_amount": {
+                    "type": "integer"
+                },
+                "final_price_amount": {
+                    "type": "integer"
+                },
+                "flower_types": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "freshness_lifespan": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "images": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "is_available": {
+                    "type": "boolean"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "occasions": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "packaging_type": {
+                    "type": "string"
+                },
+                "price_amount": {
+                    "type": "integer"
+                },
+                "price_currency": {
+                    "type": "string"
+                },
+                "rating": {
+                    "type": "number"
+                },
+                "slug": {
+                    "type": "string"
+                },
+                "sold_count": {
+                    "type": "integer"
+                },
+                "stem_count": {
+                    "type": "integer"
+                },
+                "stock": {
+                    "type": "integer"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "video_url_instagram": {
+                    "type": "string"
+                },
+                "video_url_youtube": {
+                    "type": "string"
+                }
+            }
+        },
+        "application.ProductOutputForAdmin": {
+            "type": "object",
+            "properties": {
+                "allow_custom_card": {
+                    "type": "boolean"
+                },
+                "care_instructions": {
+                    "type": "string"
+                },
+                "category_id": {
+                    "type": "string"
+                },
+                "color": {
+                    "type": "string"
+                },
+                "compatible_addons": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "deleted_at": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "discount_amount": {
+                    "type": "integer"
+                },
+                "final_price_amount": {
+                    "type": "integer"
+                },
+                "flower_types": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "freshness_lifespan": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "images": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "is_available": {
+                    "type": "boolean"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "occasions": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "packaging_type": {
+                    "type": "string"
+                },
+                "price_amount": {
+                    "type": "integer"
+                },
+                "price_currency": {
+                    "type": "string"
+                },
+                "rating": {
+                    "type": "number"
+                },
+                "slug": {
+                    "type": "string"
+                },
+                "sold_count": {
+                    "type": "integer"
+                },
+                "stem_count": {
+                    "type": "integer"
+                },
+                "stock": {
+                    "type": "integer"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "video_url_instagram": {
+                    "type": "string"
+                },
+                "video_url_youtube": {
+                    "type": "string"
+                }
+            }
+        },
         "application.UpdateCategoryInput": {
             "type": "object",
             "properties": {
@@ -1131,6 +1820,89 @@
                 }
             }
         },
+        "application.UpdateProductInput": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "type": "integer"
+                },
+                "care_instructions": {
+                    "type": "string"
+                },
+                "category_id": {
+                    "type": "string"
+                },
+                "clear_care_instructions": {
+                    "type": "boolean"
+                },
+                "clear_discount": {
+                    "type": "boolean"
+                },
+                "color": {
+                    "type": "string"
+                },
+                "compatible_addons": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "currency": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "discount_amount": {
+                    "type": "integer"
+                },
+                "flower_types": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "freshness_lifespan": {
+                    "type": "integer"
+                },
+                "is_available": {
+                    "type": "boolean"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "occasions": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "packaging_type": {
+                    "type": "string"
+                },
+                "rating": {
+                    "type": "number"
+                },
+                "slug": {
+                    "type": "string"
+                },
+                "sold_count": {
+                    "type": "integer"
+                },
+                "stem_count": {
+                    "type": "integer"
+                },
+                "stock": {
+                    "type": "integer"
+                },
+                "video_url_instagram": {
+                    "type": "string"
+                },
+                "video_url_youtube": {
+                    "type": "string"
+                }
+            }
+        },
         "http.CreateCategoryResponse": {
             "type": "object",
             "properties": {
@@ -1147,32 +1919,6 @@
                     "type": "string"
                 },
                 "updated_at": {
-                    "type": "string"
-                }
-            }
-        },
-        "http.CreateProductResponse": {
-            "type": "object",
-            "properties": {
-                "amount": {
-                    "type": "integer"
-                },
-                "category_id": {
-                    "type": "string"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "currency": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "image_url": {
-                    "type": "string"
-                },
-                "name": {
                     "type": "string"
                 }
             }
