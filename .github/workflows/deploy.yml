@@ -1,4 +1,4 @@
-name: Deploy to server
+name: Deploy
 
 on:
   push:
@@ -17,9 +17,12 @@ jobs:
           port: ${{ secrets.SERVER_PORT }}
           script: |
             cd /home/deploy/uzum-clone-with-ddd
-            git pull origin main
+            git fetch origin
+            git reset --hard origin/main
             docker compose down
             docker compose up -d --build
             sleep 5
-            export $(grep -v '^#' .env | xargs)
+            set -a
+            source .env
+            set +a
             migrate -path ./migrations -database "postgres://${DB_USER}:${DB_PASSWORD}@localhost:${DB_PORT}/${DB_NAME}?sslmode=disable" up
