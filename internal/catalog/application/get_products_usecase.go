@@ -14,10 +14,11 @@ func NewGetProductsUseCase(repo domain.ProductRepository) *GetProductsUseCase {
 	return &GetProductsUseCase{repo: repo}
 }
 
-func (uc *GetProductsUseCase) Execute(ctx context.Context, search string, categoryID string) ([]*ProductOutput, error) {
-	products, err := uc.repo.FindAll(ctx, search, categoryID)
+func (uc *GetProductsUseCase) Execute(ctx context.Context, search string, categoryID string, page, pageSize int) ([]*ProductOutput, int64, error) {
+	page, pageSize = NormalizeProductPagination(page, pageSize)
+	products, total, err := uc.repo.FindAll(ctx, search, categoryID, page, pageSize)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
-	return ToProductOutputs(products), nil
+	return ToProductOutputs(products), total, nil
 }

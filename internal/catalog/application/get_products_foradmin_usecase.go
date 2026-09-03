@@ -14,10 +14,11 @@ func NewGetAllProductsIncludingDeletedUseCase(repo domain.ProductRepository) *Ge
 	return &GetAllProductsIncludingDeletedUseCase{repo: repo}
 }
 
-func (uc *GetAllProductsIncludingDeletedUseCase) Execute(ctx context.Context, search string, categoryID string) ([]*ProductOutputForAdmin, error) {
-	products, err := uc.repo.FindAllIncludingDeleted(ctx, search, categoryID)
+func (uc *GetAllProductsIncludingDeletedUseCase) Execute(ctx context.Context, search string, categoryID string, page, pageSize int) ([]*ProductOutputForAdmin, int64, error) {
+	page, pageSize = NormalizeProductPagination(page, pageSize)
+	products, total, err := uc.repo.FindAllIncludingDeleted(ctx, search, categoryID, page, pageSize)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
-	return ToProductOutputsForAdmin(products), nil
+	return ToProductOutputsForAdmin(products), total, nil
 }

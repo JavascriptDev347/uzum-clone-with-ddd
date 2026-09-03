@@ -61,6 +61,22 @@ func parseTagList(raw string) []string {
 	return result
 }
 
+// parsePagination - "page" va "page_size" query parametrlarini o'qiydi, bo'sh/noto'g'ri bo'lsa 0 qaytaradi
+// (standart qiymatlar use case darajasida qo'llanadi).
+func parsePagination(r *http.Request) (page int, pageSize int) {
+	if raw := r.URL.Query().Get("page"); raw != "" {
+		if v, err := strconv.Atoi(raw); err == nil {
+			page = v
+		}
+	}
+	if raw := r.URL.Query().Get("page_size"); raw != "" {
+		if v, err := strconv.Atoi(raw); err == nil {
+			pageSize = v
+		}
+	}
+	return page, pageSize
+}
+
 // CreateProduct godoc
 //
 //		@Summary		Yangi mahsulot yaratish
@@ -241,19 +257,23 @@ func (h *ProductHandler) CreateProduct(w http.ResponseWriter, r *http.Request) {
 //	@Produce		json
 //	@Param			search		query		string	false	"Mahsulot nomi bo'yicha qidirish"
 //	@Param			category_id	query		string	false	"Kategoriya ID bo'yicha filtrlash"
-//	@Success		200			{object}	response.Envelope{data=[]application.ProductOutput}	"Mahsulotlar"
+//	@Param			page		query		int		false	"Sahifa raqami (default 1)"
+//	@Param			page_size	query		int		false	"Sahifadagi elementlar soni (default 20, max 100)"
+//	@Success		200			{object}	response.Envelope{data=response.PaginatedResult}	"Mahsulotlar"
 //	@Failure		500			{object}	response.Envelope	"Ichki server xatosi"
 //	@Router			/products [get]
 func (h *ProductHandler) GetProducts(w http.ResponseWriter, r *http.Request) {
 	search := r.URL.Query().Get("search")
 	categoryID := r.URL.Query().Get("category_id")
-	products, err := h.getUc.Execute(r.Context(), search, categoryID)
+	page, pageSize := parsePagination(r)
+	products, total, err := h.getUc.Execute(r.Context(), search, categoryID, page, pageSize)
 	if err != nil {
 		writeProductError(w, err)
 		return
 	}
 
-	response.Success(w, http.StatusOK, products)
+	page, pageSize = application.NormalizeProductPagination(page, pageSize)
+	response.Success(w, http.StatusOK, response.NewPaginatedResult(products, total, page, pageSize))
 }
 
 // GetProductsByCategory godoc
@@ -262,21 +282,25 @@ func (h *ProductHandler) GetProducts(w http.ResponseWriter, r *http.Request) {
 //	@Description	Berilgan category_id ga tegishli faol (o'chirilmagan) mahsulotlar ro'yxati
 //	@Tags			products
 //	@Produce		json
-//	@Param			id		path		string	true	"Kategoriya ID"
-//	@Param			search	query		string	false	"Mahsulot nomi bo'yicha qidirish"
-//	@Success		200		{object}	response.Envelope{data=[]application.ProductOutput}	"Mahsulotlar"
-//	@Failure		500		{object}	response.Envelope	"Ichki server xatosi"
+//	@Param			id			path		string	true	"Kategoriya ID"
+//	@Param			search		query		string	false	"Mahsulot nomi bo'yicha qidirish"
+//	@Param			page		query		int		false	"Sahifa raqami (default 1)"
+//	@Param			page_size	query		int		false	"Sahifadagi elementlar soni (default 20, max 100)"
+//	@Success		200			{object}	response.Envelope{data=response.PaginatedResult}	"Mahsulotlar"
+//	@Failure		500			{object}	response.Envelope	"Ichki server xatosi"
 //	@Router			/categories/{id}/products [get]
 func (h *ProductHandler) GetProductsByCategory(w http.ResponseWriter, r *http.Request) {
 	categoryID := chi.URLParam(r, "id")
 	search := r.URL.Query().Get("search")
-	products, err := h.getUc.Execute(r.Context(), search, categoryID)
+	page, pageSize := parsePagination(r)
+	products, total, err := h.getUc.Execute(r.Context(), search, categoryID, page, pageSize)
 	if err != nil {
 		writeProductError(w, err)
 		return
 	}
 
-	response.Success(w, http.StatusOK, products)
+	page, pageSize = application.NormalizeProductPagination(page, pageSize)
+	response.Success(w, http.StatusOK, response.NewPaginatedResult(products, total, page, pageSize))
 }
 
 // GetProduct godoc
@@ -387,17 +411,21 @@ func (h *ProductHandler) DeleteProduct(w http.ResponseWriter, r *http.Request) {
 //		@Produce		json
 //		@Param			search		query		string	false	"Mahsulot nomi bo'yicha qidirish"
 //		@Param			category_id	query		string	false	"Kategoriya ID bo'yicha filtrlash"
-//		@Success		200			{object}	response.Envelope{data=[]application.ProductOutputForAdmin}	"Mahsulotlar"
+//		@Param			page		query		int		false	"Sahifa raqami (default 1)"
+//		@Param			page_size	query		int		false	"Sahifadagi elementlar soni (default 20, max 100)"
+//		@Success		200			{object}	response.Envelope{data=response.PaginatedResult}	"Mahsulotlar"
 //		@Failure		500			{object}	response.Envelope	"Ichki server xatosi"
 //		@Router			/products/admin [get]
 func (h *ProductHandler) GetAllProducts(w http.ResponseWriter, r *http.Request) {
 	search := r.URL.Query().Get("search")
 	categoryID := r.URL.Query().Get("category_id")
-	products, err := h.getAllUc.Execute(r.Context(), search, categoryID)
+	page, pageSize := parsePagination(r)
+	products, total, err := h.getAllUc.Execute(r.Context(), search, categoryID, page, pageSize)
 	if err != nil {
 		writeProductError(w, err)
 		return
 	}
 
-	response.Success(w, http.StatusOK, products)
+	page, pageSize = application.NormalizeProductPagination(page, pageSize)
+	response.Success(w, http.StatusOK, response.NewPaginatedResult(products, total, page, pageSize))
 }

@@ -407,28 +407,46 @@ Muhim izohlar:
 ### 4.1 Mahsulotlar ro'yxatini olish (public)
 
 ```
-GET /api/v1/products?search=<matn>&category_id=<uuid>
+GET /api/v1/products?search=<matn>&category_id=<uuid>&page=<son>&page_size=<son>
 ```
 
 - Auth talab qilinmaydi.
 - `search` — ixtiyoriy, nom bo'yicha qidirish (`ILIKE`).
 - `category_id` — ixtiyoriy, faqat shu kategoriyaga tegishli mahsulotlarni qaytaradi. Ikkalasini birga ham berish mumkin.
+- `page` — ixtiyoriy, sahifa raqami, **1 dan boshlanadi**. Berilmasa yoki `1`dan kichik bo'lsa `1` deb olinadi.
+- `page_size` — ixtiyoriy, sahifadagi elementlar soni. Berilmasa `20`. Maksimal `100` — undan katta qiymat yuborilsa `100`ga qisqartiriladi.
 - Faqat **o'chirilmagan** (`deleted_at IS NULL`) mahsulotlarni qaytaradi. `is_available=false` bo'lgan mahsulotlar ham shu ro'yxatda keladi (yashirilmaydi) — "tugagan" holatini frontendda `is_available` orqali ko'rsating.
 
-**Javob — `200 OK`:** `{ "data": [ <Product obyekti>, ... ] }`
+**Javob — `200 OK`:**
+```json
+{
+  "data": {
+    "items": [ <Product obyekti>, ... ],
+    "pagination": {
+      "page": 1,
+      "page_size": 20,
+      "total_items": 42,
+      "total_pages": 3
+    }
+  }
+}
+```
+
+> Diqqat: bu **ro'yxat qaytaradigan barcha `/products` endpointlarida bir xil shakl** (pastdagi 4.2 va 4.5 ham shu). Eski (pagination'siz) formatdan farqi: `data` endi to'g'ridan-to'g'ri massiv emas, balki `items` + `pagination` bo'lgan obyekt. Mahsulotlar ro'yxatini chizishda `data.items`ni, "keyingi sahifa" tugmasi uchun `data.pagination.total_pages`ni ishlating.
 
 ---
 
 ### 4.2 Kategoriya bo'yicha mahsulotlarni olish (public)
 
 ```
-GET /api/v1/categories/{id}/products?search=<matn>
+GET /api/v1/categories/{id}/products?search=<matn>&page=<son>&page_size=<son>
 ```
 
 - Auth talab qilinmaydi.
 - Xuddi `GET /products?category_id={id}` bilan bir xil natija — kategoriya sahifasida (masalan "Atirgullar" kategoriyasi) qulay bo'lishi uchun alohida yo'l sifatida ham ochilgan.
+- `page` / `page_size` — 4.1 bilan bir xil qoidalar.
 
-**Javob — `200 OK`:** `{ "data": [ <Product obyekti>, ... ] }`
+**Javob — `200 OK`:** 4.1dagi bilan bir xil `{ "data": { "items": [...], "pagination": {...} } }` shakli.
 
 ---
 
@@ -463,12 +481,13 @@ GET /api/v1/products/slug/{slug}
 ### 4.5 Mahsulotlarni olish — admin (o'chirilganlar bilan birga)
 
 ```
-GET /api/v1/products/admin?search=<matn>&category_id=<uuid>
+GET /api/v1/products/admin?search=<matn>&category_id=<uuid>&page=<son>&page_size=<son>
 ```
 
 🔒 **Faqat admin**
 
 - Oddiy `/products`dan farqi: soft-delete qilingan mahsulotlarni ham qaytaradi. Har bir elementda qo'shimcha `deleted_at` maydoni bo'ladi (o'chirilmagan bo'lsa `null`).
+- `page` / `page_size` — 4.1 bilan bir xil qoidalar. Javob shakli ham bir xil: `{ "data": { "items": [...], "pagination": {...} } }`.
 
 **Xatoliklar:** `401` (token yo'q), `403` (admin emas)
 

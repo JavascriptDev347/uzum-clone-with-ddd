@@ -208,22 +208,32 @@ func (r *PostgresProductRepository) FindBySlug(ctx context.Context, slug string)
 	return product, nil
 }
 
-func (r *PostgresProductRepository) findAll(ctx context.Context, search, categoryID string, includeDeleted bool) ([]*domain.Product, error) {
-	query := `SELECT ` + productColumns + ` FROM products WHERE name ILIKE $1`
+func (r *PostgresProductRepository) findAll(ctx context.Context, search, categoryID string, includeDeleted bool, page, pageSize int) ([]*domain.Product, int64, error) {
+	where := ` WHERE name ILIKE $1`
 	args := []any{"%" + search + "%"}
 
 	if categoryID != "" {
 		args = append(args, categoryID)
-		query += ` AND category_id = $` + strconv.Itoa(len(args))
+		where += ` AND category_id = $` + strconv.Itoa(len(args))
 	}
 	if !includeDeleted {
-		query += ` AND deleted_at IS NULL`
+		where += ` AND deleted_at IS NULL`
 	}
-	query += ` ORDER BY created_at DESC`
+
+	var total int64
+	countQuery := `SELECT COUNT(*) FROM products` + where
+	if err := r.db.GetContext(ctx, &total, countQuery, args...); err != nil {
+		return nil, 0, err
+	}
+
+	offset := (page - 1) * pageSize
+	args = append(args, pageSize, offset)
+	query := `SELECT ` + productColumns + ` FROM products` + where +
+		` ORDER BY created_at DESC LIMIT $` + strconv.Itoa(len(args)-1) + ` OFFSET $` + strconv.Itoa(len(args))
 
 	rows, err := r.db.QueryContext(ctx, query, args...)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 	defer rows.Close()
 
@@ -231,22 +241,22 @@ func (r *PostgresProductRepository) findAll(ctx context.Context, search, categor
 	for rows.Next() {
 		product, err := scanProduct(rows)
 		if err != nil {
-			return nil, err
+			return nil, 0, err
 		}
 		products = append(products, product)
 	}
 	if err := rows.Err(); err != nil {
-		return nil, err
+		return nil, 0, err
 	}
-	return products, nil
+	return products, total, nil
 }
 
-func (r *PostgresProductRepository) FindAll(ctx context.Context, search string, categoryID string) ([]*domain.Product, error) {
-	return r.findAll(ctx, search, categoryID, false)
+func (r *PostgresProductRepository) FindAll(ctx context.Context, search string, categoryID string, page, pageSize int) ([]*domain.Product, int64, error) {
+	return r.findAll(ctx, search, categoryID, false, page, pageSize)
 }
 
-func (r *PostgresProductRepository) FindAllIncludingDeleted(ctx context.Context, search string, categoryID string) ([]*domain.Product, error) {
-	return r.findAll(ctx, search, categoryID, true)
+func (r *PostgresProductRepository) FindAllIncludingDeleted(ctx context.Context, search string, categoryID string, page, pageSize int) ([]*domain.Product, int64, error) {
+	return r.findAll(ctx, search, categoryID, true, page, pageSize)
 }
 
 func (r *PostgresProductRepository) Update(ctx context.Context, p *domain.Product) error {

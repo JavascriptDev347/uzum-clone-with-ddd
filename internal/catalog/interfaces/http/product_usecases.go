@@ -11,7 +11,7 @@ type CreateProductUseCase interface {
 }
 
 type GetProductsUseCase interface {
-	Execute(ctx context.Context, search string, categoryID string) ([]*application.ProductOutput, error)
+	Execute(ctx context.Context, search string, categoryID string, page, pageSize int) ([]*application.ProductOutput, int64, error)
 }
 
 type GetProductUseCase interface {
@@ -31,5 +31,5 @@ type DeleteProductUseCase interface {
 }
 
 type GetAllProductsIncludingDeletedUseCase interface {
-	Execute(ctx context.Context, search string, categoryID string) ([]*application.ProductOutputForAdmin, error)
+	Execute(ctx context.Context, search string, categoryID string, page, pageSize int) ([]*application.ProductOutputForAdmin, int64, error)
 }

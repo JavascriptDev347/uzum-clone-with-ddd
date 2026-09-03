@@ -7,6 +7,26 @@ import (
 	"github.com/JavascriptDev347/uzum-clone-with-ddd.git/internal/shared/media"
 )
 
+const (
+	DefaultProductPage     = 1
+	DefaultProductPageSize = 20
+	MaxProductPageSize     = 100
+)
+
+// NormalizeProductPagination - page/pageSize noto'g'ri yoki bo'sh bo'lsa standart qiymatlarni qo'llaydi.
+func NormalizeProductPagination(page, pageSize int) (int, int) {
+	if page < 1 {
+		page = DefaultProductPage
+	}
+	if pageSize < 1 {
+		pageSize = DefaultProductPageSize
+	}
+	if pageSize > MaxProductPageSize {
+		pageSize = MaxProductPageSize
+	}
+	return page, pageSize
+}
+
 type CreateProductInput struct {
 	Name              string
 	Description       string

@@ -583,6 +583,18 @@ const docTemplate = `{
                         "description": "Mahsulot nomi bo'yicha qidirish",
                         "name": "search",
                         "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Sahifa raqami (default 1)",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Sahifadagi elementlar soni (default 20, max 100)",
+                        "name": "page_size",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -597,10 +609,7 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/definitions/application.ProductOutput"
-                                            }
+                                            "$ref": "#/definitions/response.PaginatedResult"
                                         }
                                     }
                                 }
@@ -993,6 +1002,18 @@ const docTemplate = `{
                         "description": "Kategoriya ID bo'yicha filtrlash",
                         "name": "category_id",
                         "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Sahifa raqami (default 1)",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Sahifadagi elementlar soni (default 20, max 100)",
+                        "name": "page_size",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -1007,10 +1028,7 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/definitions/application.ProductOutput"
-                                            }
+                                            "$ref": "#/definitions/response.PaginatedResult"
                                         }
                                     }
                                 }
@@ -1254,6 +1272,18 @@ const docTemplate = `{
                         "description": "Kategoriya ID bo'yicha filtrlash",
                         "name": "category_id",
                         "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Sahifa raqami (default 1)",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Sahifadagi elementlar soni (default 20, max 100)",
+                        "name": "page_size",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -1268,10 +1298,7 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/definitions/application.ProductOutputForAdmin"
-                                            }
+                                            "$ref": "#/definitions/response.PaginatedResult"
                                         }
                                     }
                                 }
@@ -1692,107 +1719,6 @@ const docTemplate = `{
                 }
             }
         },
-        "application.ProductOutputForAdmin": {
-            "type": "object",
-            "properties": {
-                "allow_custom_card": {
-                    "type": "boolean"
-                },
-                "care_instructions": {
-                    "type": "string"
-                },
-                "category_id": {
-                    "type": "string"
-                },
-                "color": {
-                    "type": "string"
-                },
-                "compatible_addons": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "deleted_at": {
-                    "type": "string"
-                },
-                "description": {
-                    "type": "string"
-                },
-                "discount_amount": {
-                    "type": "integer"
-                },
-                "final_price_amount": {
-                    "type": "integer"
-                },
-                "flower_types": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "freshness_lifespan": {
-                    "type": "integer"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "images": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "is_available": {
-                    "type": "boolean"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "occasions": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "packaging_type": {
-                    "type": "string"
-                },
-                "price_amount": {
-                    "type": "integer"
-                },
-                "price_currency": {
-                    "type": "string"
-                },
-                "rating": {
-                    "type": "number"
-                },
-                "slug": {
-                    "type": "string"
-                },
-                "sold_count": {
-                    "type": "integer"
-                },
-                "stem_count": {
-                    "type": "integer"
-                },
-                "stock": {
-                    "type": "integer"
-                },
-                "updated_at": {
-                    "type": "string"
-                },
-                "video_url_instagram": {
-                    "type": "string"
-                },
-                "video_url_youtube": {
-                    "type": "string"
-                }
-            }
-        },
         "application.UpdateCategoryInput": {
             "type": "object",
             "properties": {
@@ -1991,6 +1917,32 @@ const docTemplate = `{
                 },
                 "message": {
                     "type": "string"
+                }
+            }
+        },
+        "response.PaginatedResult": {
+            "type": "object",
+            "properties": {
+                "items": {},
+                "pagination": {
+                    "$ref": "#/definitions/response.Pagination"
+                }
+            }
+        },
+        "response.Pagination": {
+            "type": "object",
+            "properties": {
+                "page": {
+                    "type": "integer"
+                },
+                "page_size": {
+                    "type": "integer"
+                },
+                "total_items": {
+                    "type": "integer"
+                },
+                "total_pages": {
+                    "type": "integer"
                 }
             }
         }

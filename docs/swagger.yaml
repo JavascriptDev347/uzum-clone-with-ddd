@@ -122,73 +122,6 @@ definitions:
       video_url_youtube:
         type: string
     type: object
-  application.ProductOutputForAdmin:
-    properties:
-      allow_custom_card:
-        type: boolean
-      care_instructions:
-        type: string
-      category_id:
-        type: string
-      color:
-        type: string
-      compatible_addons:
-        items:
-          type: string
-        type: array
-      created_at:
-        type: string
-      deleted_at:
-        type: string
-      description:
-        type: string
-      discount_amount:
-        type: integer
-      final_price_amount:
-        type: integer
-      flower_types:
-        items:
-          type: string
-        type: array
-      freshness_lifespan:
-        type: integer
-      id:
-        type: string
-      images:
-        items:
-          type: string
-        type: array
-      is_available:
-        type: boolean
-      name:
-        type: string
-      occasions:
-        items:
-          type: string
-        type: array
-      packaging_type:
-        type: string
-      price_amount:
-        type: integer
-      price_currency:
-        type: string
-      rating:
-        type: number
-      slug:
-        type: string
-      sold_count:
-        type: integer
-      stem_count:
-        type: integer
-      stock:
-        type: integer
-      updated_at:
-        type: string
-      video_url_instagram:
-        type: string
-      video_url_youtube:
-        type: string
-    type: object
   application.UpdateCategoryInput:
     properties:
       id:
@@ -319,6 +252,23 @@ definitions:
         type: string
       message:
         type: string
+    type: object
+  response.PaginatedResult:
+    properties:
+      items: {}
+      pagination:
+        $ref: '#/definitions/response.Pagination'
+    type: object
+  response.Pagination:
+    properties:
+      page:
+        type: integer
+      page_size:
+        type: integer
+      total_items:
+        type: integer
+      total_pages:
+        type: integer
     type: object
 info:
   contact: {}
@@ -648,6 +598,14 @@ paths:
         in: query
         name: search
         type: string
+      - description: Sahifa raqami (default 1)
+        in: query
+        name: page
+        type: integer
+      - description: Sahifadagi elementlar soni (default 20, max 100)
+        in: query
+        name: page_size
+        type: integer
       produces:
       - application/json
       responses:
@@ -658,9 +616,7 @@ paths:
             - $ref: '#/definitions/response.Envelope'
             - properties:
                 data:
-                  items:
-                    $ref: '#/definitions/application.ProductOutput'
-                  type: array
+                  $ref: '#/definitions/response.PaginatedResult'
               type: object
         "500":
           description: Ichki server xatosi
@@ -929,6 +885,14 @@ paths:
         in: query
         name: category_id
         type: string
+      - description: Sahifa raqami (default 1)
+        in: query
+        name: page
+        type: integer
+      - description: Sahifadagi elementlar soni (default 20, max 100)
+        in: query
+        name: page_size
+        type: integer
       produces:
       - application/json
       responses:
@@ -939,9 +903,7 @@ paths:
             - $ref: '#/definitions/response.Envelope'
             - properties:
                 data:
-                  items:
-                    $ref: '#/definitions/application.ProductOutput'
-                  type: array
+                  $ref: '#/definitions/response.PaginatedResult'
               type: object
         "500":
           description: Ichki server xatosi
@@ -1198,6 +1160,14 @@ paths:
         in: query
         name: category_id
         type: string
+      - description: Sahifa raqami (default 1)
+        in: query
+        name: page
+        type: integer
+      - description: Sahifadagi elementlar soni (default 20, max 100)
+        in: query
+        name: page_size
+        type: integer
       produces:
       - application/json
       responses:
@@ -1208,9 +1178,7 @@ paths:
             - $ref: '#/definitions/response.Envelope'
             - properties:
                 data:
-                  items:
-                    $ref: '#/definitions/application.ProductOutputForAdmin'
-                  type: array
+                  $ref: '#/definitions/response.PaginatedResult'
               type: object
         "500":
           description: Ichki server xatosi
