@@ -14,10 +14,10 @@ func NewGetProductBySlugUseCase(repo domain.ProductRepository) *GetProductBySlug
 	return &GetProductBySlugUseCase{repo: repo}
 }
 
-func (uc *GetProductBySlugUseCase) Execute(ctx context.Context, slug string) (*ProductOutput, error) {
+func (uc *GetProductBySlugUseCase) Execute(ctx context.Context, slug string, lang Lang) (*ProductOutput, error) {
 	product, err := uc.repo.FindBySlug(ctx, slug)
 	if err != nil {
 		return nil, err
 	}
-	return ToProductOutput(product), nil
+	return ToProductOutput(product, lang), nil
 }

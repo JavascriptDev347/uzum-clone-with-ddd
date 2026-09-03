@@ -11,11 +11,11 @@ type CreateCategoryUseCase interface {
 }
 
 type GetCategoriesUseCase interface {
-	Execute(ctx context.Context, search string) ([]*application.CategoryOutput, error)
+	Execute(ctx context.Context, search string, lang application.Lang) ([]*application.CategoryOutput, error)
 }
 
 type GetCategoryUseCase interface {
-	Execute(ctx context.Context, id string) (application.CategoryOutput, error)
+	Execute(ctx context.Context, id string, lang application.Lang) (application.CategoryOutput, error)
 }
 
 type UpdateCategoryUseCase interface {

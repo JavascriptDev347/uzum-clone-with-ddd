@@ -20,19 +20,5 @@ func (uc *GetAllCategoriesIncludingDeletedUseCase) Execute(ctx context.Context, 
 		return nil, err
 	}
 
-	outputs := make([]*CategoryOutputForAdmin, 0, len(categories))
-	for _, c := range categories {
-		outputs = append(outputs, &CategoryOutputForAdmin{
-			CategoryOutput: CategoryOutput{
-				ID:            c.ID(),
-				Name:          c.Name(),
-				ImageURL:      c.ImageURL(),
-				ImagePublicID: c.ImagePublicID(),
-				CreatedAt:     c.CreatedAt(),
-				UpdatedAt:     c.UpdatedAt(),
-			},
-			DeletedAt: c.DeletedAt(),
-		})
-	}
-	return outputs, nil
+	return ToCategoryOutputsForAdmin(categories), nil
 }

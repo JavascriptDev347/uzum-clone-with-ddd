@@ -26,7 +26,7 @@ func (uc *CreateCategoryUseCase) Execute(ctx context.Context, input CreateCatego
 
 	id := uuid.New().String()
 
-	category, err := domain.NewCategory(id, input.Name, uploadResult.URL, uploadResult.PublicID)
+	category, err := domain.NewCategory(id, input.NameUz, input.NameEng, input.NameRu, uploadResult.URL, uploadResult.PublicID)
 	if err != nil {
 		_ = uc.uploader.Delete(ctx, uploadResult.PublicID)
 		return nil, err
@@ -37,11 +37,5 @@ func (uc *CreateCategoryUseCase) Execute(ctx context.Context, input CreateCatego
 		return nil, err
 	}
 
-	return &CreateCategoryOutput{
-		ID:            category.ID(),
-		Name:          category.Name(),
-		ImageURL:      category.ImageURL(),
-		ImagePublicID: category.ImagePublicID(),
-		CreatedAt:     category.CreatedAt(),
-	}, nil
+	return ToCategoryOutput(category, LangUZ), nil
 }

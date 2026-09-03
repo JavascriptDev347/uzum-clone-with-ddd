@@ -261,7 +261,7 @@ const docTemplate = `{
         },
         "/categories": {
             "get": {
-                "description": "Kategoriyalarni nomi bo'yicha qidirish",
+                "description": "Kategoriyalarni nomi bo'yicha qidirish. lang bo'yicha localized javob qaytadi.",
                 "consumes": [
                     "application/json"
                 ],
@@ -277,6 +277,12 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Kategoriya nomi",
                         "name": "search",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Til: uz (default), eng yoki ru",
+                        "name": "lang",
                         "in": "query"
                     }
                 ],
@@ -294,7 +300,7 @@ const docTemplate = `{
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/http.CreateCategoryResponse"
+                                                "$ref": "#/definitions/application.CategoryOutput"
                                             }
                                         }
                                     }
@@ -316,7 +322,7 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "Nomi va rasm orqali yangi kategoriya yaratadi",
+                "description": "Nomi (3 tilda) va rasm orqali yangi kategoriya yaratadi",
                 "consumes": [
                     "multipart/form-data"
                 ],
@@ -330,8 +336,22 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Kategoriya nomi",
-                        "name": "name",
+                        "description": "Kategoriya nomi (o'zbekcha)",
+                        "name": "name_uz",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Kategoriya nomi (inglizcha)",
+                        "name": "name_eng",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Kategoriya nomi (ruscha)",
+                        "name": "name_ru",
                         "in": "formData",
                         "required": true
                     },
@@ -355,7 +375,7 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/http.CreateCategoryResponse"
+                                            "$ref": "#/definitions/application.CategoryOutput"
                                         }
                                     }
                                 }
@@ -384,7 +404,7 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "Kategoriyalarni olish",
+                "description": "Barcha kategoriyalarni (o'chirilganlarni ham), 3 ta tildagi to'liq ma'lumot bilan qaytaradi",
                 "consumes": [
                     "application/json"
                 ],
@@ -394,7 +414,7 @@ const docTemplate = `{
                 "tags": [
                     "categories"
                 ],
-                "summary": "Kategoriyalarni olish",
+                "summary": "Kategoriyalarni olish - admin (o'chirilganlar bilan birga)",
                 "parameters": [
                     {
                         "type": "string",
@@ -407,7 +427,22 @@ const docTemplate = `{
                     "200": {
                         "description": "Kategoriyalar olish muvaffaqiyatli",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.Envelope"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/application.CategoryOutputForAdmin"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "500": {
@@ -439,6 +474,12 @@ const docTemplate = `{
                         "name": "id",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Til: uz (default), eng yoki ru",
+                        "name": "lang",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -453,7 +494,7 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/http.CreateCategoryResponse"
+                                            "$ref": "#/definitions/application.CategoryOutput"
                                         }
                                     }
                                 }
@@ -474,7 +515,7 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "Kategoriyani ID bo'yicha yangilash",
+                "description": "Kategoriyani ID bo'yicha yangilash (nomi 3 tilda)",
                 "consumes": [
                     "application/json"
                 ],
@@ -506,6 +547,18 @@ const docTemplate = `{
                 "responses": {
                     "200": {
                         "description": "Kategoriya yangilash muvaffaqiyatli",
+                        "schema": {
+                            "$ref": "#/definitions/response.Envelope"
+                        }
+                    },
+                    "400": {
+                        "description": "Validatsiya xatosi",
+                        "schema": {
+                            "$ref": "#/definitions/response.Envelope"
+                        }
+                    },
+                    "404": {
+                        "description": "Kategoriya topilmadi",
                         "schema": {
                             "$ref": "#/definitions/response.Envelope"
                         }
@@ -585,6 +638,12 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
+                        "type": "string",
+                        "description": "Til: uz (default), eng yoki ru",
+                        "name": "lang",
+                        "in": "query"
+                    },
+                    {
                         "type": "integer",
                         "description": "Sahifa raqami (default 1)",
                         "name": "page",
@@ -627,7 +686,7 @@ const docTemplate = `{
         },
         "/events": {
             "get": {
-                "description": "Faol (o'chirilmagan) eventlar ro'yxati. is_root=true bo'lganlar birinchi chiqadi",
+                "description": "Faol (o'chirilmagan) eventlar ro'yxati. is_root=true bo'lganlar birinchi chiqadi. lang bo'yicha localized javob qaytadi.",
                 "produces": [
                     "application/json"
                 ],
@@ -635,6 +694,14 @@ const docTemplate = `{
                     "events"
                 ],
                 "summary": "Eventlarni olish",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Til: uz (default), eng yoki ru",
+                        "name": "lang",
+                        "in": "query"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "Eventlar",
@@ -685,27 +752,77 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Kichik ustki matn",
-                        "name": "eyebrow",
+                        "description": "Kichik ustki matn (o'zbekcha)",
+                        "name": "eyebrow_uz",
                         "in": "formData"
                     },
                     {
                         "type": "string",
-                        "description": "Sarlavha",
-                        "name": "title",
+                        "description": "Kichik ustki matn (inglizcha)",
+                        "name": "eyebrow_eng",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Kichik ustki matn (ruscha)",
+                        "name": "eyebrow_ru",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Sarlavha (o'zbekcha)",
+                        "name": "title_uz",
                         "in": "formData",
                         "required": true
                     },
                     {
                         "type": "string",
-                        "description": "Kichik matn (subtitle)",
-                        "name": "subtitle",
+                        "description": "Sarlavha (inglizcha)",
+                        "name": "title_eng",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Sarlavha (ruscha)",
+                        "name": "title_ru",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Kichik matn (o'zbekcha)",
+                        "name": "subtitle_uz",
                         "in": "formData"
                     },
                     {
                         "type": "string",
-                        "description": "Tugma matni",
-                        "name": "cta",
+                        "description": "Kichik matn (inglizcha)",
+                        "name": "subtitle_eng",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Kichik matn (ruscha)",
+                        "name": "subtitle_ru",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Tugma matni (o'zbekcha)",
+                        "name": "cta_uz",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Tugma matni (inglizcha)",
+                        "name": "cta_eng",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Tugma matni (ruscha)",
+                        "name": "cta_ru",
                         "in": "formData"
                     },
                     {
@@ -838,6 +955,12 @@ const docTemplate = `{
                         "name": "id",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Til: uz (default), eng yoki ru",
+                        "name": "lang",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -982,7 +1105,7 @@ const docTemplate = `{
         },
         "/products": {
             "get": {
-                "description": "Faol (o'chirilmagan) mahsulotlar ro'yxati, nomi va/yoki category_id bo'yicha filtrlash mumkin",
+                "description": "Faol (o'chirilmagan) mahsulotlar ro'yxati, nomi va/yoki category_id bo'yicha filtrlash mumkin. lang bo'yicha localized javob qaytadi.",
                 "produces": [
                     "application/json"
                 ],
@@ -1001,6 +1124,12 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Kategoriya ID bo'yicha filtrlash",
                         "name": "category_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Til: uz (default), eng yoki ru",
+                        "name": "lang",
                         "in": "query"
                     },
                     {
@@ -1049,7 +1178,7 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "Gullar do'koni mahsulotini barcha xususiyatlari (narx, chegirma, rasmlar, qadoqlash va h.k.) bilan yaratadi. Faqat admin uchun.",
+                "description": "Yangi mahsulotni barcha xususiyatlari (nomi/tavsifi 3 tilda, narx, chegirma, rasmlar) bilan yaratadi. Faqat admin uchun.",
                 "consumes": [
                     "multipart/form-data"
                 ],
@@ -1063,15 +1192,41 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Mahsulot nomi",
-                        "name": "name",
+                        "description": "Mahsulot nomi (o'zbekcha)",
+                        "name": "name_uz",
                         "in": "formData",
                         "required": true
                     },
                     {
                         "type": "string",
-                        "description": "Tavsif",
-                        "name": "description",
+                        "description": "Mahsulot nomi (inglizcha)",
+                        "name": "name_eng",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Mahsulot nomi (ruscha)",
+                        "name": "name_ru",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Tavsif (o'zbekcha)",
+                        "name": "description_uz",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Tavsif (inglizcha)",
+                        "name": "description_eng",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Tavsif (ruscha)",
+                        "name": "description_ru",
                         "in": "formData"
                     },
                     {
@@ -1083,7 +1238,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "integer",
-                        "description": "Narx (tiyin/kopeykada)",
+                        "description": "Narx (so'mda, butun son)",
                         "name": "amount",
                         "in": "formData",
                         "required": true
@@ -1097,7 +1252,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "integer",
-                        "description": "Chegirma narxi (ixtiyoriy)",
+                        "description": "Chegirma narxi, so'mda (ixtiyoriy)",
                         "name": "discount_amount",
                         "in": "formData"
                     },
@@ -1105,18 +1260,6 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Slug (bo'sh bo'lsa nomidan avtomatik yasaladi)",
                         "name": "slug",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "string",
-                        "description": "YouTube video URL",
-                        "name": "video_url_youtube",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "string",
-                        "description": "Instagram video URL",
-                        "name": "video_url_instagram",
                         "in": "formData"
                     },
                     {
@@ -1139,51 +1282,20 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "Gullar turi, vergul bilan",
-                        "name": "flower_types",
+                        "description": "Belgi/badge, masalan bestseller (o'zbekcha, ixtiyoriy)",
+                        "name": "tag_uz",
                         "in": "formData"
                     },
                     {
                         "type": "string",
-                        "description": "Rangi",
-                        "name": "color",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Buketdagi gullar soni",
-                        "name": "stem_count",
+                        "description": "Belgi/badge (inglizcha, ixtiyoriy)",
+                        "name": "tag_eng",
                         "in": "formData"
                     },
                     {
                         "type": "string",
-                        "description": "Qadoqlash turi: bucket, box yoki vase",
-                        "name": "packaging_type",
-                        "in": "formData",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Saqlanish muddati (kunlarda, 1-7, default 1)",
-                        "name": "freshness_lifespan",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "string",
-                        "description": "Parvarish bo'yicha ko'rsatma",
-                        "name": "care_instructions",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "string",
-                        "description": "Bayramlar/holatlar (tag), vergul bilan",
-                        "name": "occasions",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "string",
-                        "description": "Mos qo'shimchalar, vergul bilan",
-                        "name": "compatible_addons",
+                        "description": "Belgi/badge (ruscha, ixtiyoriy)",
+                        "name": "tag_ru",
                         "in": "formData"
                     },
                     {
@@ -1252,7 +1364,7 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "Barcha mahsulotlarni (o'chirilganlarni ham) qaytaradi",
+                "description": "Barcha mahsulotlarni (o'chirilganlarni ham), 3 ta tildagi to'liq ma'lumot bilan qaytaradi",
                 "produces": [
                     "application/json"
                 ],
@@ -1331,6 +1443,12 @@ const docTemplate = `{
                         "name": "slug",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Til: uz (default), eng yoki ru",
+                        "name": "lang",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -1384,6 +1502,12 @@ const docTemplate = `{
                         "name": "id",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Til: uz (default), eng yoki ru",
+                        "name": "lang",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -1534,6 +1658,61 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "application.CategoryOutput": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "image_public_id": {
+                    "type": "string"
+                },
+                "image_url": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "application.CategoryOutputForAdmin": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "deleted_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "image_public_id": {
+                    "type": "string"
+                },
+                "image_url": {
+                    "type": "string"
+                },
+                "name_eng": {
+                    "type": "string"
+                },
+                "name_ru": {
+                    "type": "string"
+                },
+                "name_uz": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
         "application.EventOutput": {
             "type": "object",
             "properties": {
@@ -1578,13 +1757,25 @@ const docTemplate = `{
                 "created_at": {
                     "type": "string"
                 },
-                "cta": {
+                "cta_eng": {
+                    "type": "string"
+                },
+                "cta_ru": {
+                    "type": "string"
+                },
+                "cta_uz": {
                     "type": "string"
                 },
                 "deleted_at": {
                     "type": "string"
                 },
-                "eyebrow": {
+                "eyebrow_eng": {
+                    "type": "string"
+                },
+                "eyebrow_ru": {
+                    "type": "string"
+                },
+                "eyebrow_uz": {
                     "type": "string"
                 },
                 "id": {
@@ -1596,10 +1787,22 @@ const docTemplate = `{
                 "is_root": {
                     "type": "boolean"
                 },
-                "subtitle": {
+                "subtitle_eng": {
                     "type": "string"
                 },
-                "title": {
+                "subtitle_ru": {
+                    "type": "string"
+                },
+                "subtitle_uz": {
+                    "type": "string"
+                },
+                "title_eng": {
+                    "type": "string"
+                },
+                "title_ru": {
+                    "type": "string"
+                },
+                "title_uz": {
                     "type": "string"
                 },
                 "updated_at": {
@@ -1624,23 +1827,8 @@ const docTemplate = `{
         "application.ProductOutput": {
             "type": "object",
             "properties": {
-                "allow_custom_card": {
-                    "type": "boolean"
-                },
-                "care_instructions": {
-                    "type": "string"
-                },
                 "category_id": {
                     "type": "string"
-                },
-                "color": {
-                    "type": "string"
-                },
-                "compatible_addons": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
                 },
                 "created_at": {
                     "type": "string"
@@ -1652,15 +1840,6 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "final_price_amount": {
-                    "type": "integer"
-                },
-                "flower_types": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "freshness_lifespan": {
                     "type": "integer"
                 },
                 "id": {
@@ -1678,15 +1857,6 @@ const docTemplate = `{
                 "name": {
                     "type": "string"
                 },
-                "occasions": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "packaging_type": {
-                    "type": "string"
-                },
                 "price_amount": {
                     "type": "integer"
                 },
@@ -1702,19 +1872,13 @@ const docTemplate = `{
                 "sold_count": {
                     "type": "integer"
                 },
-                "stem_count": {
-                    "type": "integer"
-                },
                 "stock": {
                     "type": "integer"
                 },
+                "tag": {
+                    "type": "string"
+                },
                 "updated_at": {
-                    "type": "string"
-                },
-                "video_url_instagram": {
-                    "type": "string"
-                },
-                "video_url_youtube": {
                     "type": "string"
                 }
             }
@@ -1725,7 +1889,13 @@ const docTemplate = `{
                 "id": {
                     "type": "string"
                 },
-                "name": {
+                "name_eng": {
+                    "type": "string"
+                },
+                "name_ru": {
+                    "type": "string"
+                },
+                "name_uz": {
                     "type": "string"
                 }
             }
@@ -1736,19 +1906,43 @@ const docTemplate = `{
                 "category_id": {
                     "type": "string"
                 },
-                "cta": {
+                "cta_eng": {
                     "type": "string"
                 },
-                "eyebrow": {
+                "cta_ru": {
+                    "type": "string"
+                },
+                "cta_uz": {
+                    "type": "string"
+                },
+                "eyebrow_eng": {
+                    "type": "string"
+                },
+                "eyebrow_ru": {
+                    "type": "string"
+                },
+                "eyebrow_uz": {
                     "type": "string"
                 },
                 "is_root": {
                     "type": "boolean"
                 },
-                "subtitle": {
+                "subtitle_eng": {
                     "type": "string"
                 },
-                "title": {
+                "subtitle_ru": {
+                    "type": "string"
+                },
+                "subtitle_uz": {
+                    "type": "string"
+                },
+                "title_eng": {
+                    "type": "string"
+                },
+                "title_ru": {
+                    "type": "string"
+                },
+                "title_uz": {
                     "type": "string"
                 }
             }
@@ -1759,58 +1953,46 @@ const docTemplate = `{
                 "amount": {
                     "type": "integer"
                 },
-                "care_instructions": {
-                    "type": "string"
-                },
                 "category_id": {
                     "type": "string"
-                },
-                "clear_care_instructions": {
-                    "type": "boolean"
                 },
                 "clear_discount": {
                     "type": "boolean"
                 },
-                "color": {
-                    "type": "string"
+                "clear_tag_eng": {
+                    "type": "boolean"
                 },
-                "compatible_addons": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
+                "clear_tag_ru": {
+                    "type": "boolean"
+                },
+                "clear_tag_uz": {
+                    "type": "boolean"
                 },
                 "currency": {
                     "type": "string"
                 },
-                "description": {
+                "description_eng": {
+                    "type": "string"
+                },
+                "description_ru": {
+                    "type": "string"
+                },
+                "description_uz": {
                     "type": "string"
                 },
                 "discount_amount": {
                     "type": "integer"
                 },
-                "flower_types": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "freshness_lifespan": {
-                    "type": "integer"
-                },
                 "is_available": {
                     "type": "boolean"
                 },
-                "name": {
+                "name_eng": {
                     "type": "string"
                 },
-                "occasions": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
+                "name_ru": {
+                    "type": "string"
                 },
-                "packaging_type": {
+                "name_uz": {
                     "type": "string"
                 },
                 "rating": {
@@ -1822,36 +2004,16 @@ const docTemplate = `{
                 "sold_count": {
                     "type": "integer"
                 },
-                "stem_count": {
-                    "type": "integer"
-                },
                 "stock": {
                     "type": "integer"
                 },
-                "video_url_instagram": {
+                "tag_eng": {
                     "type": "string"
                 },
-                "video_url_youtube": {
-                    "type": "string"
-                }
-            }
-        },
-        "http.CreateCategoryResponse": {
-            "type": "object",
-            "properties": {
-                "created_at": {
+                "tag_ru": {
                     "type": "string"
                 },
-                "id": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "parent_id": {
-                    "type": "string"
-                },
-                "updated_at": {
+                "tag_uz": {
                     "type": "string"
                 }
             }

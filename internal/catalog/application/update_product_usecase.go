@@ -30,22 +30,34 @@ func (uc *UpdateProductUseCase) Execute(ctx context.Context, input UpdateProduct
 		}
 	}
 
-	if input.Name != nil {
-		if err := product.ChangeName(*input.Name); err != nil {
+	if input.NameUz != nil || input.NameEng != nil || input.NameRu != nil {
+		nameUz, nameEng, nameRu := product.NameUz(), product.NameEng(), product.NameRu()
+		if input.NameUz != nil {
+			nameUz = *input.NameUz
+		}
+		if input.NameEng != nil {
+			nameEng = *input.NameEng
+		}
+		if input.NameRu != nil {
+			nameRu = *input.NameRu
+		}
+		if err := product.ChangeNames(nameUz, nameEng, nameRu); err != nil {
 			return err
 		}
 	}
 
-	if input.Description != nil {
-		product.ChangeDescription(*input.Description)
-	}
-
-	if input.VideoURLYoutube != nil {
-		product.ChangeVideoURLYoutube(*input.VideoURLYoutube)
-	}
-
-	if input.VideoURLInstagram != nil {
-		product.ChangeVideoURLInstagram(*input.VideoURLInstagram)
+	if input.DescriptionUz != nil || input.DescriptionEng != nil || input.DescriptionRu != nil {
+		descUz, descEng, descRu := product.DescriptionUz(), product.DescriptionEng(), product.DescriptionRu()
+		if input.DescriptionUz != nil {
+			descUz = *input.DescriptionUz
+		}
+		if input.DescriptionEng != nil {
+			descEng = *input.DescriptionEng
+		}
+		if input.DescriptionRu != nil {
+			descRu = *input.DescriptionRu
+		}
+		product.ChangeDescriptions(descUz, descEng, descRu)
 	}
 
 	if input.Amount != nil || input.Currency != nil {
@@ -106,44 +118,25 @@ func (uc *UpdateProductUseCase) Execute(ctx context.Context, input UpdateProduct
 		}
 	}
 
-	if input.FlowerTypes != nil {
-		product.ChangeFlowerTypes(input.FlowerTypes)
-	}
-
-	if input.Color != nil {
-		product.ChangeColor(*input.Color)
-	}
-
-	if input.StemCount != nil {
-		if err := product.ChangeStemCount(*input.StemCount); err != nil {
-			return err
+	if input.TagUz != nil || input.TagEng != nil || input.TagRu != nil ||
+		input.ClearTagUz || input.ClearTagEng || input.ClearTagRu {
+		tagUz, tagEng, tagRu := product.TagUz(), product.TagEng(), product.TagRu()
+		if input.ClearTagUz {
+			tagUz = nil
+		} else if input.TagUz != nil {
+			tagUz = input.TagUz
 		}
-	}
-
-	if input.PackagingType != nil {
-		if err := product.ChangePackagingType(domain.PackagingType(*input.PackagingType)); err != nil {
-			return err
+		if input.ClearTagEng {
+			tagEng = nil
+		} else if input.TagEng != nil {
+			tagEng = input.TagEng
 		}
-	}
-
-	if input.FreshnessLifespan != nil {
-		if err := product.ChangeFreshnessLifespan(domain.FreshnessLifespan(*input.FreshnessLifespan)); err != nil {
-			return err
+		if input.ClearTagRu {
+			tagRu = nil
+		} else if input.TagRu != nil {
+			tagRu = input.TagRu
 		}
-	}
-
-	if input.ClearCareInstructions {
-		product.ChangeCareInstructions(nil)
-	} else if input.CareInstructions != nil {
-		product.ChangeCareInstructions(input.CareInstructions)
-	}
-
-	if input.Occasions != nil {
-		product.ChangeOccasions(input.Occasions)
-	}
-
-	if input.CompatibleAddons != nil {
-		product.ChangeCompatibleAddons(input.CompatibleAddons)
+		product.ChangeTags(tagUz, tagEng, tagRu)
 	}
 
 	return uc.repo.Update(ctx, product)

@@ -63,7 +63,7 @@ func (uc *CreateProductUseCase) Execute(ctx context.Context, input CreateProduct
 
 	slug := input.Slug
 	if slug == "" {
-		slug = domain.GenerateSlug(input.Name)
+		slug = domain.GenerateSlug(input.NameUz)
 	}
 	if slug == "" {
 		slug = uuid.New().String()
@@ -71,27 +71,24 @@ func (uc *CreateProductUseCase) Execute(ctx context.Context, input CreateProduct
 
 	id := uuid.New().String()
 	product, err := domain.NewProduct(domain.NewProductParams{
-		ID:                id,
-		Name:              input.Name,
-		Description:       input.Description,
-		Images:            uploaded,
-		VideoURLYoutube:   input.VideoURLYoutube,
-		VideoURLInstagram: input.VideoURLInstagram,
-		CategoryID:        input.CategoryID,
-		Price:             price,
-		DiscountPrice:     discountPrice,
-		Slug:              slug,
-		IsAvailable:       input.IsAvailable,
-		Rating:            input.Rating,
-		Stock:             input.Stock,
-		FlowerTypes:       input.FlowerTypes,
-		Color:             input.Color,
-		StemCount:         input.StemCount,
-		PackagingType:     domain.PackagingType(input.PackagingType),
-		FreshnessLifespan: domain.FreshnessLifespan(input.FreshnessLifespan),
-		CareInstructions:  input.CareInstructions,
-		Occasions:         input.Occasions,
-		CompatibleAddons:  input.CompatibleAddons,
+		ID:             id,
+		NameUz:         input.NameUz,
+		NameEng:        input.NameEng,
+		NameRu:         input.NameRu,
+		DescriptionUz:  input.DescriptionUz,
+		DescriptionEng: input.DescriptionEng,
+		DescriptionRu:  input.DescriptionRu,
+		Images:         uploaded,
+		CategoryID:     input.CategoryID,
+		Price:          price,
+		DiscountPrice:  discountPrice,
+		Slug:           slug,
+		IsAvailable:    input.IsAvailable,
+		Rating:         input.Rating,
+		Stock:          input.Stock,
+		TagUz:          input.TagUz,
+		TagEng:         input.TagEng,
+		TagRu:          input.TagRu,
 	})
 	if err != nil {
 		rollback()
@@ -103,5 +100,5 @@ func (uc *CreateProductUseCase) Execute(ctx context.Context, input CreateProduct
 		return nil, err
 	}
 
-	return ToProductOutput(product), nil
+	return ToProductOutput(product, LangUZ), nil
 }

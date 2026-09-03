@@ -8,7 +8,8 @@ var (
 	ErrInvalidCurrency  = errors.New("catalog: noto'g'ri valyuta")
 )
 
-// amount bu yerda tiyinlarda saqlanadi
+// amount bu yerda so'mda (butun sonlarda) saqlanadi - backend tiyinga konvertatsiya qilmaydi,
+// qiymat frontenddan qanday kelsa, shundayligicha saqlanadi.
 type Money struct {
 	amount   int64
 	currency string

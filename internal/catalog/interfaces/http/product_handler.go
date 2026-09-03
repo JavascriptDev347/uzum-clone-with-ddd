@@ -5,7 +5,6 @@ import (
 	"io"
 	"net/http"
 	"strconv"
-	"strings"
 
 	"github.com/JavascriptDev347/uzum-clone-with-ddd.git/internal/catalog/application"
 	"github.com/JavascriptDev347/uzum-clone-with-ddd.git/internal/catalog/domain"
@@ -45,22 +44,6 @@ func NewProductHandler(
 	}
 }
 
-// parseTagList - vergul bilan ajratilgan form qiymatini ("romantic, birthday") tag ro'yxatiga aylantiradi.
-func parseTagList(raw string) []string {
-	if strings.TrimSpace(raw) == "" {
-		return []string{}
-	}
-	parts := strings.Split(raw, ",")
-	result := make([]string, 0, len(parts))
-	for _, part := range parts {
-		part = strings.TrimSpace(part)
-		if part != "" {
-			result = append(result, part)
-		}
-	}
-	return result
-}
-
 // parsePagination - "page" va "page_size" query parametrlarini o'qiydi, bo'sh/noto'g'ri bo'lsa 0 qaytaradi
 // (standart qiymatlar use case darajasida qo'llanadi).
 func parsePagination(r *http.Request) (page int, pageSize int) {
@@ -77,34 +60,36 @@ func parsePagination(r *http.Request) (page int, pageSize int) {
 	return page, pageSize
 }
 
+// parseLang - "lang" query parametrini o'qiydi (uz/eng/ru), bo'sh yoki noto'g'ri bo'lsa uz qaytadi.
+func parseLang(r *http.Request) application.Lang {
+	return application.ParseLang(r.URL.Query().Get("lang"))
+}
+
 // CreateProduct godoc
 //
 //		@Summary		Yangi mahsulot yaratish
-//		@Description	Gullar do'koni mahsulotini barcha xususiyatlari (narx, chegirma, rasmlar, qadoqlash va h.k.) bilan yaratadi. Faqat admin uchun.
+//		@Description	Yangi mahsulotni barcha xususiyatlari (nomi/tavsifi 3 tilda, narx, chegirma, rasmlar) bilan yaratadi. Faqat admin uchun.
 //		@Tags			products
 //		@Accept			multipart/form-data
 //	 @Security		BearerAuth
 //		@Produce		json
-//		@Param			name					formData	string	true	"Mahsulot nomi"
-//		@Param			description				formData	string	false	"Tavsif"
+//		@Param			name_uz					formData	string	true	"Mahsulot nomi (o'zbekcha)"
+//		@Param			name_eng				formData	string	true	"Mahsulot nomi (inglizcha)"
+//		@Param			name_ru					formData	string	true	"Mahsulot nomi (ruscha)"
+//		@Param			description_uz			formData	string	false	"Tavsif (o'zbekcha)"
+//		@Param			description_eng			formData	string	false	"Tavsif (inglizcha)"
+//		@Param			description_ru			formData	string	false	"Tavsif (ruscha)"
 //		@Param			category_id				formData	string	true	"Kategoriya ID"
-//		@Param			amount					formData	int		true	"Narx (tiyin/kopeykada)"
+//		@Param			amount					formData	int		true	"Narx (so'mda, butun son)"
 //		@Param			currency				formData	string	true	"Valyuta (masalan: UZS)"
-//		@Param			discount_amount			formData	int		false	"Chegirma narxi (ixtiyoriy)"
+//		@Param			discount_amount			formData	int		false	"Chegirma narxi, so'mda (ixtiyoriy)"
 //		@Param			slug					formData	string	false	"Slug (bo'sh bo'lsa nomidan avtomatik yasaladi)"
-//		@Param			video_url_youtube		formData	string	false	"YouTube video URL"
-//		@Param			video_url_instagram		formData	string	false	"Instagram video URL"
 //		@Param			is_available			formData	boolean	false	"Sotuvda bor yoki yo'qligi (default true)"
 //		@Param			rating					formData	number	false	"Reyting 1-5 (default 1)"
 //		@Param			stock					formData	int		false	"Ombordagi soni"
-//		@Param			flower_types			formData	string	false	"Gullar turi, vergul bilan"
-//		@Param			color					formData	string	false	"Rangi"
-//		@Param			stem_count				formData	int		false	"Buketdagi gullar soni"
-//		@Param			packaging_type			formData	string	true	"Qadoqlash turi: bucket, box yoki vase"
-//		@Param			freshness_lifespan		formData	int		false	"Saqlanish muddati (kunlarda, 1-7, default 1)"
-//		@Param			care_instructions		formData	string	false	"Parvarish bo'yicha ko'rsatma"
-//		@Param			occasions				formData	string	false	"Bayramlar/holatlar (tag), vergul bilan"
-//		@Param			compatible_addons		formData	string	false	"Mos qo'shimchalar, vergul bilan"
+//		@Param			tag_uz					formData	string	false	"Belgi/badge, masalan bestseller (o'zbekcha, ixtiyoriy)"
+//		@Param			tag_eng					formData	string	false	"Belgi/badge (inglizcha, ixtiyoriy)"
+//		@Param			tag_ru					formData	string	false	"Belgi/badge (ruscha, ixtiyoriy)"
 //		@Param			images					formData	file	false	"Mahsulot rasmlari (eng ko'pi bilan 5 ta)"
 //		@Success		201			{object}	response.Envelope{data=application.ProductOutput}	"Mahsulot yaratildi"
 //		@Failure		400			{object}	response.Envelope	"Noto'g'ri so'rov tanasi yoki validatsiya xatosi"
@@ -165,29 +150,17 @@ func (h *ProductHandler) CreateProduct(w http.ResponseWriter, r *http.Request) {
 		stock = v
 	}
 
-	var stemCount int
-	if raw := r.FormValue("stem_count"); raw != "" {
-		v, err := strconv.Atoi(raw)
-		if err != nil {
-			response.Error(w, http.StatusBadRequest, "noto'g'ri stem_count qiymati")
-			return
-		}
-		stemCount = v
+	var tagUz *string
+	if raw := r.FormValue("tag_uz"); raw != "" {
+		tagUz = &raw
 	}
-
-	var freshnessLifespan int
-	if raw := r.FormValue("freshness_lifespan"); raw != "" {
-		v, err := strconv.Atoi(raw)
-		if err != nil {
-			response.Error(w, http.StatusBadRequest, "noto'g'ri freshness_lifespan qiymati")
-			return
-		}
-		freshnessLifespan = v
+	var tagEng *string
+	if raw := r.FormValue("tag_eng"); raw != "" {
+		tagEng = &raw
 	}
-
-	var careInstructions *string
-	if raw := r.FormValue("care_instructions"); raw != "" {
-		careInstructions = &raw
+	var tagRu *string
+	if raw := r.FormValue("tag_ru"); raw != "" {
+		tagRu = &raw
 	}
 
 	imageFiles := r.MultipartForm.File["images"]
@@ -217,27 +190,24 @@ func (h *ProductHandler) CreateProduct(w http.ResponseWriter, r *http.Request) {
 	}
 
 	input := application.CreateProductInput{
-		Name:              r.FormValue("name"),
-		Description:       r.FormValue("description"),
-		Images:            images,
-		VideoURLYoutube:   r.FormValue("video_url_youtube"),
-		VideoURLInstagram: r.FormValue("video_url_instagram"),
-		CategoryID:        r.FormValue("category_id"),
-		Amount:            amount,
-		Currency:          r.FormValue("currency"),
-		DiscountAmount:    discountAmount,
-		Slug:              r.FormValue("slug"),
-		IsAvailable:       isAvailable,
-		Rating:            rating,
-		Stock:             stock,
-		FlowerTypes:       parseTagList(r.FormValue("flower_types")),
-		Color:             r.FormValue("color"),
-		StemCount:         stemCount,
-		PackagingType:     r.FormValue("packaging_type"),
-		FreshnessLifespan: freshnessLifespan,
-		CareInstructions:  careInstructions,
-		Occasions:         parseTagList(r.FormValue("occasions")),
-		CompatibleAddons:  parseTagList(r.FormValue("compatible_addons")),
+		NameUz:         r.FormValue("name_uz"),
+		NameEng:        r.FormValue("name_eng"),
+		NameRu:         r.FormValue("name_ru"),
+		DescriptionUz:  r.FormValue("description_uz"),
+		DescriptionEng: r.FormValue("description_eng"),
+		DescriptionRu:  r.FormValue("description_ru"),
+		Images:         images,
+		CategoryID:     r.FormValue("category_id"),
+		Amount:         amount,
+		Currency:       r.FormValue("currency"),
+		DiscountAmount: discountAmount,
+		Slug:           r.FormValue("slug"),
+		IsAvailable:    isAvailable,
+		Rating:         rating,
+		Stock:          stock,
+		TagUz:          tagUz,
+		TagEng:         tagEng,
+		TagRu:          tagRu,
 	}
 
 	output, err := h.createUc.Execute(r.Context(), input)
@@ -252,11 +222,12 @@ func (h *ProductHandler) CreateProduct(w http.ResponseWriter, r *http.Request) {
 // GetProducts godoc
 //
 //	@Summary		Mahsulotlarni olish
-//	@Description	Faol (o'chirilmagan) mahsulotlar ro'yxati, nomi va/yoki category_id bo'yicha filtrlash mumkin
+//	@Description	Faol (o'chirilmagan) mahsulotlar ro'yxati, nomi va/yoki category_id bo'yicha filtrlash mumkin. lang bo'yicha localized javob qaytadi.
 //	@Tags			products
 //	@Produce		json
 //	@Param			search		query		string	false	"Mahsulot nomi bo'yicha qidirish"
 //	@Param			category_id	query		string	false	"Kategoriya ID bo'yicha filtrlash"
+//	@Param			lang		query		string	false	"Til: uz (default), eng yoki ru"
 //	@Param			page		query		int		false	"Sahifa raqami (default 1)"
 //	@Param			page_size	query		int		false	"Sahifadagi elementlar soni (default 20, max 100)"
 //	@Success		200			{object}	response.Envelope{data=response.PaginatedResult}	"Mahsulotlar"
@@ -266,7 +237,8 @@ func (h *ProductHandler) GetProducts(w http.ResponseWriter, r *http.Request) {
 	search := r.URL.Query().Get("search")
 	categoryID := r.URL.Query().Get("category_id")
 	page, pageSize := parsePagination(r)
-	products, total, err := h.getUc.Execute(r.Context(), search, categoryID, page, pageSize)
+	lang := parseLang(r)
+	products, total, err := h.getUc.Execute(r.Context(), search, categoryID, page, pageSize, lang)
 	if err != nil {
 		writeProductError(w, err)
 		return
@@ -284,6 +256,7 @@ func (h *ProductHandler) GetProducts(w http.ResponseWriter, r *http.Request) {
 //	@Produce		json
 //	@Param			id			path		string	true	"Kategoriya ID"
 //	@Param			search		query		string	false	"Mahsulot nomi bo'yicha qidirish"
+//	@Param			lang		query		string	false	"Til: uz (default), eng yoki ru"
 //	@Param			page		query		int		false	"Sahifa raqami (default 1)"
 //	@Param			page_size	query		int		false	"Sahifadagi elementlar soni (default 20, max 100)"
 //	@Success		200			{object}	response.Envelope{data=response.PaginatedResult}	"Mahsulotlar"
@@ -293,7 +266,8 @@ func (h *ProductHandler) GetProductsByCategory(w http.ResponseWriter, r *http.Re
 	categoryID := chi.URLParam(r, "id")
 	search := r.URL.Query().Get("search")
 	page, pageSize := parsePagination(r)
-	products, total, err := h.getUc.Execute(r.Context(), search, categoryID, page, pageSize)
+	lang := parseLang(r)
+	products, total, err := h.getUc.Execute(r.Context(), search, categoryID, page, pageSize, lang)
 	if err != nil {
 		writeProductError(w, err)
 		return
@@ -309,14 +283,16 @@ func (h *ProductHandler) GetProductsByCategory(w http.ResponseWriter, r *http.Re
 //	@Description	Mahsulotni ID bo'yicha olish
 //	@Tags			products
 //	@Produce		json
-//	@Param			id	path		string	true	"Mahsulot ID"
+//	@Param			id		path		string	true	"Mahsulot ID"
+//	@Param			lang	query		string	false	"Til: uz (default), eng yoki ru"
 //	@Success		200	{object}	response.Envelope{data=application.ProductOutput}	"Mahsulot"
 //	@Failure		404	{object}	response.Envelope	"Mahsulot topilmadi"
 //	@Failure		500	{object}	response.Envelope	"Ichki server xatosi"
 //	@Router			/products/{id} [get]
 func (h *ProductHandler) GetProduct(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
-	product, err := h.getByIdUc.Execute(r.Context(), id)
+	lang := parseLang(r)
+	product, err := h.getByIdUc.Execute(r.Context(), id, lang)
 	if err != nil {
 		writeProductError(w, err)
 		return
@@ -332,13 +308,15 @@ func (h *ProductHandler) GetProduct(w http.ResponseWriter, r *http.Request) {
 //	@Tags			products
 //	@Produce		json
 //	@Param			slug	path		string	true	"Mahsulot slug"
+//	@Param			lang	query		string	false	"Til: uz (default), eng yoki ru"
 //	@Success		200		{object}	response.Envelope{data=application.ProductOutput}	"Mahsulot"
 //	@Failure		404		{object}	response.Envelope	"Mahsulot topilmadi"
 //	@Failure		500		{object}	response.Envelope	"Ichki server xatosi"
 //	@Router			/products/slug/{slug} [get]
 func (h *ProductHandler) GetProductBySlug(w http.ResponseWriter, r *http.Request) {
 	slug := chi.URLParam(r, "slug")
-	product, err := h.getBySlug.Execute(r.Context(), slug)
+	lang := parseLang(r)
+	product, err := h.getBySlug.Execute(r.Context(), slug, lang)
 	if err != nil {
 		writeProductError(w, err)
 		return
@@ -405,7 +383,7 @@ func (h *ProductHandler) DeleteProduct(w http.ResponseWriter, r *http.Request) {
 // GetAllProducts godoc
 //
 //		@Summary		Mahsulotlarni olish - admin (o'chirilganlar bilan birga)
-//		@Description	Barcha mahsulotlarni (o'chirilganlarni ham) qaytaradi
+//		@Description	Barcha mahsulotlarni (o'chirilganlarni ham), 3 ta tildagi to'liq ma'lumot bilan qaytaradi
 //		@Tags			products
 //	 @Security		BearerAuth
 //		@Produce		json

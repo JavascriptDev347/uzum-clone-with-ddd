@@ -14,10 +14,10 @@ func NewGetCategoriesUseCase(repo domain.CategoryRepository) *GetCategoriesUseCa
 	return &GetCategoriesUseCase{repo: repo}
 }
 
-func (uc *GetCategoriesUseCase) Execute(ctx context.Context, search string) ([]*CategoryOutput, error) {
+func (uc *GetCategoriesUseCase) Execute(ctx context.Context, search string, lang Lang) ([]*CategoryOutput, error) {
 	categories, err := uc.repo.FindAll(ctx, search)
 	if err != nil {
 		return nil, err
 	}
-	return ToCategoryOutputs(categories), nil
+	return ToCategoryOutputs(categories, lang), nil
 }

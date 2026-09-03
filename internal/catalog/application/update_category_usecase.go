@@ -20,8 +20,18 @@ func (uc *UpdateCategoryUseCase) Execute(ctx context.Context, input UpdateCatego
 		return err
 	}
 
-	if input.Name != nil {
-		if err := category.ChangeName(*input.Name); err != nil {
+	if input.NameUz != nil || input.NameEng != nil || input.NameRu != nil {
+		nameUz, nameEng, nameRu := category.NameUz(), category.NameEng(), category.NameRu()
+		if input.NameUz != nil {
+			nameUz = *input.NameUz
+		}
+		if input.NameEng != nil {
+			nameEng = *input.NameEng
+		}
+		if input.NameRu != nil {
+			nameRu = *input.NameRu
+		}
+		if err := category.ChangeNames(nameUz, nameEng, nameRu); err != nil {
 			return err
 		}
 	}

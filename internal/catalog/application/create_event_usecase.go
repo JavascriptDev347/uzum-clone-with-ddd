@@ -33,7 +33,25 @@ func (uc *CreateEventUseCase) Execute(ctx context.Context, input CreateEventInpu
 	}
 
 	id := uuid.New().String()
-	event, err := domain.NewEvent(id, input.Eyebrow, input.Title, input.Subtitle, input.CTA, uploadResult.URL, uploadResult.PublicID, input.CategoryID, input.IsRoot)
+	event, err := domain.NewEvent(domain.NewEventParams{
+		ID:            id,
+		EyebrowUz:     input.EyebrowUz,
+		EyebrowEng:    input.EyebrowEng,
+		EyebrowRu:     input.EyebrowRu,
+		TitleUz:       input.TitleUz,
+		TitleEng:      input.TitleEng,
+		TitleRu:       input.TitleRu,
+		SubtitleUz:    input.SubtitleUz,
+		SubtitleEng:   input.SubtitleEng,
+		SubtitleRu:    input.SubtitleRu,
+		CTAUz:         input.CTAUz,
+		CTAEng:        input.CTAEng,
+		CTARu:         input.CTARu,
+		ImageURL:      uploadResult.URL,
+		ImagePublicID: uploadResult.PublicID,
+		CategoryID:    input.CategoryID,
+		IsRoot:        input.IsRoot,
+	})
 	if err != nil {
 		_ = uc.uploader.Delete(ctx, uploadResult.PublicID)
 		return nil, err
@@ -44,5 +62,5 @@ func (uc *CreateEventUseCase) Execute(ctx context.Context, input CreateEventInpu
 		return nil, err
 	}
 
-	return ToEventOutput(event), nil
+	return ToEventOutput(event, LangUZ), nil
 }

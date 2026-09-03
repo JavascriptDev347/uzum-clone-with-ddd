@@ -14,11 +14,11 @@ func NewGetCategoryUseCase(repo domain.CategoryRepository) *GetCategoryUseCase {
 	return &GetCategoryUseCase{repo: repo}
 }
 
-func (uc *GetCategoryUseCase) Execute(ctx context.Context, id string) (CategoryOutput, error) {
+func (uc *GetCategoryUseCase) Execute(ctx context.Context, id string, lang Lang) (CategoryOutput, error) {
 	category, err := uc.repo.FindByID(ctx, id)
 	if err != nil {
 		return CategoryOutput{}, err
 	}
 
-	return *ToCategoryOutput(category), nil
+	return *ToCategoryOutput(category, lang), nil
 }

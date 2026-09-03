@@ -19,5 +19,6 @@ func (uc *GetAllEventsIncludingDeletedUseCase) Execute(ctx context.Context) ([]*
 	if err != nil {
 		return nil, err
 	}
+
 	return ToEventOutputsForAdmin(events), nil
 }

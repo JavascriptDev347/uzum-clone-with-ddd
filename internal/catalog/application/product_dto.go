@@ -27,93 +27,151 @@ func NormalizeProductPagination(page, pageSize int) (int, int) {
 	return page, pageSize
 }
 
+// Lang - mahsulot ma'lumotlarini olishda so'raladigan til.
+type Lang string
+
+const (
+	LangUZ  Lang = "uz"
+	LangEng Lang = "eng"
+	LangRu  Lang = "ru"
+)
+
+// ParseLang - "lang" query parametrini Lang qiymatiga aylantiradi, noto'g'ri/bo'sh bo'lsa uz qaytadi.
+func ParseLang(raw string) Lang {
+	switch Lang(raw) {
+	case LangEng, LangRu:
+		return Lang(raw)
+	default:
+		return LangUZ
+	}
+}
+
 type CreateProductInput struct {
-	Name              string
-	Description       string
-	Images            []media.UploadInput // eng ko'pi bilan 5 ta
-	VideoURLYoutube   string
-	VideoURLInstagram string
-	CategoryID        string
-	Amount            int64
-	Currency          string
-	DiscountAmount    *int64
-	Slug              string
-	IsAvailable       bool
-	Rating            float64
-	Stock             int
-	FlowerTypes       []string
-	Color             string
-	StemCount         int
-	PackagingType     string
-	FreshnessLifespan int
-	CareInstructions  *string
-	Occasions         []string
-	CompatibleAddons  []string
+	NameUz         string
+	NameEng        string
+	NameRu         string
+	DescriptionUz  string
+	DescriptionEng string
+	DescriptionRu  string
+	Images         []media.UploadInput // eng ko'pi bilan 5 ta
+	CategoryID     string
+	Amount         int64
+	Currency       string
+	DiscountAmount *int64
+	Slug           string
+	IsAvailable    bool
+	Rating         float64
+	Stock          int
+	TagUz          *string
+	TagEng         *string
+	TagRu          *string
 }
 
 type UpdateProductInput struct {
-	ID                    string   `json:"-"`
-	Name                  *string  `json:"name,omitempty"`
-	Description           *string  `json:"description,omitempty"`
-	VideoURLYoutube       *string  `json:"video_url_youtube,omitempty"`
-	VideoURLInstagram     *string  `json:"video_url_instagram,omitempty"`
-	CategoryID            *string  `json:"category_id,omitempty"`
-	Amount                *int64   `json:"amount,omitempty"`
-	Currency              *string  `json:"currency,omitempty"`
-	DiscountAmount        *int64   `json:"discount_amount,omitempty"`
-	ClearDiscount         bool     `json:"clear_discount,omitempty"`
-	Slug                  *string  `json:"slug,omitempty"`
-	IsAvailable           *bool    `json:"is_available,omitempty"`
-	Rating                *float64 `json:"rating,omitempty"`
-	Stock                 *int     `json:"stock,omitempty"`
-	SoldCount             *int     `json:"sold_count,omitempty"`
-	FlowerTypes           []string `json:"flower_types,omitempty"`
-	Color                 *string  `json:"color,omitempty"`
-	StemCount             *int     `json:"stem_count,omitempty"`
-	PackagingType         *string  `json:"packaging_type,omitempty"`
-	FreshnessLifespan     *int     `json:"freshness_lifespan,omitempty"`
-	CareInstructions      *string  `json:"care_instructions,omitempty"`
-	ClearCareInstructions bool     `json:"clear_care_instructions,omitempty"`
-	Occasions             []string `json:"occasions,omitempty"`
-	CompatibleAddons      []string `json:"compatible_addons,omitempty"`
+	ID             string   `json:"-"`
+	NameUz         *string  `json:"name_uz,omitempty"`
+	NameEng        *string  `json:"name_eng,omitempty"`
+	NameRu         *string  `json:"name_ru,omitempty"`
+	DescriptionUz  *string  `json:"description_uz,omitempty"`
+	DescriptionEng *string  `json:"description_eng,omitempty"`
+	DescriptionRu  *string  `json:"description_ru,omitempty"`
+	CategoryID     *string  `json:"category_id,omitempty"`
+	Amount         *int64   `json:"amount,omitempty"`
+	Currency       *string  `json:"currency,omitempty"`
+	DiscountAmount *int64   `json:"discount_amount,omitempty"`
+	ClearDiscount  bool     `json:"clear_discount,omitempty"`
+	Slug           *string  `json:"slug,omitempty"`
+	IsAvailable    *bool    `json:"is_available,omitempty"`
+	Rating         *float64 `json:"rating,omitempty"`
+	Stock          *int     `json:"stock,omitempty"`
+	SoldCount      *int     `json:"sold_count,omitempty"`
+	TagUz          *string  `json:"tag_uz,omitempty"`
+	ClearTagUz     bool     `json:"clear_tag_uz,omitempty"`
+	TagEng         *string  `json:"tag_eng,omitempty"`
+	ClearTagEng    bool     `json:"clear_tag_eng,omitempty"`
+	TagRu          *string  `json:"tag_ru,omitempty"`
+	ClearTagRu     bool     `json:"clear_tag_ru,omitempty"`
 }
 
+// ProductOutput - so'ralgan tilga moslashtirilgan (localized) mahsulot ma'lumoti, ommaviy endpointlar uchun.
 type ProductOutput struct {
-	ID                string    `json:"id"`
-	Name              string    `json:"name"`
-	Description       string    `json:"description"`
-	Images            []string  `json:"images"`
-	VideoURLYoutube   string    `json:"video_url_youtube"`
-	VideoURLInstagram string    `json:"video_url_instagram"`
-	CategoryID        string    `json:"category_id"`
-	PriceAmount       int64     `json:"price_amount"`
-	PriceCurrency     string    `json:"price_currency"`
-	DiscountAmount    *int64    `json:"discount_amount,omitempty"`
-	FinalPriceAmount  int64     `json:"final_price_amount"`
-	Slug              string    `json:"slug"`
-	IsAvailable       bool      `json:"is_available"`
-	Rating            float64   `json:"rating"`
-	Stock             int       `json:"stock"`
-	SoldCount         int       `json:"sold_count"`
-	FlowerTypes       []string  `json:"flower_types"`
-	Color             string    `json:"color"`
-	StemCount         int       `json:"stem_count"`
-	PackagingType     string    `json:"packaging_type"`
-	FreshnessLifespan int       `json:"freshness_lifespan"`
-	CareInstructions  *string   `json:"care_instructions"`
-	Occasions         []string  `json:"occasions"`
-	AllowCustomCard   *bool     `json:"allow_custom_card"`
-	CompatibleAddons  []string  `json:"compatible_addons"`
-	CreatedAt         time.Time `json:"created_at"`
-	UpdatedAt         time.Time `json:"updated_at"`
+	ID               string    `json:"id"`
+	Name             string    `json:"name"`
+	Description      string    `json:"description"`
+	Tag              *string   `json:"tag,omitempty"`
+	Images           []string  `json:"images"`
+	CategoryID       string    `json:"category_id"`
+	PriceAmount      int64     `json:"price_amount"`
+	PriceCurrency    string    `json:"price_currency"`
+	DiscountAmount   *int64    `json:"discount_amount,omitempty"`
+	FinalPriceAmount int64     `json:"final_price_amount"`
+	Slug             string    `json:"slug"`
+	IsAvailable      bool      `json:"is_available"`
+	Rating           float64   `json:"rating"`
+	Stock            int       `json:"stock"`
+	SoldCount        int       `json:"sold_count"`
+	CreatedAt        time.Time `json:"created_at"`
+	UpdatedAt        time.Time `json:"updated_at"`
 }
 
+// ProductOutputForAdmin - admin panel uchun 3 ta tildagi to'liq ma'lumot (tahrirlash uchun).
 type ProductOutputForAdmin struct {
-	ProductOutput
-	DeletedAt *time.Time `json:"deleted_at"`
+	ID               string     `json:"id"`
+	NameUz           string     `json:"name_uz"`
+	NameEng          string     `json:"name_eng"`
+	NameRu           string     `json:"name_ru"`
+	DescriptionUz    string     `json:"description_uz"`
+	DescriptionEng   string     `json:"description_eng"`
+	DescriptionRu    string     `json:"description_ru"`
+	TagUz            *string    `json:"tag_uz,omitempty"`
+	TagEng           *string    `json:"tag_eng,omitempty"`
+	TagRu            *string    `json:"tag_ru,omitempty"`
+	Images           []string   `json:"images"`
+	CategoryID       string     `json:"category_id"`
+	PriceAmount      int64      `json:"price_amount"`
+	PriceCurrency    string     `json:"price_currency"`
+	DiscountAmount   *int64     `json:"discount_amount,omitempty"`
+	FinalPriceAmount int64      `json:"final_price_amount"`
+	Slug             string     `json:"slug"`
+	IsAvailable      bool       `json:"is_available"`
+	Rating           float64    `json:"rating"`
+	Stock            int        `json:"stock"`
+	SoldCount        int        `json:"sold_count"`
+	CreatedAt        time.Time  `json:"created_at"`
+	UpdatedAt        time.Time  `json:"updated_at"`
+	DeletedAt        *time.Time `json:"deleted_at"`
 }
 
-func ToProductOutput(p *domain.Product) *ProductOutput {
+// localizedField - so'ralgan tildagi qiymat bo'sh bo'lsa uz variantiga fallback qiladi.
+func localizedField(uz, eng, ru string, lang Lang) string {
+	switch lang {
+	case LangEng:
+		if eng != "" {
+			return eng
+		}
+	case LangRu:
+		if ru != "" {
+			return ru
+		}
+	}
+	return uz
+}
+
+func localizedTag(uz, eng, ru *string, lang Lang) *string {
+	switch lang {
+	case LangEng:
+		if eng != nil && *eng != "" {
+			return eng
+		}
+	case LangRu:
+		if ru != nil && *ru != "" {
+			return ru
+		}
+	}
+	return uz
+}
+
+func ToProductOutput(p *domain.Product, lang Lang) *ProductOutput {
 	images := make([]string, 0, len(p.Images()))
 	for _, img := range p.Images() {
 		images = append(images, img.URL)
@@ -128,51 +186,80 @@ func ToProductOutput(p *domain.Product) *ProductOutput {
 	}
 
 	return &ProductOutput{
-		ID:                p.ID(),
-		Name:              p.Name(),
-		Description:       p.Description(),
-		Images:            images,
-		VideoURLYoutube:   p.VideoURLYoutube(),
-		VideoURLInstagram: p.VideoURLInstagram(),
-		CategoryID:        p.CategoryID(),
-		PriceAmount:       p.Price().Amount(),
-		PriceCurrency:     p.Price().Currency(),
-		DiscountAmount:    discountAmount,
-		FinalPriceAmount:  finalPrice,
-		Slug:              p.Slug(),
-		IsAvailable:       p.IsAvailable(),
-		Rating:            p.Rating(),
-		Stock:             p.Stock(),
-		SoldCount:         p.SoldCount(),
-		FlowerTypes:       p.FlowerTypes(),
-		Color:             p.Color(),
-		StemCount:         p.StemCount(),
-		PackagingType:     p.PackagingType().String(),
-		FreshnessLifespan: int(p.FreshnessLifespan()),
-		CareInstructions:  p.CareInstructions(),
-		Occasions:         p.Occasions(),
-		AllowCustomCard:   p.AllowCustomCard(),
-		CompatibleAddons:  p.CompatibleAddons(),
-		CreatedAt:         p.CreatedAt(),
-		UpdatedAt:         p.UpdatedAt(),
+		ID:               p.ID(),
+		Name:             localizedField(p.NameUz(), p.NameEng(), p.NameRu(), lang),
+		Description:      localizedField(p.DescriptionUz(), p.DescriptionEng(), p.DescriptionRu(), lang),
+		Tag:              localizedTag(p.TagUz(), p.TagEng(), p.TagRu(), lang),
+		Images:           images,
+		CategoryID:       p.CategoryID(),
+		PriceAmount:      p.Price().Amount(),
+		PriceCurrency:    p.Price().Currency(),
+		DiscountAmount:   discountAmount,
+		FinalPriceAmount: finalPrice,
+		Slug:             p.Slug(),
+		IsAvailable:      p.IsAvailable(),
+		Rating:           p.Rating(),
+		Stock:            p.Stock(),
+		SoldCount:        p.SoldCount(),
+		CreatedAt:        p.CreatedAt(),
+		UpdatedAt:        p.UpdatedAt(),
 	}
 }
 
-func ToProductOutputs(products []*domain.Product) []*ProductOutput {
+func ToProductOutputs(products []*domain.Product, lang Lang) []*ProductOutput {
 	outputs := make([]*ProductOutput, 0, len(products))
 	for _, p := range products {
-		outputs = append(outputs, ToProductOutput(p))
+		outputs = append(outputs, ToProductOutput(p, lang))
 	}
 	return outputs
+}
+
+func ToProductOutputForAdmin(p *domain.Product) *ProductOutputForAdmin {
+	images := make([]string, 0, len(p.Images()))
+	for _, img := range p.Images() {
+		images = append(images, img.URL)
+	}
+
+	var discountAmount *int64
+	finalPrice := p.Price().Amount()
+	if dp := p.DiscountPrice(); dp != nil {
+		amt := dp.Amount()
+		discountAmount = &amt
+		finalPrice = amt
+	}
+
+	return &ProductOutputForAdmin{
+		ID:               p.ID(),
+		NameUz:           p.NameUz(),
+		NameEng:          p.NameEng(),
+		NameRu:           p.NameRu(),
+		DescriptionUz:    p.DescriptionUz(),
+		DescriptionEng:   p.DescriptionEng(),
+		DescriptionRu:    p.DescriptionRu(),
+		TagUz:            p.TagUz(),
+		TagEng:           p.TagEng(),
+		TagRu:            p.TagRu(),
+		Images:           images,
+		CategoryID:       p.CategoryID(),
+		PriceAmount:      p.Price().Amount(),
+		PriceCurrency:    p.Price().Currency(),
+		DiscountAmount:   discountAmount,
+		FinalPriceAmount: finalPrice,
+		Slug:             p.Slug(),
+		IsAvailable:      p.IsAvailable(),
+		Rating:           p.Rating(),
+		Stock:            p.Stock(),
+		SoldCount:        p.SoldCount(),
+		CreatedAt:        p.CreatedAt(),
+		UpdatedAt:        p.UpdatedAt(),
+		DeletedAt:        p.DeletedAt(),
+	}
 }
 
 func ToProductOutputsForAdmin(products []*domain.Product) []*ProductOutputForAdmin {
 	outputs := make([]*ProductOutputForAdmin, 0, len(products))
 	for _, p := range products {
-		outputs = append(outputs, &ProductOutputForAdmin{
-			ProductOutput: *ToProductOutput(p),
-			DeletedAt:     p.DeletedAt(),
-		})
+		outputs = append(outputs, ToProductOutputForAdmin(p))
 	}
 	return outputs
 }

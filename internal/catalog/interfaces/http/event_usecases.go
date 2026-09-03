@@ -11,11 +11,11 @@ type CreateEventUseCase interface {
 }
 
 type GetEventsUseCase interface {
-	Execute(ctx context.Context) ([]*application.EventOutput, error)
+	Execute(ctx context.Context, lang application.Lang) ([]*application.EventOutput, error)
 }
 
 type GetEventUseCase interface {
-	Execute(ctx context.Context, id string) (*application.EventOutput, error)
+	Execute(ctx context.Context, id string, lang application.Lang) (*application.EventOutput, error)
 }
 
 type UpdateEventUseCase interface {

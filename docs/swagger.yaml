@@ -1,5 +1,41 @@
 basePath: /api/v1
 definitions:
+  application.CategoryOutput:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: string
+      image_public_id:
+        type: string
+      image_url:
+        type: string
+      name:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  application.CategoryOutputForAdmin:
+    properties:
+      created_at:
+        type: string
+      deleted_at:
+        type: string
+      id:
+        type: string
+      image_public_id:
+        type: string
+      image_url:
+        type: string
+      name_eng:
+        type: string
+      name_ru:
+        type: string
+      name_uz:
+        type: string
+      updated_at:
+        type: string
+    type: object
   application.EventOutput:
     properties:
       category_id:
@@ -29,11 +65,19 @@ definitions:
         type: string
       created_at:
         type: string
-      cta:
+      cta_eng:
+        type: string
+      cta_ru:
+        type: string
+      cta_uz:
         type: string
       deleted_at:
         type: string
-      eyebrow:
+      eyebrow_eng:
+        type: string
+      eyebrow_ru:
+        type: string
+      eyebrow_uz:
         type: string
       id:
         type: string
@@ -41,9 +85,17 @@ definitions:
         type: string
       is_root:
         type: boolean
-      subtitle:
+      subtitle_eng:
         type: string
-      title:
+      subtitle_ru:
+        type: string
+      subtitle_uz:
+        type: string
+      title_eng:
+        type: string
+      title_ru:
+        type: string
+      title_uz:
         type: string
       updated_at:
         type: string
@@ -59,18 +111,8 @@ definitions:
     type: object
   application.ProductOutput:
     properties:
-      allow_custom_card:
-        type: boolean
-      care_instructions:
-        type: string
       category_id:
         type: string
-      color:
-        type: string
-      compatible_addons:
-        items:
-          type: string
-        type: array
       created_at:
         type: string
       description:
@@ -78,12 +120,6 @@ definitions:
       discount_amount:
         type: integer
       final_price_amount:
-        type: integer
-      flower_types:
-        items:
-          type: string
-        type: array
-      freshness_lifespan:
         type: integer
       id:
         type: string
@@ -95,12 +131,6 @@ definitions:
         type: boolean
       name:
         type: string
-      occasions:
-        items:
-          type: string
-        type: array
-      packaging_type:
-        type: string
       price_amount:
         type: integer
       price_currency:
@@ -111,78 +141,86 @@ definitions:
         type: string
       sold_count:
         type: integer
-      stem_count:
-        type: integer
       stock:
         type: integer
+      tag:
+        type: string
       updated_at:
-        type: string
-      video_url_instagram:
-        type: string
-      video_url_youtube:
         type: string
     type: object
   application.UpdateCategoryInput:
     properties:
       id:
         type: string
-      name:
+      name_eng:
+        type: string
+      name_ru:
+        type: string
+      name_uz:
         type: string
     type: object
   application.UpdateEventInput:
     properties:
       category_id:
         type: string
-      cta:
+      cta_eng:
         type: string
-      eyebrow:
+      cta_ru:
+        type: string
+      cta_uz:
+        type: string
+      eyebrow_eng:
+        type: string
+      eyebrow_ru:
+        type: string
+      eyebrow_uz:
         type: string
       is_root:
         type: boolean
-      subtitle:
+      subtitle_eng:
         type: string
-      title:
+      subtitle_ru:
+        type: string
+      subtitle_uz:
+        type: string
+      title_eng:
+        type: string
+      title_ru:
+        type: string
+      title_uz:
         type: string
     type: object
   application.UpdateProductInput:
     properties:
       amount:
         type: integer
-      care_instructions:
-        type: string
       category_id:
         type: string
-      clear_care_instructions:
-        type: boolean
       clear_discount:
         type: boolean
-      color:
-        type: string
-      compatible_addons:
-        items:
-          type: string
-        type: array
+      clear_tag_eng:
+        type: boolean
+      clear_tag_ru:
+        type: boolean
+      clear_tag_uz:
+        type: boolean
       currency:
         type: string
-      description:
+      description_eng:
+        type: string
+      description_ru:
+        type: string
+      description_uz:
         type: string
       discount_amount:
         type: integer
-      flower_types:
-        items:
-          type: string
-        type: array
-      freshness_lifespan:
-        type: integer
       is_available:
         type: boolean
-      name:
+      name_eng:
         type: string
-      occasions:
-        items:
-          type: string
-        type: array
-      packaging_type:
+      name_ru:
+        type: string
+      name_uz:
         type: string
       rating:
         type: number
@@ -190,26 +228,13 @@ definitions:
         type: string
       sold_count:
         type: integer
-      stem_count:
-        type: integer
       stock:
         type: integer
-      video_url_instagram:
+      tag_eng:
         type: string
-      video_url_youtube:
+      tag_ru:
         type: string
-    type: object
-  http.CreateCategoryResponse:
-    properties:
-      created_at:
-        type: string
-      id:
-        type: string
-      name:
-        type: string
-      parent_id:
-        type: string
-      updated_at:
+      tag_uz:
         type: string
     type: object
   http.LoginRequest:
@@ -429,11 +454,16 @@ paths:
     get:
       consumes:
       - application/json
-      description: Kategoriyalarni nomi bo'yicha qidirish
+      description: Kategoriyalarni nomi bo'yicha qidirish. lang bo'yicha localized
+        javob qaytadi.
       parameters:
       - description: Kategoriya nomi
         in: query
         name: search
+        type: string
+      - description: 'Til: uz (default), eng yoki ru'
+        in: query
+        name: lang
         type: string
       produces:
       - application/json
@@ -446,7 +476,7 @@ paths:
             - properties:
                 data:
                   items:
-                    $ref: '#/definitions/http.CreateCategoryResponse'
+                    $ref: '#/definitions/application.CategoryOutput'
                   type: array
               type: object
         "500":
@@ -459,11 +489,21 @@ paths:
     post:
       consumes:
       - multipart/form-data
-      description: Nomi va rasm orqali yangi kategoriya yaratadi
+      description: Nomi (3 tilda) va rasm orqali yangi kategoriya yaratadi
       parameters:
-      - description: Kategoriya nomi
+      - description: Kategoriya nomi (o'zbekcha)
         in: formData
-        name: name
+        name: name_uz
+        required: true
+        type: string
+      - description: Kategoriya nomi (inglizcha)
+        in: formData
+        name: name_eng
+        required: true
+        type: string
+      - description: Kategoriya nomi (ruscha)
+        in: formData
+        name: name_ru
         required: true
         type: string
       - description: Kategoriya rasmi
@@ -481,7 +521,7 @@ paths:
             - $ref: '#/definitions/response.Envelope'
             - properties:
                 data:
-                  $ref: '#/definitions/http.CreateCategoryResponse'
+                  $ref: '#/definitions/application.CategoryOutput'
               type: object
         "400":
           description: Noto'g'ri so'rov tanasi yoki validatsiya xatosi
@@ -533,6 +573,10 @@ paths:
         name: id
         required: true
         type: string
+      - description: 'Til: uz (default), eng yoki ru'
+        in: query
+        name: lang
+        type: string
       produces:
       - application/json
       responses:
@@ -543,7 +587,7 @@ paths:
             - $ref: '#/definitions/response.Envelope'
             - properties:
                 data:
-                  $ref: '#/definitions/http.CreateCategoryResponse'
+                  $ref: '#/definitions/application.CategoryOutput'
               type: object
         "500":
           description: Ichki server xatosi
@@ -555,7 +599,7 @@ paths:
     put:
       consumes:
       - application/json
-      description: Kategoriyani ID bo'yicha yangilash
+      description: Kategoriyani ID bo'yicha yangilash (nomi 3 tilda)
       parameters:
       - description: Kategoriya ID
         in: path
@@ -573,6 +617,14 @@ paths:
       responses:
         "200":
           description: Kategoriya yangilash muvaffaqiyatli
+          schema:
+            $ref: '#/definitions/response.Envelope'
+        "400":
+          description: Validatsiya xatosi
+          schema:
+            $ref: '#/definitions/response.Envelope'
+        "404":
+          description: Kategoriya topilmadi
           schema:
             $ref: '#/definitions/response.Envelope'
         "500":
@@ -597,6 +649,10 @@ paths:
       - description: Mahsulot nomi bo'yicha qidirish
         in: query
         name: search
+        type: string
+      - description: 'Til: uz (default), eng yoki ru'
+        in: query
+        name: lang
         type: string
       - description: Sahifa raqami (default 1)
         in: query
@@ -629,7 +685,8 @@ paths:
     get:
       consumes:
       - application/json
-      description: Kategoriyalarni olish
+      description: Barcha kategoriyalarni (o'chirilganlarni ham), 3 ta tildagi to'liq
+        ma'lumot bilan qaytaradi
       parameters:
       - description: Kategoriyalarni qidirish
         in: query
@@ -641,20 +698,32 @@ paths:
         "200":
           description: Kategoriyalar olish muvaffaqiyatli
           schema:
-            $ref: '#/definitions/response.Envelope'
+            allOf:
+            - $ref: '#/definitions/response.Envelope'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/application.CategoryOutputForAdmin'
+                  type: array
+              type: object
         "500":
           description: Ichki server xatosi
           schema:
             $ref: '#/definitions/response.Envelope'
       security:
       - BearerAuth: []
-      summary: Kategoriyalarni olish
+      summary: Kategoriyalarni olish - admin (o'chirilganlar bilan birga)
       tags:
       - categories
   /events:
     get:
       description: Faol (o'chirilmagan) eventlar ro'yxati. is_root=true bo'lganlar
-        birinchi chiqadi
+        birinchi chiqadi. lang bo'yicha localized javob qaytadi.
+      parameters:
+      - description: 'Til: uz (default), eng yoki ru'
+        in: query
+        name: lang
+        type: string
       produces:
       - application/json
       responses:
@@ -682,22 +751,56 @@ paths:
       description: Eyebrow, title, subtitle, cta, category_id va rasm orqali yangi
         event yaratadi
       parameters:
-      - description: Kichik ustki matn
+      - description: Kichik ustki matn (o'zbekcha)
         in: formData
-        name: eyebrow
+        name: eyebrow_uz
         type: string
-      - description: Sarlavha
+      - description: Kichik ustki matn (inglizcha)
         in: formData
-        name: title
+        name: eyebrow_eng
+        type: string
+      - description: Kichik ustki matn (ruscha)
+        in: formData
+        name: eyebrow_ru
+        type: string
+      - description: Sarlavha (o'zbekcha)
+        in: formData
+        name: title_uz
         required: true
         type: string
-      - description: Kichik matn (subtitle)
+      - description: Sarlavha (inglizcha)
         in: formData
-        name: subtitle
+        name: title_eng
+        required: true
         type: string
-      - description: Tugma matni
+      - description: Sarlavha (ruscha)
         in: formData
-        name: cta
+        name: title_ru
+        required: true
+        type: string
+      - description: Kichik matn (o'zbekcha)
+        in: formData
+        name: subtitle_uz
+        type: string
+      - description: Kichik matn (inglizcha)
+        in: formData
+        name: subtitle_eng
+        type: string
+      - description: Kichik matn (ruscha)
+        in: formData
+        name: subtitle_ru
+        type: string
+      - description: Tugma matni (o'zbekcha)
+        in: formData
+        name: cta_uz
+        type: string
+      - description: Tugma matni (inglizcha)
+        in: formData
+        name: cta_eng
+        type: string
+      - description: Tugma matni (ruscha)
+        in: formData
+        name: cta_ru
         type: string
       - description: Kategoriya ID
         in: formData
@@ -782,6 +885,10 @@ paths:
         in: path
         name: id
         required: true
+        type: string
+      - description: 'Til: uz (default), eng yoki ru'
+        in: query
+        name: lang
         type: string
       produces:
       - application/json
@@ -875,7 +982,7 @@ paths:
   /products:
     get:
       description: Faol (o'chirilmagan) mahsulotlar ro'yxati, nomi va/yoki category_id
-        bo'yicha filtrlash mumkin
+        bo'yicha filtrlash mumkin. lang bo'yicha localized javob qaytadi.
       parameters:
       - description: Mahsulot nomi bo'yicha qidirish
         in: query
@@ -884,6 +991,10 @@ paths:
       - description: Kategoriya ID bo'yicha filtrlash
         in: query
         name: category_id
+        type: string
+      - description: 'Til: uz (default), eng yoki ru'
+        in: query
+        name: lang
         type: string
       - description: Sahifa raqami (default 1)
         in: query
@@ -915,24 +1026,42 @@ paths:
     post:
       consumes:
       - multipart/form-data
-      description: Gullar do'koni mahsulotini barcha xususiyatlari (narx, chegirma,
-        rasmlar, qadoqlash va h.k.) bilan yaratadi. Faqat admin uchun.
+      description: Yangi mahsulotni barcha xususiyatlari (nomi/tavsifi 3 tilda, narx,
+        chegirma, rasmlar) bilan yaratadi. Faqat admin uchun.
       parameters:
-      - description: Mahsulot nomi
+      - description: Mahsulot nomi (o'zbekcha)
         in: formData
-        name: name
+        name: name_uz
         required: true
         type: string
-      - description: Tavsif
+      - description: Mahsulot nomi (inglizcha)
         in: formData
-        name: description
+        name: name_eng
+        required: true
+        type: string
+      - description: Mahsulot nomi (ruscha)
+        in: formData
+        name: name_ru
+        required: true
+        type: string
+      - description: Tavsif (o'zbekcha)
+        in: formData
+        name: description_uz
+        type: string
+      - description: Tavsif (inglizcha)
+        in: formData
+        name: description_eng
+        type: string
+      - description: Tavsif (ruscha)
+        in: formData
+        name: description_ru
         type: string
       - description: Kategoriya ID
         in: formData
         name: category_id
         required: true
         type: string
-      - description: Narx (tiyin/kopeykada)
+      - description: Narx (so'mda, butun son)
         in: formData
         name: amount
         required: true
@@ -942,21 +1071,13 @@ paths:
         name: currency
         required: true
         type: string
-      - description: Chegirma narxi (ixtiyoriy)
+      - description: Chegirma narxi, so'mda (ixtiyoriy)
         in: formData
         name: discount_amount
         type: integer
       - description: Slug (bo'sh bo'lsa nomidan avtomatik yasaladi)
         in: formData
         name: slug
-        type: string
-      - description: YouTube video URL
-        in: formData
-        name: video_url_youtube
-        type: string
-      - description: Instagram video URL
-        in: formData
-        name: video_url_instagram
         type: string
       - description: Sotuvda bor yoki yo'qligi (default true)
         in: formData
@@ -970,38 +1091,17 @@ paths:
         in: formData
         name: stock
         type: integer
-      - description: Gullar turi, vergul bilan
+      - description: Belgi/badge, masalan bestseller (o'zbekcha, ixtiyoriy)
         in: formData
-        name: flower_types
+        name: tag_uz
         type: string
-      - description: Rangi
+      - description: Belgi/badge (inglizcha, ixtiyoriy)
         in: formData
-        name: color
+        name: tag_eng
         type: string
-      - description: Buketdagi gullar soni
+      - description: Belgi/badge (ruscha, ixtiyoriy)
         in: formData
-        name: stem_count
-        type: integer
-      - description: 'Qadoqlash turi: bucket, box yoki vase'
-        in: formData
-        name: packaging_type
-        required: true
-        type: string
-      - description: Saqlanish muddati (kunlarda, 1-7, default 1)
-        in: formData
-        name: freshness_lifespan
-        type: integer
-      - description: Parvarish bo'yicha ko'rsatma
-        in: formData
-        name: care_instructions
-        type: string
-      - description: Bayramlar/holatlar (tag), vergul bilan
-        in: formData
-        name: occasions
-        type: string
-      - description: Mos qo'shimchalar, vergul bilan
-        in: formData
-        name: compatible_addons
+        name: tag_ru
         type: string
       - description: Mahsulot rasmlari (eng ko'pi bilan 5 ta)
         in: formData
@@ -1081,6 +1181,10 @@ paths:
         name: id
         required: true
         type: string
+      - description: 'Til: uz (default), eng yoki ru'
+        in: query
+        name: lang
+        type: string
       produces:
       - application/json
       responses:
@@ -1150,7 +1254,8 @@ paths:
       - products
   /products/admin:
     get:
-      description: Barcha mahsulotlarni (o'chirilganlarni ham) qaytaradi
+      description: Barcha mahsulotlarni (o'chirilganlarni ham), 3 ta tildagi to'liq
+        ma'lumot bilan qaytaradi
       parameters:
       - description: Mahsulot nomi bo'yicha qidirish
         in: query
@@ -1197,6 +1302,10 @@ paths:
         in: path
         name: slug
         required: true
+        type: string
+      - description: 'Til: uz (default), eng yoki ru'
+        in: query
+        name: lang
         type: string
       produces:
       - application/json

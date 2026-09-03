@@ -14,10 +14,10 @@ func NewGetProductUseCase(repo domain.ProductRepository) *GetProductUseCase {
 	return &GetProductUseCase{repo: repo}
 }
 
-func (uc *GetProductUseCase) Execute(ctx context.Context, id string) (*ProductOutput, error) {
+func (uc *GetProductUseCase) Execute(ctx context.Context, id string, lang Lang) (*ProductOutput, error) {
 	product, err := uc.repo.FindByID(ctx, id)
 	if err != nil {
 		return nil, err
 	}
-	return ToProductOutput(product), nil
+	return ToProductOutput(product, lang), nil
 }

@@ -41,14 +41,16 @@ func NewCategoryHandler(createUc CreateCategoryUseCase,
 // CreateCategory godoc
 //
 //		@Summary		Yangi kategoriya yaratish
-//		@Description	Nomi va rasm orqali yangi kategoriya yaratadi
+//		@Description	Nomi (3 tilda) va rasm orqali yangi kategoriya yaratadi
 //		@Tags			categories
 //		@Accept			multipart/form-data
 //	    @Security		BearerAuth
 //		@Produce		json
-//		@Param			name	formData	string	true	"Kategoriya nomi"
-//		@Param			image	formData	file	true	"Kategoriya rasmi"
-//		@Success		201		{object}	response.Envelope{data=CreateCategoryResponse}	"Kategoriya yaratildi"
+//		@Param			name_uz		formData	string	true	"Kategoriya nomi (o'zbekcha)"
+//		@Param			name_eng	formData	string	true	"Kategoriya nomi (inglizcha)"
+//		@Param			name_ru		formData	string	true	"Kategoriya nomi (ruscha)"
+//		@Param			image		formData	file	true	"Kategoriya rasmi"
+//		@Success		201		{object}	response.Envelope{data=application.CategoryOutput}	"Kategoriya yaratildi"
 //		@Failure		400		{object}	response.Envelope	"Noto'g'ri so'rov tanasi yoki validatsiya xatosi"
 //		@Failure		500		{object}	response.Envelope	"Ichki server xatosi"
 //		@Router			/categories [post]
@@ -57,8 +59,6 @@ func (h *CategoryHandler) CreateCategory(w http.ResponseWriter, r *http.Request)
 		response.Error(w, http.StatusBadRequest, "fayl hajmi juda katta yoki noto'g'ri format")
 		return
 	}
-
-	name := r.FormValue("name")
 
 	file, header, err := r.FormFile("image")
 	if err != nil {
@@ -76,7 +76,9 @@ func (h *CategoryHandler) CreateCategory(w http.ResponseWriter, r *http.Request)
 	ext := filepath.Ext(header.Filename) // ".png"
 	uniqueFileName := uuid.New().String() + ext
 	input := application.CreateCategoryInput{
-		Name: name,
+		NameUz:  r.FormValue("name_uz"),
+		NameEng: r.FormValue("name_eng"),
+		NameRu:  r.FormValue("name_ru"),
 		Image: media.UploadInput{
 			Data:     data,
 			FileName: uniqueFileName,
@@ -95,17 +97,19 @@ func (h *CategoryHandler) CreateCategory(w http.ResponseWriter, r *http.Request)
 // GetCategories godoc
 //
 //	@Summary		Kategoriyalarni olish
-//	@Description	Kategoriyalarni nomi bo'yicha qidirish
+//	@Description	Kategoriyalarni nomi bo'yicha qidirish. lang bo'yicha localized javob qaytadi.
 //	@Tags			categories
 //	@Accept			json
 //	@Produce		json
 //	@Param			search	query		string	false	"Kategoriya nomi"
-//	@Success		200		{object}	response.Envelope{data=[]CreateCategoryResponse}	"Kategoriyalar olish muvaffaqiyatli"
+//	@Param			lang	query		string	false	"Til: uz (default), eng yoki ru"
+//	@Success		200		{object}	response.Envelope{data=[]application.CategoryOutput}	"Kategoriyalar olish muvaffaqiyatli"
 //	@Failure		500		{object}	response.Envelope	"Ichki server xatosi"
 //	@Router			/categories [get]
 func (h *CategoryHandler) GetCategories(w http.ResponseWriter, r *http.Request) {
 	search := r.URL.Query().Get("search")
-	categories, err := h.getUc.Execute(r.Context(), search)
+	lang := parseLang(r)
+	categories, err := h.getUc.Execute(r.Context(), search, lang)
 	if err != nil {
 		writeCategoryError(w, err)
 		return
@@ -121,13 +125,15 @@ func (h *CategoryHandler) GetCategories(w http.ResponseWriter, r *http.Request) 
 //	@Tags			categories
 //	@Accept			json
 //	@Produce		json
-//	@Param			id	path		string	true	"Kategoriya ID"
-//	@Success		200		{object}	response.Envelope{data=CreateCategoryResponse}	"Kategoriya olish muvaffaqiyatli"
+//	@Param			id		path		string	true	"Kategoriya ID"
+//	@Param			lang	query		string	false	"Til: uz (default), eng yoki ru"
+//	@Success		200		{object}	response.Envelope{data=application.CategoryOutput}	"Kategoriya olish muvaffaqiyatli"
 //	@Failure		500		{object}	response.Envelope	"Ichki server xatosi"
 //	@Router			/categories/{id} [get]
 func (h *CategoryHandler) GetCategory(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
-	category, err := h.getByIdUc.Execute(r.Context(), id)
+	lang := parseLang(r)
+	category, err := h.getByIdUc.Execute(r.Context(), id, lang)
 	if err != nil {
 		writeCategoryError(w, err)
 		return
@@ -139,7 +145,7 @@ func (h *CategoryHandler) GetCategory(w http.ResponseWriter, r *http.Request) {
 // UpdateCategory godoc
 //
 //		@Summary		Kategoriyani yangilash
-//		@Description	Kategoriyani ID bo'yicha yangilash
+//		@Description	Kategoriyani ID bo'yicha yangilash (nomi 3 tilda)
 //		@Tags			categories
 //		@Accept			json
 //	 @Security		BearerAuth
@@ -147,6 +153,8 @@ func (h *CategoryHandler) GetCategory(w http.ResponseWriter, r *http.Request) {
 //		@Param			id	path		string	true	"Kategoriya ID"
 //		@Param			category	body		application.UpdateCategoryInput	true	"Yangilash uchun kategoriya ma'lumotlari"
 //		@Success		200		{object}	response.Envelope	"Kategoriya yangilash muvaffaqiyatli"
+//		@Failure		400		{object}	response.Envelope	"Validatsiya xatosi"
+//		@Failure		404		{object}	response.Envelope	"Kategoriya topilmadi"
 //		@Failure		500		{object}	response.Envelope	"Ichki server xatosi"
 //		@Router			/categories/{id} [put]
 func (h *CategoryHandler) UpdateCategory(w http.ResponseWriter, r *http.Request) {
@@ -189,14 +197,14 @@ func (h *CategoryHandler) DeleteCategory(w http.ResponseWriter, r *http.Request)
 
 // GetAllCategories godoc
 //
-//		@Summary		Kategoriyalarni olish
-//		@Description	Kategoriyalarni olish
+//		@Summary		Kategoriyalarni olish - admin (o'chirilganlar bilan birga)
+//		@Description	Barcha kategoriyalarni (o'chirilganlarni ham), 3 ta tildagi to'liq ma'lumot bilan qaytaradi
 //		@Tags			categories
 //		@Accept			json
 //	 @Security		BearerAuth
 //		@Produce		json
 //		@Param			search	query		string	false	"Kategoriyalarni qidirish"
-//		@Success		200		{object}	response.Envelope	"Kategoriyalar olish muvaffaqiyatli"
+//		@Success		200		{object}	response.Envelope{data=[]application.CategoryOutputForAdmin}	"Kategoriyalar olish muvaffaqiyatli"
 //		@Failure		500		{object}	response.Envelope	"Ichki server xatosi"
 //		@Router			/categories/admin [get]
 func (h *CategoryHandler) GetAllCategories(w http.ResponseWriter, r *http.Request) {

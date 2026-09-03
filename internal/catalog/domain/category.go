@@ -6,14 +6,17 @@ import (
 )
 
 var (
-	ErrorEmptyCategoryName   = errors.New("catalog: category nomi bo'sh bo'lishi mumkin emas")
+	ErrorEmptyCategoryName   = errors.New("catalog: category nomi (uz, eng, ru) bo'sh bo'lishi mumkin emas")
 	ErrCategoryNotFound      = errors.New("catalog: category topilmadi")
 	ErrCategoryAlreadyExists = errors.New("category with this name already exists under the same parent")
 )
 
 type Category struct {
-	id            string
-	name          string
+	id      string
+	nameUz  string
+	nameEng string
+	nameRu  string
+
 	imageURL      string
 	imagePublicID string
 	createdAt     time.Time
@@ -21,17 +24,19 @@ type Category struct {
 	deletedAt     *time.Time
 }
 
-func NewCategory(id, name, imageURL, imagePublicID string) (*Category, error) {
+func NewCategory(id, nameUz, nameEng, nameRu, imageURL, imagePublicID string) (*Category, error) {
 	if id == "" {
 		return nil, ErrEmptyCategoryID
 	}
-	if name == "" {
+	if nameUz == "" || nameEng == "" || nameRu == "" {
 		return nil, ErrorEmptyCategoryName
 	}
 
 	return &Category{
 		id:            id,
-		name:          name,
+		nameUz:        nameUz,
+		nameEng:       nameEng,
+		nameRu:        nameRu,
 		imageURL:      imageURL,
 		imagePublicID: imagePublicID,
 		createdAt:     time.Now(),
@@ -40,11 +45,13 @@ func NewCategory(id, name, imageURL, imagePublicID string) (*Category, error) {
 	}, nil
 }
 
-func NewCategoryFromRepository(id, name, imageURL, imagePublicID string, createdAt time.Time, updatedAt time.Time, deletedAt *time.Time) *Category {
+func NewCategoryFromRepository(id, nameUz, nameEng, nameRu, imageURL, imagePublicID string, createdAt time.Time, updatedAt time.Time, deletedAt *time.Time) *Category {
 
 	return &Category{
 		id:            id,
-		name:          name,
+		nameUz:        nameUz,
+		nameEng:       nameEng,
+		nameRu:        nameRu,
 		imageURL:      imageURL,
 		imagePublicID: imagePublicID,
 		createdAt:     createdAt,
@@ -56,8 +63,14 @@ func NewCategoryFromRepository(id, name, imageURL, imagePublicID string, created
 func (c *Category) ID() string {
 	return c.id
 }
-func (c *Category) Name() string {
-	return c.name
+func (c *Category) NameUz() string {
+	return c.nameUz
+}
+func (c *Category) NameEng() string {
+	return c.nameEng
+}
+func (c *Category) NameRu() string {
+	return c.nameRu
 }
 func (c *Category) CreatedAt() time.Time {
 	return c.createdAt
@@ -84,11 +97,13 @@ func (c *Category) Delete() {
 	c.deletedAt = &now
 }
 
-func (c *Category) ChangeName(name string) error {
-	if name == "" {
+func (c *Category) ChangeNames(nameUz, nameEng, nameRu string) error {
+	if nameUz == "" || nameEng == "" || nameRu == "" {
 		return ErrorEmptyCategoryName
 	}
-	c.name = name
+	c.nameUz = nameUz
+	c.nameEng = nameEng
+	c.nameRu = nameRu
 	c.updatedAt = time.Now()
 	return nil
 }

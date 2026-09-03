@@ -21,11 +21,10 @@ func NewPostgresProductRepository(db *sqlx.DB) *PostgresProductRepository {
 	return &PostgresProductRepository{db: db}
 }
 
-const productColumns = `id, name, description, images, video_url_youtube, video_url_instagram, category_id,
-	price_amount, price_currency, discount_price_amount, slug, is_available,
-	rating, stock, sold_count, flower_types, color, stem_count,
-	packaging_type, freshness_lifespan, care_instructions, occasions,
-	allow_custom_card, compatible_addons, created_at, updated_at, deleted_at`
+const productColumns = `id, name_uz, name_eng, name_ru, description_uz, description_eng, description_ru, images,
+	category_id, price_amount, price_currency, discount_price_amount, slug, is_available,
+	rating, stock, sold_count, tag_uz, tag_eng, tag_ru,
+	created_at, updated_at, deleted_at`
 
 type rowScanner interface {
 	Scan(dest ...any) error
@@ -33,41 +32,36 @@ type rowScanner interface {
 
 func scanProduct(s rowScanner) (*domain.Product, error) {
 	var (
-		id                string
-		name              string
-		description       string
-		imagesRaw         []byte
-		videoURLYoutube   string
-		videoURLInstagram string
-		categoryID        string
-		priceAmount       int64
-		priceCurrency     string
-		discountAmount    sql.NullInt64
-		slug              string
-		isAvailable       bool
-		rating            float64
-		stock             int
-		soldCount         int
-		flowerTypes       []string
-		color             string
-		stemCount         int
-		packagingType     string
-		freshnessLifespan int
-		careInstructions  sql.NullString
-		occasions         []string
-		allowCustomCard   sql.NullBool
-		compatibleAddons  []string
-		createdAt         time.Time
-		updatedAt         time.Time
-		deletedAt         sql.NullTime
+		id             string
+		nameUz         string
+		nameEng        string
+		nameRu         string
+		descriptionUz  string
+		descriptionEng string
+		descriptionRu  string
+		imagesRaw      []byte
+		categoryID     string
+		priceAmount    int64
+		priceCurrency  string
+		discountAmount sql.NullInt64
+		slug           string
+		isAvailable    bool
+		rating         float64
+		stock          int
+		soldCount      int
+		tagUz          sql.NullString
+		tagEng         sql.NullString
+		tagRu          sql.NullString
+		createdAt      time.Time
+		updatedAt      time.Time
+		deletedAt      sql.NullTime
 	)
 
 	err := s.Scan(
-		&id, &name, &description, &imagesRaw, &videoURLYoutube, &videoURLInstagram, &categoryID,
-		&priceAmount, &priceCurrency, &discountAmount, &slug, &isAvailable,
-		&rating, &stock, &soldCount, pq.Array(&flowerTypes), &color, &stemCount,
-		&packagingType, &freshnessLifespan, &careInstructions, pq.Array(&occasions),
-		&allowCustomCard, pq.Array(&compatibleAddons), &createdAt, &updatedAt, &deletedAt,
+		&id, &nameUz, &nameEng, &nameRu, &descriptionUz, &descriptionEng, &descriptionRu, &imagesRaw,
+		&categoryID, &priceAmount, &priceCurrency, &discountAmount, &slug, &isAvailable,
+		&rating, &stock, &soldCount, &tagUz, &tagEng, &tagRu,
+		&createdAt, &updatedAt, &deletedAt,
 	)
 	if err != nil {
 		return nil, err
@@ -94,16 +88,18 @@ func scanProduct(s rowScanner) (*domain.Product, error) {
 		}
 	}
 
-	var careInstructionsPtr *string
-	if careInstructions.Valid {
-		v := careInstructions.String
-		careInstructionsPtr = &v
+	var tagUzPtr, tagEngPtr, tagRuPtr *string
+	if tagUz.Valid {
+		v := tagUz.String
+		tagUzPtr = &v
 	}
-
-	var allowCustomCardPtr *bool
-	if allowCustomCard.Valid {
-		v := allowCustomCard.Bool
-		allowCustomCardPtr = &v
+	if tagEng.Valid {
+		v := tagEng.String
+		tagEngPtr = &v
+	}
+	if tagRu.Valid {
+		v := tagRu.String
+		tagRuPtr = &v
 	}
 
 	var deletedAtPtr *time.Time
@@ -112,32 +108,28 @@ func scanProduct(s rowScanner) (*domain.Product, error) {
 	}
 
 	return domain.NewProductFromRepository(domain.ProductFromRepositoryParams{
-		ID:                id,
-		Name:              name,
-		Description:       description,
-		Images:            images,
-		VideoURLYoutube:   videoURLYoutube,
-		VideoURLInstagram: videoURLInstagram,
-		CategoryID:        categoryID,
-		Price:             price,
-		DiscountPrice:     discountPrice,
-		Slug:              slug,
-		IsAvailable:       isAvailable,
-		Rating:            rating,
-		Stock:             stock,
-		SoldCount:         soldCount,
-		FlowerTypes:       flowerTypes,
-		Color:             color,
-		StemCount:         stemCount,
-		PackagingType:     domain.PackagingType(packagingType),
-		FreshnessLifespan: domain.FreshnessLifespan(freshnessLifespan),
-		CareInstructions:  careInstructionsPtr,
-		Occasions:         occasions,
-		AllowCustomCard:   allowCustomCardPtr,
-		CompatibleAddons:  compatibleAddons,
-		CreatedAt:         createdAt,
-		UpdatedAt:         updatedAt,
-		DeletedAt:         deletedAtPtr,
+		ID:             id,
+		NameUz:         nameUz,
+		NameEng:        nameEng,
+		NameRu:         nameRu,
+		DescriptionUz:  descriptionUz,
+		DescriptionEng: descriptionEng,
+		DescriptionRu:  descriptionRu,
+		Images:         images,
+		CategoryID:     categoryID,
+		Price:          price,
+		DiscountPrice:  discountPrice,
+		Slug:           slug,
+		IsAvailable:    isAvailable,
+		Rating:         rating,
+		Stock:          stock,
+		SoldCount:      soldCount,
+		TagUz:          tagUzPtr,
+		TagEng:         tagEngPtr,
+		TagRu:          tagRuPtr,
+		CreatedAt:      createdAt,
+		UpdatedAt:      updatedAt,
+		DeletedAt:      deletedAtPtr,
 	}), nil
 }
 
@@ -166,15 +158,14 @@ func (r *PostgresProductRepository) Save(ctx context.Context, p *domain.Product)
 	}
 
 	query := `INSERT INTO products (` + productColumns + `) VALUES (
-		$1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24,$25,$26,$27
+		$1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23
 	)`
 
 	_, err = r.db.ExecContext(ctx, query,
-		p.ID(), p.Name(), p.Description(), string(imagesJSON), p.VideoURLYoutube(), p.VideoURLInstagram(), p.CategoryID(),
-		p.Price().Amount(), p.Price().Currency(), discountAmount, p.Slug(), p.IsAvailable(),
-		p.Rating(), p.Stock(), p.SoldCount(), pq.Array(p.FlowerTypes()), p.Color(), p.StemCount(),
-		string(p.PackagingType()), int(p.FreshnessLifespan()), p.CareInstructions(), pq.Array(p.Occasions()),
-		p.AllowCustomCard(), pq.Array(p.CompatibleAddons()), p.CreatedAt(), p.UpdatedAt(), p.DeletedAt(),
+		p.ID(), p.NameUz(), p.NameEng(), p.NameRu(), p.DescriptionUz(), p.DescriptionEng(), p.DescriptionRu(), string(imagesJSON),
+		p.CategoryID(), p.Price().Amount(), p.Price().Currency(), discountAmount, p.Slug(), p.IsAvailable(),
+		p.Rating(), p.Stock(), p.SoldCount(), p.TagUz(), p.TagEng(), p.TagRu(),
+		p.CreatedAt(), p.UpdatedAt(), p.DeletedAt(),
 	)
 	if isUniqueViolation(err, "products_slug_key") {
 		return domain.ErrProductSlugTaken
@@ -209,7 +200,7 @@ func (r *PostgresProductRepository) FindBySlug(ctx context.Context, slug string)
 }
 
 func (r *PostgresProductRepository) findAll(ctx context.Context, search, categoryID string, includeDeleted bool, page, pageSize int) ([]*domain.Product, int64, error) {
-	where := ` WHERE name ILIKE $1`
+	where := ` WHERE (name_uz ILIKE $1 OR name_eng ILIKE $1 OR name_ru ILIKE $1)`
 	args := []any{"%" + search + "%"}
 
 	if categoryID != "" {
@@ -276,19 +267,15 @@ func (r *PostgresProductRepository) Update(ctx context.Context, p *domain.Produc
 	}
 
 	query := `UPDATE products SET
-		name=$1, description=$2, images=$3, video_url_youtube=$4, video_url_instagram=$5, category_id=$6,
-		price_amount=$7, price_currency=$8, discount_price_amount=$9, slug=$10, is_available=$11,
-		rating=$12, stock=$13, sold_count=$14, flower_types=$15, color=$16, stem_count=$17,
-		packaging_type=$18, freshness_lifespan=$19, care_instructions=$20, occasions=$21,
-		allow_custom_card=$22, compatible_addons=$23, updated_at=$24
-		WHERE id=$25 AND deleted_at IS NULL`
+		name_uz=$1, name_eng=$2, name_ru=$3, description_uz=$4, description_eng=$5, description_ru=$6, images=$7,
+		category_id=$8, price_amount=$9, price_currency=$10, discount_price_amount=$11, slug=$12, is_available=$13,
+		rating=$14, stock=$15, sold_count=$16, tag_uz=$17, tag_eng=$18, tag_ru=$19, updated_at=$20
+		WHERE id=$21 AND deleted_at IS NULL`
 
 	result, err := r.db.ExecContext(ctx, query,
-		p.Name(), p.Description(), string(imagesJSON), p.VideoURLYoutube(), p.VideoURLInstagram(), p.CategoryID(),
-		p.Price().Amount(), p.Price().Currency(), discountAmount, p.Slug(), p.IsAvailable(),
-		p.Rating(), p.Stock(), p.SoldCount(), pq.Array(p.FlowerTypes()), p.Color(), p.StemCount(),
-		string(p.PackagingType()), int(p.FreshnessLifespan()), p.CareInstructions(), pq.Array(p.Occasions()),
-		p.AllowCustomCard(), pq.Array(p.CompatibleAddons()), p.UpdatedAt(),
+		p.NameUz(), p.NameEng(), p.NameRu(), p.DescriptionUz(), p.DescriptionEng(), p.DescriptionRu(), string(imagesJSON),
+		p.CategoryID(), p.Price().Amount(), p.Price().Currency(), discountAmount, p.Slug(), p.IsAvailable(),
+		p.Rating(), p.Stock(), p.SoldCount(), p.TagUz(), p.TagEng(), p.TagRu(), p.UpdatedAt(),
 		p.ID(),
 	)
 	if isUniqueViolation(err, "products_slug_key") {

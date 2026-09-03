@@ -19,11 +19,24 @@ func NewPostgresEventRepository(db *sqlx.DB) *PostgresEventRepository {
 }
 
 type eventRow struct {
-	ID            string       `db:"id"`
-	Eyebrow       string       `db:"eyebrow"`
-	Title         string       `db:"title"`
-	Subtitle      string       `db:"subtitle"`
-	CTA           string       `db:"cta"`
+	ID string `db:"id"`
+
+	EyebrowUz  string `db:"eyebrow_uz"`
+	EyebrowEng string `db:"eyebrow_eng"`
+	EyebrowRu  string `db:"eyebrow_ru"`
+
+	TitleUz  string `db:"title_uz"`
+	TitleEng string `db:"title_eng"`
+	TitleRu  string `db:"title_ru"`
+
+	SubtitleUz  string `db:"subtitle_uz"`
+	SubtitleEng string `db:"subtitle_eng"`
+	SubtitleRu  string `db:"subtitle_ru"`
+
+	CTAUz  string `db:"cta_uz"`
+	CTAEng string `db:"cta_eng"`
+	CTARu  string `db:"cta_ru"`
+
 	ImageURL      string       `db:"image_url"`
 	ImagePublicID string       `db:"image_public_id"`
 	CategoryID    string       `db:"category_id"`
@@ -38,25 +51,54 @@ func (row eventRow) toDomain() *domain.Event {
 	if row.DeletedAt.Valid {
 		deletedAtPtr = &row.DeletedAt.Time
 	}
-	return domain.NewEventFromRepository(
-		row.ID, row.Eyebrow, row.Title, row.Subtitle, row.CTA,
-		row.ImageURL, row.ImagePublicID, row.CategoryID, row.IsRoot,
-		row.CreatedAt, row.UpdatedAt, deletedAtPtr,
-	)
+	return domain.NewEventFromRepository(domain.EventFromRepositoryParams{
+		ID:            row.ID,
+		EyebrowUz:     row.EyebrowUz,
+		EyebrowEng:    row.EyebrowEng,
+		EyebrowRu:     row.EyebrowRu,
+		TitleUz:       row.TitleUz,
+		TitleEng:      row.TitleEng,
+		TitleRu:       row.TitleRu,
+		SubtitleUz:    row.SubtitleUz,
+		SubtitleEng:   row.SubtitleEng,
+		SubtitleRu:    row.SubtitleRu,
+		CTAUz:         row.CTAUz,
+		CTAEng:        row.CTAEng,
+		CTARu:         row.CTARu,
+		ImageURL:      row.ImageURL,
+		ImagePublicID: row.ImagePublicID,
+		CategoryID:    row.CategoryID,
+		IsRoot:        row.IsRoot,
+		CreatedAt:     row.CreatedAt,
+		UpdatedAt:     row.UpdatedAt,
+		DeletedAt:     deletedAtPtr,
+	})
 }
 
-const eventColumns = `id, eyebrow, title, subtitle, cta, image_url, image_public_id, category_id, is_root, created_at, updated_at, deleted_at`
+const eventColumns = `id, eyebrow_uz, eyebrow_eng, eyebrow_ru, title_uz, title_eng, title_ru,
+	subtitle_uz, subtitle_eng, subtitle_ru, cta_uz, cta_eng, cta_ru,
+	image_url, image_public_id, category_id, is_root, created_at, updated_at, deleted_at`
 
 func (r *PostgresEventRepository) Save(ctx context.Context, event *domain.Event) error {
 	query := `INSERT INTO events (` + eventColumns + `)
-		VALUES (:id, :eyebrow, :title, :subtitle, :cta, :image_url, :image_public_id, :category_id, :is_root, :created_at, :updated_at, :deleted_at)`
+		VALUES (:id, :eyebrow_uz, :eyebrow_eng, :eyebrow_ru, :title_uz, :title_eng, :title_ru,
+			:subtitle_uz, :subtitle_eng, :subtitle_ru, :cta_uz, :cta_eng, :cta_ru,
+			:image_url, :image_public_id, :category_id, :is_root, :created_at, :updated_at, :deleted_at)`
 
-	_, err := r.db.NamedExecContext(ctx, query, map[string]interface{}{
+	_, err := r.db.NamedExecContext(ctx, query, map[string]any{
 		"id":              event.ID(),
-		"eyebrow":         event.Eyebrow(),
-		"title":           event.Title(),
-		"subtitle":        event.Subtitle(),
-		"cta":             event.CTA(),
+		"eyebrow_uz":      event.EyebrowUz(),
+		"eyebrow_eng":     event.EyebrowEng(),
+		"eyebrow_ru":      event.EyebrowRu(),
+		"title_uz":        event.TitleUz(),
+		"title_eng":       event.TitleEng(),
+		"title_ru":        event.TitleRu(),
+		"subtitle_uz":     event.SubtitleUz(),
+		"subtitle_eng":    event.SubtitleEng(),
+		"subtitle_ru":     event.SubtitleRu(),
+		"cta_uz":          event.CTAUz(),
+		"cta_eng":         event.CTAEng(),
+		"cta_ru":          event.CTARu(),
 		"image_url":       event.ImageURL(),
 		"image_public_id": event.ImagePublicID(),
 		"category_id":     event.CategoryID(),
@@ -113,19 +155,30 @@ func (r *PostgresEventRepository) FindAllIncludingDeleted(ctx context.Context) (
 
 func (r *PostgresEventRepository) Update(ctx context.Context, event *domain.Event) error {
 	query := `UPDATE events
-		SET eyebrow=:eyebrow, title=:title, subtitle=:subtitle, cta=:cta,
+		SET eyebrow_uz=:eyebrow_uz, eyebrow_eng=:eyebrow_eng, eyebrow_ru=:eyebrow_ru,
+			title_uz=:title_uz, title_eng=:title_eng, title_ru=:title_ru,
+			subtitle_uz=:subtitle_uz, subtitle_eng=:subtitle_eng, subtitle_ru=:subtitle_ru,
+			cta_uz=:cta_uz, cta_eng=:cta_eng, cta_ru=:cta_ru,
 			category_id=:category_id, is_root=:is_root, updated_at=:updated_at
 		WHERE id=:id AND deleted_at IS NULL`
 
-	result, err := r.db.NamedExecContext(ctx, query, map[string]interface{}{
-		"eyebrow":     event.Eyebrow(),
-		"title":       event.Title(),
-		"subtitle":    event.Subtitle(),
-		"cta":         event.CTA(),
-		"category_id": event.CategoryID(),
-		"is_root":     event.IsRoot(),
-		"updated_at":  time.Now(),
-		"id":          event.ID(),
+	result, err := r.db.NamedExecContext(ctx, query, map[string]any{
+		"eyebrow_uz":   event.EyebrowUz(),
+		"eyebrow_eng":  event.EyebrowEng(),
+		"eyebrow_ru":   event.EyebrowRu(),
+		"title_uz":     event.TitleUz(),
+		"title_eng":    event.TitleEng(),
+		"title_ru":     event.TitleRu(),
+		"subtitle_uz":  event.SubtitleUz(),
+		"subtitle_eng": event.SubtitleEng(),
+		"subtitle_ru":  event.SubtitleRu(),
+		"cta_uz":       event.CTAUz(),
+		"cta_eng":      event.CTAEng(),
+		"cta_ru":       event.CTARu(),
+		"category_id":  event.CategoryID(),
+		"is_root":      event.IsRoot(),
+		"updated_at":   time.Now(),
+		"id":           event.ID(),
 	})
 	if err != nil {
 		return err

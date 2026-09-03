@@ -8,14 +8,13 @@ import (
 
 var (
 	ErrEmptyProductID       = errors.New("catalog: product ID bo'sh bo'lishi mumkin emas")
-	ErrEmptyProductName     = errors.New("catalog: product nomi bo'sh bo'lishi mumkin emas")
+	ErrEmptyProductName     = errors.New("catalog: product nomi (uz, eng, ru) bo'sh bo'lishi mumkin emas")
 	ErrEmptyProductSlug     = errors.New("catalog: product slug bo'sh bo'lishi mumkin emas")
 	ErrEmptyCategoryID      = errors.New("catalog: category ID bo'sh bo'lishi mumkin emas")
 	ErrTooManyProductImages = errors.New("catalog: mahsulot uchun eng ko'pi bilan 5 ta rasm yuklash mumkin")
 	ErrInvalidRating        = errors.New("catalog: reyting 1 dan 5 gacha bo'lishi kerak")
 	ErrNegativeStock        = errors.New("catalog: stock manfiy bo'lishi mumkin emas")
 	ErrNegativeSoldCount    = errors.New("catalog: sotilgan mahsulotlar soni manfiy bo'lishi mumkin emas")
-	ErrNegativeStemCount    = errors.New("catalog: gullar soni manfiy bo'lishi mumkin emas")
 	ErrDiscountTooHigh      = errors.New("catalog: chegirma narxi asosiy narxdan kichik va bir xil valyutada bo'lishi kerak")
 	ErrProductSlugTaken     = errors.New("catalog: bu slug allaqachon band")
 )
@@ -34,13 +33,18 @@ type ProductImage struct {
 }
 
 type Product struct {
-	id                string
-	name              string
-	description       string
-	images            []ProductImage
-	videoURLYoutube   string // YouTube video URL, frontendda embed qilinadi
-	videoURLInstagram string // Instagram video URL, frontendda embed qilinadi
-	categoryID        string
+	id string
+
+	nameUz  string
+	nameEng string
+	nameRu  string
+
+	descriptionUz  string
+	descriptionEng string
+	descriptionRu  string
+
+	images     []ProductImage
+	categoryID string
 
 	price         Money
 	discountPrice *Money // ixtiyoriy, bo'lsa umumiy summa shu bo'yicha hisoblanadi
@@ -52,18 +56,10 @@ type Product struct {
 	stock     int
 	soldCount int
 
-	flowerTypes []string // gullar turi (tag sifatida)
-	color       string
-	stemCount   int
-
-	packagingType     PackagingType     // enum: bucket, box, vase
-	freshnessLifespan FreshnessLifespan // kunlarda, 1-7, default 1
-
-	careInstructions *string  // ixtiyoriy, default nil
-	occasions        []string // taglar: masalan tug'ilgan kun, to'y va h.k.
-
-	allowCustomCard  *bool    // hozircha har doim nil - keyinchalik qo'shiladi
-	compatibleAddons []string // ixtiyoriy
+	// tagUz/tagEng/tagRu - ixtiyoriy belgi (badge), masalan "bestseller"
+	tagUz  *string
+	tagEng *string
+	tagRu  *string
 
 	createdAt time.Time
 	updatedAt time.Time
@@ -72,34 +68,31 @@ type Product struct {
 
 // NewProductParams - yangi mahsulot yaratish uchun kerakli ma'lumotlar.
 type NewProductParams struct {
-	ID                string
-	Name              string
-	Description       string
-	Images            []ProductImage
-	VideoURLYoutube   string
-	VideoURLInstagram string
-	CategoryID        string
-	Price             Money
-	DiscountPrice     *Money
-	Slug              string
-	IsAvailable       bool
-	Rating            float64
-	Stock             int
-	FlowerTypes       []string
-	Color             string
-	StemCount         int
-	PackagingType     PackagingType
-	FreshnessLifespan FreshnessLifespan
-	CareInstructions  *string
-	Occasions         []string
-	CompatibleAddons  []string
+	ID             string
+	NameUz         string
+	NameEng        string
+	NameRu         string
+	DescriptionUz  string
+	DescriptionEng string
+	DescriptionRu  string
+	Images         []ProductImage
+	CategoryID     string
+	Price          Money
+	DiscountPrice  *Money
+	Slug           string
+	IsAvailable    bool
+	Rating         float64
+	Stock          int
+	TagUz          *string
+	TagEng         *string
+	TagRu          *string
 }
 
 func NewProduct(p NewProductParams) (*Product, error) {
 	if p.ID == "" {
 		return nil, ErrEmptyProductID
 	}
-	if p.Name == "" {
+	if p.NameUz == "" || p.NameEng == "" || p.NameRu == "" {
 		return nil, ErrEmptyProductName
 	}
 	if p.CategoryID == "" {
@@ -111,15 +104,6 @@ func NewProduct(p NewProductParams) (*Product, error) {
 	if len(p.Images) > MaxProductImages {
 		return nil, ErrTooManyProductImages
 	}
-	if !p.PackagingType.IsValid() {
-		return nil, ErrInvalidPackagingType
-	}
-	if p.FreshnessLifespan == 0 {
-		p.FreshnessLifespan = DefaultFreshnessLifespan
-	}
-	if !p.FreshnessLifespan.IsValid() {
-		return nil, ErrInvalidFreshnessLifespan
-	}
 	if p.Rating == 0 {
 		p.Rating = DefaultRating
 	}
@@ -129,22 +113,10 @@ func NewProduct(p NewProductParams) (*Product, error) {
 	if p.Stock < 0 {
 		return nil, ErrNegativeStock
 	}
-	if p.StemCount < 0 {
-		return nil, ErrNegativeStemCount
-	}
 	if p.DiscountPrice != nil {
 		if p.DiscountPrice.Currency() != p.Price.Currency() || p.DiscountPrice.Amount() >= p.Price.Amount() {
 			return nil, ErrDiscountTooHigh
 		}
-	}
-	if p.FlowerTypes == nil {
-		p.FlowerTypes = []string{}
-	}
-	if p.Occasions == nil {
-		p.Occasions = []string{}
-	}
-	if p.CompatibleAddons == nil {
-		p.CompatibleAddons = []string{}
 	}
 	if p.Images == nil {
 		p.Images = []ProductImage{}
@@ -152,92 +124,80 @@ func NewProduct(p NewProductParams) (*Product, error) {
 
 	now := time.Now()
 	return &Product{
-		id:                p.ID,
-		name:              p.Name,
-		description:       p.Description,
-		images:            p.Images,
-		videoURLYoutube:   p.VideoURLYoutube,
-		videoURLInstagram: p.VideoURLInstagram,
-		categoryID:        p.CategoryID,
-		price:             p.Price,
-		discountPrice:     p.DiscountPrice,
-		slug:              p.Slug,
-		isAvailable:       p.IsAvailable,
-		rating:            p.Rating,
-		stock:             p.Stock,
-		soldCount:         0,
-		flowerTypes:       p.FlowerTypes,
-		color:             p.Color,
-		stemCount:         p.StemCount,
-		packagingType:     p.PackagingType,
-		freshnessLifespan: p.FreshnessLifespan,
-		careInstructions:  p.CareInstructions,
-		occasions:         p.Occasions,
-		allowCustomCard:   nil,
-		compatibleAddons:  p.CompatibleAddons,
-		createdAt:         now,
-		updatedAt:         now,
+		id:             p.ID,
+		nameUz:         p.NameUz,
+		nameEng:        p.NameEng,
+		nameRu:         p.NameRu,
+		descriptionUz:  p.DescriptionUz,
+		descriptionEng: p.DescriptionEng,
+		descriptionRu:  p.DescriptionRu,
+		images:         p.Images,
+		categoryID:     p.CategoryID,
+		price:          p.Price,
+		discountPrice:  p.DiscountPrice,
+		slug:           p.Slug,
+		isAvailable:    p.IsAvailable,
+		rating:         p.Rating,
+		stock:          p.Stock,
+		soldCount:      0,
+		tagUz:          p.TagUz,
+		tagEng:         p.TagEng,
+		tagRu:          p.TagRu,
+		createdAt:      now,
+		updatedAt:      now,
 	}, nil
 }
 
 // ProductFromRepositoryParams - saqlangan mahsulotni bazadan qayta tiklash uchun.
 type ProductFromRepositoryParams struct {
-	ID                string
-	Name              string
-	Description       string
-	Images            []ProductImage
-	VideoURLYoutube   string
-	VideoURLInstagram string
-	CategoryID        string
-	Price             Money
-	DiscountPrice     *Money
-	Slug              string
-	IsAvailable       bool
-	Rating            float64
-	Stock             int
-	SoldCount         int
-	FlowerTypes       []string
-	Color             string
-	StemCount         int
-	PackagingType     PackagingType
-	FreshnessLifespan FreshnessLifespan
-	CareInstructions  *string
-	Occasions         []string
-	AllowCustomCard   *bool
-	CompatibleAddons  []string
-	CreatedAt         time.Time
-	UpdatedAt         time.Time
-	DeletedAt         *time.Time
+	ID             string
+	NameUz         string
+	NameEng        string
+	NameRu         string
+	DescriptionUz  string
+	DescriptionEng string
+	DescriptionRu  string
+	Images         []ProductImage
+	CategoryID     string
+	Price          Money
+	DiscountPrice  *Money
+	Slug           string
+	IsAvailable    bool
+	Rating         float64
+	Stock          int
+	SoldCount      int
+	TagUz          *string
+	TagEng         *string
+	TagRu          *string
+	CreatedAt      time.Time
+	UpdatedAt      time.Time
+	DeletedAt      *time.Time
 }
 
 func NewProductFromRepository(p ProductFromRepositoryParams) *Product {
 	return &Product{
-		id:                p.ID,
-		name:              p.Name,
-		description:       p.Description,
-		images:            p.Images,
-		videoURLYoutube:   p.VideoURLYoutube,
-		videoURLInstagram: p.VideoURLInstagram,
-		categoryID:        p.CategoryID,
-		price:             p.Price,
-		discountPrice:     p.DiscountPrice,
-		slug:              p.Slug,
-		isAvailable:       p.IsAvailable,
-		rating:            p.Rating,
-		stock:             p.Stock,
-		soldCount:         p.SoldCount,
-		flowerTypes:       p.FlowerTypes,
-		color:             p.Color,
-		stemCount:         p.StemCount,
-		packagingType:     p.PackagingType,
-		freshnessLifespan: p.FreshnessLifespan,
-		careInstructions:  p.CareInstructions,
-		occasions:         p.Occasions,
-		allowCustomCard:   p.AllowCustomCard,
-		compatibleAddons:  p.CompatibleAddons,
-		createdAt:         p.CreatedAt,
-		updatedAt:         p.UpdatedAt,
-		deletedAt:         p.DeletedAt,
+		id:             p.ID,
+		nameUz:         p.NameUz,
+		nameEng:        p.NameEng,
+		nameRu:         p.NameRu,
+		descriptionUz:  p.DescriptionUz,
+		descriptionEng: p.DescriptionEng,
+		descriptionRu:  p.DescriptionRu,
+		images:         p.Images,
+		categoryID:     p.CategoryID,
+		price:          p.Price,
+		discountPrice:  p.DiscountPrice,
+		slug:           p.Slug,
+		isAvailable:    p.IsAvailable,
+		rating:         p.Rating,
+		stock:          p.Stock,
+		soldCount:      p.SoldCount,
+		tagUz:          p.TagUz,
+		tagEng:         p.TagEng,
+		tagRu:          p.TagRu,
+		createdAt:      p.CreatedAt,
+		updatedAt:      p.UpdatedAt,
+		deletedAt:      p.DeletedAt,
 	}
 }
 
@@ -263,17 +223,21 @@ func GenerateSlug(name string) string {
 
 // change methods
 
-func (p *Product) ChangeName(name string) error {
-	if name == "" {
+func (p *Product) ChangeNames(nameUz, nameEng, nameRu string) error {
+	if nameUz == "" || nameEng == "" || nameRu == "" {
 		return ErrEmptyProductName
 	}
-	p.name = name
+	p.nameUz = nameUz
+	p.nameEng = nameEng
+	p.nameRu = nameRu
 	p.updatedAt = time.Now()
 	return nil
 }
 
-func (p *Product) ChangeDescription(description string) {
-	p.description = description
+func (p *Product) ChangeDescriptions(descriptionUz, descriptionEng, descriptionRu string) {
+	p.descriptionUz = descriptionUz
+	p.descriptionEng = descriptionEng
+	p.descriptionRu = descriptionRu
 	p.updatedAt = time.Now()
 }
 
@@ -284,16 +248,6 @@ func (p *Product) ChangeImages(images []ProductImage) error {
 	p.images = images
 	p.updatedAt = time.Now()
 	return nil
-}
-
-func (p *Product) ChangeVideoURLYoutube(url string) {
-	p.videoURLYoutube = url
-	p.updatedAt = time.Now()
-}
-
-func (p *Product) ChangeVideoURLInstagram(url string) {
-	p.videoURLInstagram = url
-	p.updatedAt = time.Now()
 }
 
 func (p *Product) ChangeCategory(categoryID string) error {
@@ -362,64 +316,10 @@ func (p *Product) ChangeSoldCount(count int) error {
 	return nil
 }
 
-func (p *Product) ChangeFlowerTypes(types []string) {
-	if types == nil {
-		types = []string{}
-	}
-	p.flowerTypes = types
-	p.updatedAt = time.Now()
-}
-
-func (p *Product) ChangeColor(color string) {
-	p.color = color
-	p.updatedAt = time.Now()
-}
-
-func (p *Product) ChangeStemCount(count int) error {
-	if count < 0 {
-		return ErrNegativeStemCount
-	}
-	p.stemCount = count
-	p.updatedAt = time.Now()
-	return nil
-}
-
-func (p *Product) ChangePackagingType(pt PackagingType) error {
-	if !pt.IsValid() {
-		return ErrInvalidPackagingType
-	}
-	p.packagingType = pt
-	p.updatedAt = time.Now()
-	return nil
-}
-
-func (p *Product) ChangeFreshnessLifespan(f FreshnessLifespan) error {
-	if !f.IsValid() {
-		return ErrInvalidFreshnessLifespan
-	}
-	p.freshnessLifespan = f
-	p.updatedAt = time.Now()
-	return nil
-}
-
-func (p *Product) ChangeCareInstructions(instructions *string) {
-	p.careInstructions = instructions
-	p.updatedAt = time.Now()
-}
-
-func (p *Product) ChangeOccasions(occasions []string) {
-	if occasions == nil {
-		occasions = []string{}
-	}
-	p.occasions = occasions
-	p.updatedAt = time.Now()
-}
-
-func (p *Product) ChangeCompatibleAddons(addons []string) {
-	if addons == nil {
-		addons = []string{}
-	}
-	p.compatibleAddons = addons
+func (p *Product) ChangeTags(tagUz, tagEng, tagRu *string) {
+	p.tagUz = tagUz
+	p.tagEng = tagEng
+	p.tagRu = tagRu
 	p.updatedAt = time.Now()
 }
 
@@ -434,29 +334,25 @@ func (p *Product) IsDeleted() bool {
 
 // getters
 
-func (p *Product) ID() string                           { return p.id }
-func (p *Product) Name() string                         { return p.name }
-func (p *Product) Description() string                  { return p.description }
-func (p *Product) Images() []ProductImage               { return p.images }
-func (p *Product) VideoURLYoutube() string              { return p.videoURLYoutube }
-func (p *Product) VideoURLInstagram() string            { return p.videoURLInstagram }
-func (p *Product) CategoryID() string                   { return p.categoryID }
-func (p *Product) Price() Money                         { return p.price }
-func (p *Product) DiscountPrice() *Money                { return p.discountPrice }
-func (p *Product) Slug() string                         { return p.slug }
-func (p *Product) IsAvailable() bool                    { return p.isAvailable }
-func (p *Product) Rating() float64                      { return p.rating }
-func (p *Product) Stock() int                           { return p.stock }
-func (p *Product) SoldCount() int                       { return p.soldCount }
-func (p *Product) FlowerTypes() []string                { return p.flowerTypes }
-func (p *Product) Color() string                        { return p.color }
-func (p *Product) StemCount() int                       { return p.stemCount }
-func (p *Product) PackagingType() PackagingType         { return p.packagingType }
-func (p *Product) FreshnessLifespan() FreshnessLifespan { return p.freshnessLifespan }
-func (p *Product) CareInstructions() *string            { return p.careInstructions }
-func (p *Product) Occasions() []string                  { return p.occasions }
-func (p *Product) AllowCustomCard() *bool               { return p.allowCustomCard }
-func (p *Product) CompatibleAddons() []string           { return p.compatibleAddons }
-func (p *Product) CreatedAt() time.Time                 { return p.createdAt }
-func (p *Product) UpdatedAt() time.Time                 { return p.updatedAt }
-func (p *Product) DeletedAt() *time.Time                { return p.deletedAt }
+func (p *Product) ID() string             { return p.id }
+func (p *Product) NameUz() string         { return p.nameUz }
+func (p *Product) NameEng() string        { return p.nameEng }
+func (p *Product) NameRu() string         { return p.nameRu }
+func (p *Product) DescriptionUz() string  { return p.descriptionUz }
+func (p *Product) DescriptionEng() string { return p.descriptionEng }
+func (p *Product) DescriptionRu() string  { return p.descriptionRu }
+func (p *Product) Images() []ProductImage { return p.images }
+func (p *Product) CategoryID() string     { return p.categoryID }
+func (p *Product) Price() Money           { return p.price }
+func (p *Product) DiscountPrice() *Money  { return p.discountPrice }
+func (p *Product) Slug() string           { return p.slug }
+func (p *Product) IsAvailable() bool      { return p.isAvailable }
+func (p *Product) Rating() float64        { return p.rating }
+func (p *Product) Stock() int             { return p.stock }
+func (p *Product) SoldCount() int         { return p.soldCount }
+func (p *Product) TagUz() *string         { return p.tagUz }
+func (p *Product) TagEng() *string        { return p.tagEng }
+func (p *Product) TagRu() *string         { return p.tagRu }
+func (p *Product) CreatedAt() time.Time   { return p.createdAt }
+func (p *Product) UpdatedAt() time.Time   { return p.updatedAt }
+func (p *Product) DeletedAt() *time.Time  { return p.deletedAt }

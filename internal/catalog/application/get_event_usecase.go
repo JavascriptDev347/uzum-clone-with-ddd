@@ -14,10 +14,10 @@ func NewGetEventUseCase(repo domain.EventRepository) *GetEventUseCase {
 	return &GetEventUseCase{repo: repo}
 }
 
-func (uc *GetEventUseCase) Execute(ctx context.Context, id string) (*EventOutput, error) {
+func (uc *GetEventUseCase) Execute(ctx context.Context, id string, lang Lang) (*EventOutput, error) {
 	event, err := uc.repo.FindByID(ctx, id)
 	if err != nil {
 		return nil, err
 	}
-	return ToEventOutput(event), nil
+	return ToEventOutput(event, lang), nil
 }

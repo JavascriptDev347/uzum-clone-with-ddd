@@ -20,7 +20,9 @@ func NewPostgresCategoryRepository(db *sqlx.DB) *PostgresCategoryRepository {
 
 type categoryRow struct {
 	ID            string       `db:"id"`
-	Name          string       `db:"name"`
+	NameUz        string       `db:"name_uz"`
+	NameEng       string       `db:"name_eng"`
+	NameRu        string       `db:"name_ru"`
 	ImageURL      string       `db:"image_url"`
 	ImagePublicID string       `db:"image_public_id"`
 	CreatedAt     time.Time    `db:"created_at"`
@@ -29,18 +31,20 @@ type categoryRow struct {
 }
 
 func (r *PostgresCategoryRepository) Save(ctx context.Context, category *domain.Category) error {
-	query := `INSERT INTO categories (id, name, image_url, image_public_id, created_at, updated_at, deleted_at) VALUES ($1, $2, $3, $4, $5, $6, $7)`
+	query := `INSERT INTO categories (id, name_uz, name_eng, name_ru, image_url, image_public_id, created_at, updated_at, deleted_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`
 
-	_, err := r.db.ExecContext(ctx, query, category.ID(), category.Name(), category.ImageURL(), category.ImagePublicID(), category.CreatedAt(), category.UpdatedAt(), category.DeletedAt())
+	_, err := r.db.ExecContext(ctx, query, category.ID(), category.NameUz(), category.NameEng(), category.NameRu(), category.ImageURL(), category.ImagePublicID(), category.CreatedAt(), category.UpdatedAt(), category.DeletedAt())
 	return err
 }
 
 func (r *PostgresCategoryRepository) FindByID(ctx context.Context, id string) (*domain.Category, error) {
-	query := `SELECT id, name, image_url, image_public_id, created_at, updated_at, deleted_at FROM categories WHERE id = $1 AND deleted_at IS NULL`
+	query := `SELECT id, name_uz, name_eng, name_ru, image_url, image_public_id, created_at, updated_at, deleted_at FROM categories WHERE id = $1 AND deleted_at IS NULL`
 
 	var (
 		categoryID    string
-		name          string
+		nameUz        string
+		nameEng       string
+		nameRu        string
 		imageURL      string
 		imagePublicID string
 		createdAt     time.Time
@@ -49,7 +53,7 @@ func (r *PostgresCategoryRepository) FindByID(ctx context.Context, id string) (*
 	)
 
 	row := r.db.QueryRowContext(ctx, query, id)
-	err := row.Scan(&categoryID, &name, &imageURL, &imagePublicID, &createdAt, &updatedAt, &deletedAt)
+	err := row.Scan(&categoryID, &nameUz, &nameEng, &nameRu, &imageURL, &imagePublicID, &createdAt, &updatedAt, &deletedAt)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, domain.ErrCategoryNotFound
@@ -57,13 +61,13 @@ func (r *PostgresCategoryRepository) FindByID(ctx context.Context, id string) (*
 		return nil, err
 	}
 
-	return domain.NewCategoryFromRepository(id, name, imageURL, imagePublicID, createdAt, updatedAt, deletedAt), nil
+	return domain.NewCategoryFromRepository(id, nameUz, nameEng, nameRu, imageURL, imagePublicID, createdAt, updatedAt, deletedAt), nil
 }
 
 func (r *PostgresCategoryRepository) FindAll(ctx context.Context, search string) ([]*domain.Category, error) {
-	query := `SELECT id, name, image_url, image_public_id, created_at, updated_at, deleted_at
+	query := `SELECT id, name_uz, name_eng, name_ru, image_url, image_public_id, created_at, updated_at, deleted_at
 		          FROM categories
-		          WHERE deleted_at IS NULL AND name ILIKE :search
+		          WHERE deleted_at IS NULL AND (name_uz ILIKE :search OR name_eng ILIKE :search OR name_ru ILIKE :search)
 		          ORDER BY created_at DESC`
 
 	params := map[string]any{
@@ -88,16 +92,16 @@ func (r *PostgresCategoryRepository) FindAll(ctx context.Context, search string)
 			deletedAtPtr = &row.DeletedAt.Time
 		}
 		categories = append(categories, domain.NewCategoryFromRepository(
-			row.ID, row.Name, row.ImageURL, row.ImagePublicID, row.CreatedAt, row.UpdatedAt, deletedAtPtr,
+			row.ID, row.NameUz, row.NameEng, row.NameRu, row.ImageURL, row.ImagePublicID, row.CreatedAt, row.UpdatedAt, deletedAtPtr,
 		))
 	}
 	return categories, nil
 }
 
 func (r *PostgresCategoryRepository) FindAllIncludingDeleted(ctx context.Context, search string) ([]*domain.Category, error) {
-	query := `SELECT id, name, image_url, image_public_id, created_at, updated_at, deleted_at
+	query := `SELECT id, name_uz, name_eng, name_ru, image_url, image_public_id, created_at, updated_at, deleted_at
 	          FROM categories
-	          WHERE name ILIKE :search
+	          WHERE (name_uz ILIKE :search OR name_eng ILIKE :search OR name_ru ILIKE :search)
 	          ORDER BY created_at DESC`
 	params := map[string]any{
 		"search": "%" + search + "%",
@@ -120,7 +124,7 @@ func (r *PostgresCategoryRepository) FindAllIncludingDeleted(ctx context.Context
 			deletedAtPtr = &row.DeletedAt.Time
 		}
 		categories = append(categories, domain.NewCategoryFromRepository(
-			row.ID, row.Name, row.ImageURL, row.ImagePublicID, row.CreatedAt, row.UpdatedAt, deletedAtPtr,
+			row.ID, row.NameUz, row.NameEng, row.NameRu, row.ImageURL, row.ImagePublicID, row.CreatedAt, row.UpdatedAt, deletedAtPtr,
 		))
 	}
 	return categories, nil
@@ -129,11 +133,13 @@ func (r *PostgresCategoryRepository) FindAllIncludingDeleted(ctx context.Context
 func (r *PostgresCategoryRepository) Update(ctx context.Context, category *domain.Category) error {
 	query := `
 			UPDATE categories
-			SET name = :name, updated_at = :updated_at
+			SET name_uz = :name_uz, name_eng = :name_eng, name_ru = :name_ru, updated_at = :updated_at
 			WHERE id = :id AND deleted_at IS NULL
 		`
-	params := map[string]interface{}{
-		"name":       category.Name(),
+	params := map[string]any{
+		"name_uz":    category.NameUz(),
+		"name_eng":   category.NameEng(),
+		"name_ru":    category.NameRu(),
 		"updated_at": time.Now(),
 		"id":         category.ID(),
 	}

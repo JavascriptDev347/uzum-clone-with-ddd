@@ -11,15 +11,15 @@ type CreateProductUseCase interface {
 }
 
 type GetProductsUseCase interface {
-	Execute(ctx context.Context, search string, categoryID string, page, pageSize int) ([]*application.ProductOutput, int64, error)
+	Execute(ctx context.Context, search string, categoryID string, page, pageSize int, lang application.Lang) ([]*application.ProductOutput, int64, error)
 }
 
 type GetProductUseCase interface {
-	Execute(ctx context.Context, id string) (*application.ProductOutput, error)
+	Execute(ctx context.Context, id string, lang application.Lang) (*application.ProductOutput, error)
 }
 
 type GetProductBySlugUseCase interface {
-	Execute(ctx context.Context, slug string) (*application.ProductOutput, error)
+	Execute(ctx context.Context, slug string, lang application.Lang) (*application.ProductOutput, error)
 }
 
 type UpdateProductUseCase interface {
