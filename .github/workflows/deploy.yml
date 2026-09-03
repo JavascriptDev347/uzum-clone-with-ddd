@@ -1,4 +1,3 @@
-mkdir .github\workflows -Force
 @"
 name: Deploy to server
 
@@ -18,7 +17,7 @@ jobs:
           key: `${{ secrets.SERVER_SSH_KEY }}
           port: `${{ secrets.SERVER_PORT }}
           script: |
-            cd /path/to/your/project
+            cd /home/deploy/uzum-clone-with-ddd
             git pull origin main
             docker compose down
             docker compose up -d --build
