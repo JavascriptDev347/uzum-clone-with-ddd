@@ -26,7 +26,7 @@ const (
 	DefaultRating = 1
 )
 
-// ProductImage - mahsulotning bitta rasmi (Cloudinary'dagi manzili va public id'si).
+// ProductImage - mahsulotning bitta rasmi (S3'dagi manzili va obyekt kaliti).
 type ProductImage struct {
 	URL      string
 	PublicID string

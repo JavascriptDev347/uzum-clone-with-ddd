@@ -195,7 +195,7 @@ Kategoriya nomi endi (mahsulot bilan bir xil qoidada) **3 tilda** (`uz`, `eng`, 
 {
   "id": "uuid",
   "name": "Elektronika",
-  "image_url": "https://res.cloudinary.com/.../category-images/....jpg",
+  "image_url": "https://your-bucket.s3.your-region.amazonaws.com/category-images/....jpg",
   "image_public_id": "category-images/xxxxxxx",
   "created_at": "2026-08-18T10:00:00Z",
   "updated_at": "2026-08-18T10:00:00Z"
@@ -210,7 +210,7 @@ Kategoriya nomi endi (mahsulot bilan bir xil qoidada) **3 tilda** (`uz`, `eng`, 
   "name_uz": "Elektronika",
   "name_eng": "Electronics",
   "name_ru": "Электроника",
-  "image_url": "https://res.cloudinary.com/.../category-images/....jpg",
+  "image_url": "https://your-bucket.s3.your-region.amazonaws.com/category-images/....jpg",
   "image_public_id": "category-images/xxxxxxx",
   "created_at": "2026-08-18T10:00:00Z",
   "updated_at": "2026-08-18T10:00:00Z",
@@ -218,7 +218,7 @@ Kategoriya nomi endi (mahsulot bilan bir xil qoidada) **3 tilda** (`uz`, `eng`, 
 }
 ```
 
-> **Muhim:** Kategoriyada **`parent_id` maydoni umuman yo'q** — hozircha kategoriyalar ierarxiyasi (parent/child daraxti) backendda mavjud emas, barcha kategoriyalar "flat" (tekis) ro'yxat sifatida keladi. `image_url` va `image_public_id` har doim javobda bor (Cloudinary'ga yuklangan rasm). Nomlar yaratishda **barcha 3 til majburiy** (bo'sh bo'lsa `400`).
+> **Muhim:** Kategoriyada **`parent_id` maydoni umuman yo'q** — hozircha kategoriyalar ierarxiyasi (parent/child daraxti) backendda mavjud emas, barcha kategoriyalar "flat" (tekis) ro'yxat sifatida keladi. `image_url` va `image_public_id` har doim javobda bor (AWS S3'ga yuklangan rasm). Nomlar yaratishda **barcha 3 til majburiy** (bo'sh bo'lsa `400`).
 
 ---
 
@@ -396,8 +396,8 @@ Quyidagi public GET endpointlarning barchasi `?lang=uz|eng|ru` query parametrini
   "description": "Premium Ekvador atirgullaridan yig'ilgan buket",
   "tag": "bestseller",
   "images": [
-    "https://res.cloudinary.com/.../product-images/....jpg",
-    "https://res.cloudinary.com/.../product-images/....jpg"
+    "https://your-bucket.s3.your-region.amazonaws.com/product-images/....jpg",
+    "https://your-bucket.s3.your-region.amazonaws.com/product-images/....jpg"
   ],
   "category_id": "uuid",
   "price_amount": 150000,
@@ -430,7 +430,7 @@ Barcha 3 til birga, tahrirlash formasini to'ldirish uchun:
   "tag_uz": "bestseller",
   "tag_eng": "Bestseller",
   "tag_ru": "хит продаж",
-  "images": ["https://res.cloudinary.com/.../product-images/....jpg"],
+  "images": ["https://your-bucket.s3.your-region.amazonaws.com/product-images/....jpg"],
   "category_id": "uuid",
   "price_amount": 150000,
   "price_currency": "UZS",
@@ -451,7 +451,7 @@ Muhim izohlar:
 - **`name` / `description`** — 3 tilda saqlanadi (`name_uz/eng/ru`, `description_uz/eng/ru`). Yaratishda **nom uchun barcha 3 til majburiy** (bo'sh bo'lsa `400`), tavsif ixtiyoriy (bo'sh string bo'lishi mumkin).
 - **`tag`** — ixtiyoriy belgi/badge, masalan `"bestseller"`, 3 tilda (`tag_uz/eng/ru`). Berilmasa `null`/`omitempty`.
 - Video (YouTube/Instagram) va gul-do'koniga xos maydonlar (`flower_types`, `color`, `stem_count`, `packaging_type`, `freshness_lifespan`, `care_instructions`, `allow_custom_card`, `compatible_addons`, `occasions`) **butunlay olib tashlangan** — endi mavjud emas.
-- **`images`** — Cloudinary CDN URL'lari ro'yxati, **eng ko'pi bilan 5 ta**. Bo'sh bo'lishi ham mumkin (`[]`).
+- **`images`** — AWS S3'dagi rasm URL'lari ro'yxati, **eng ko'pi bilan 5 ta**. Bo'sh bo'lishi ham mumkin (`[]`).
 - **`price_amount` / `discount_amount` / `final_price_amount`** — endi **tiyinda emas, to'g'ridan-to'g'ri so'mda** (butun son) saqlanadi va qaytadi — backend hech qanday konversiya qilmaydi, frontend qanday yuborsa, shundayligicha saqlanadi va qaytadi. `discount_amount` bo'lmasa, javobda bu maydon umuman ko'rinmaydi (`omitempty`) va `final_price_amount` = `price_amount` bilan teng bo'ladi. `discount_amount` bo'lsa, u har doim `price_amount`dan kichik bo'ladi va **narxni ko'rsatishda `final_price_amount`dan foydalaning**.
 - **`slug`** — URL uchun (masalan `/product/51-ta-qizil-atirgul`). Yaratishda yubormasangiz, backend `name_uz`dan avtomatik hosil qiladi. Har bir mahsulotda **unikal** bo'lishi shart — band bo'lgan slug yuborilsa `409` qaytadi.
 - **`rating`** — 1 dan 5 gacha, default `1`. Hozircha foydalanuvchi sharhlaridan avtomatik hisoblanmaydi — admin qo'lda kiritadi (izoh/sharh tizimi hali yo'q).
@@ -691,7 +691,7 @@ Bosh sahifadagi banner/aksiya bloklari (masalan "Bugungi taklif — Sevimlilar u
   "title": "Sevimlilar uchun gullar",
   "subtitle": "Bugun buyurtma bering, bugun yetkazamiz",
   "cta": "Mahsulotlarni ko'rish",
-  "image": "https://res.cloudinary.com/.../event-images/....jpg",
+  "image": "https://your-bucket.s3.your-region.amazonaws.com/event-images/....jpg",
   "category_id": "uuid",
   "is_root": true,
   "created_at": "2026-08-18T10:00:00Z",
@@ -716,7 +716,7 @@ Bosh sahifadagi banner/aksiya bloklari (masalan "Bugungi taklif — Sevimlilar u
   "cta_uz": "Mahsulotlarni ko'rish",
   "cta_eng": "View products",
   "cta_ru": "Смотреть товары",
-  "image": "https://res.cloudinary.com/.../event-images/....jpg",
+  "image": "https://your-bucket.s3.your-region.amazonaws.com/event-images/....jpg",
   "category_id": "uuid",
   "is_root": true,
   "created_at": "2026-08-18T10:00:00Z",
@@ -725,7 +725,7 @@ Bosh sahifadagi banner/aksiya bloklari (masalan "Bugungi taklif — Sevimlilar u
 }
 ```
 
-- `image` — Cloudinary'ga yuklangan rasmning to'liq CDN URL'i (local `/images/...` fayl yo'li emas — bu maydonga to'g'ridan-to'g'ri backenddan qaytgan URL keladi, frontendda `<img src>` sifatida shuni ishlating).
+- `image` — AWS S3'ga yuklangan rasmning to'liq URL'i (local `/images/...` fayl yo'li emas — bu maydonga to'g'ridan-to'g'ri backenddan qaytgan URL keladi, frontendda `<img src>` sifatida shuni ishlating).
 - `category_id` — event qaysi kategoriyaga tegishli ekanligi. **Create va update paytida backend bu ID chindan mavjud kategoriyaga tegishli ekanligini tekshiradi** — mavjud bo'lmagan/noto'g'ri `category_id` yuborilsa `400` xato qaytadi.
 - `is_root` — `true` bo'lsa, `GET /events` va `GET /events/admin` ro'yxatlarida **birinchi bo'lib** chiqadi (backendda `ORDER BY is_root DESC, created_at DESC`). Bir nechta event `is_root: true` bo'lishi mumkin — ular orasida eng yangisi birinchi keladi.
 - `title` — yaratishda **barcha 3 til majburiy** (bo'sh bo'lsa `400`). `eyebrow`/`subtitle`/`cta` — ixtiyoriy (bo'sh string bo'lishi mumkin).
@@ -752,7 +752,7 @@ GET /api/v1/events?lang=<uz|eng|ru>
       "title": "Sevimlilar uchun gullar",
       "subtitle": "Bugun buyurtma bering, bugun yetkazamiz",
       "cta": "Mahsulotlarni ko'rish",
-      "image": "https://res.cloudinary.com/.../gul2.jpg",
+      "image": "https://your-bucket.s3.your-region.amazonaws.com/gul2.jpg",
       "category_id": "uuid",
       "is_root": true,
       "created_at": "...",
@@ -911,7 +911,7 @@ Categories, Products va Events — barchasida rasm quyidagi qoidalarga bo'ysunad
 
 - **Maksimal hajm:** 3 MB (`multipart` form umumiy hajm chegarasi ham 10MB, lekin rasm faylining o'zi 3MB dan oshmasligi kerak)
 - **Ruxsat etilgan formatlar:** `image/jpeg`, `image/png`, `image/webp`
-- Rasmlar **Cloudinary**'ga yuklanadi, qaytadigan URL — to'liq CDN havolasi (frontendda to'g'ridan-to'g'ri `<img src>` sifatida ishlatavering).
+- Rasmlar **AWS S3**'ga yuklanadi, qaytadigan URL — to'liq S3 havolasi (frontendda to'g'ridan-to'g'ri `<img src>` sifatida ishlatavering).
 
 ---
 

@@ -53,20 +53,21 @@ func main() {
 		RefreshTTL: cfg.JWT.RefreshTTL,
 	})
 
-	cloudinaryUploader, err := media.NewCloudinaryUploader(media.CloudinaryConfig{
-		CloudName: cfg.Cloudinary.CloudName,
-		APIKey:    cfg.Cloudinary.APIKey,
-		APISecret: cfg.Cloudinary.APISecret,
-		Folder:    cfg.Cloudinary.Folder,
+	s3Uploader, err := media.NewS3Uploader(media.S3Config{
+		AccessKeyID:     cfg.AWS.AccessKeyID,
+		SecretAccessKey: cfg.AWS.SecretAccessKey,
+		Region:          cfg.AWS.Region,
+		Bucket:          cfg.AWS.S3BucketName,
+		Folder:          cfg.AWS.S3Folder,
 	})
 	if err != nil {
-		log.Fatalf("cloudinary init error: %v", err)
+		log.Fatalf("s3 init error: %v", err)
 	}
 
 	catalogModule := catalog.NewModule(catalog.Config{
 		DB:            db,
 		TokenService:  identityModule.TokenService,
-		MediaUploader: cloudinaryUploader,
+		MediaUploader: s3Uploader,
 	})
 
 	// standart middlewares

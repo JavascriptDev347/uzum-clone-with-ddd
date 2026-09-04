@@ -8,7 +8,7 @@ type Uploader interface {
 }
 
 type UploadInput struct {
-	FileName    string // masalan: "category-images/uuid" (kengaytmasiz, Cloudinary o'zi qo'shadi)
+	FileName    string // masalan: "category-images/uuid" (S3 obyekt kaliti)
 	ContentType string // masalan: "image/jpeg"
 	Data        []byte
 }

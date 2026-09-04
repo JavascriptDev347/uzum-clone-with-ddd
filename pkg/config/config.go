@@ -21,16 +21,16 @@ var baseOptions = []oneenv.Option{
 }
 
 type Config struct {
-	DB         DBConfig         `envPrefix:"DB_"`
-	Redis      RedisConfig      `envPrefix:"REDIS_"`
-	JWT        JWTConfig        `envPrefix:"JWT_"`
-	AppPort    int              `env:"APP_PORT" default:"8080"`
-	Cloudinary CloudinaryConfig `envPrefix:"CLOUDINARY_"`
+	DB      DBConfig    `envPrefix:"DB_"`
+	Redis   RedisConfig `envPrefix:"REDIS_"`
+	JWT     JWTConfig   `envPrefix:"JWT_"`
+	AppPort int         `env:"APP_PORT" default:"8080"`
+	AWS     AWSConfig   `envPrefix:"AWS_"`
 }
 
 type DBConfig struct {
 	Host     string `env:"HOST,required"`
-	Port     string `env:"PORT" default:"5432"`
+	Port     string `env:"PORT" default	:"5432"`
 	User     string `env:"USER,required"`
 	Password string `env:"PASSWORD,required"`
 	Name     string `env:"NAME,required"`
@@ -48,11 +48,12 @@ type JWTConfig struct {
 	RefreshTTL time.Duration `env:"REFRESH_TTL" default:"168h"` // 7 kun
 }
 
-type CloudinaryConfig struct {
-	CloudName string `env:"CLOUD_NAME,required"`
-	APIKey    string `env:"API_KEY,required"`
-	APISecret string `env:"API_SECRET,required"`
-	Folder    string `env:"FOLDER,required"`
+type AWSConfig struct {
+	AccessKeyID     string `env:"ACCESS_KEY_ID,required"`
+	SecretAccessKey string `env:"SECRET_ACCESS_KEY,required"`
+	Region          string `env:"REGION,required"`
+	S3BucketName    string `env:"S3_BUCKET_NAME,required"`
+	S3Folder        string `env:"S3_FOLDER" default:"uzum-clone"`
 }
 
 func (c Config) DSN() string {
