@@ -55,9 +55,9 @@ type CreateProductInput struct {
 	DescriptionRu  string
 	Images         []media.UploadInput // eng ko'pi bilan 5 ta
 	CategoryID     string
-	Amount         int64
+	Amount         float64
 	Currency       string
-	DiscountAmount *int64
+	DiscountAmount *float64
 	Slug           string
 	IsAvailable    bool
 	Rating         float64
@@ -76,9 +76,9 @@ type UpdateProductInput struct {
 	DescriptionEng *string  `json:"description_eng,omitempty"`
 	DescriptionRu  *string  `json:"description_ru,omitempty"`
 	CategoryID     *string  `json:"category_id,omitempty"`
-	Amount         *int64   `json:"amount,omitempty"`
+	Amount         *float64 `json:"amount,omitempty"`
 	Currency       *string  `json:"currency,omitempty"`
-	DiscountAmount *int64   `json:"discount_amount,omitempty"`
+	DiscountAmount *float64 `json:"discount_amount,omitempty"`
 	ClearDiscount  bool     `json:"clear_discount,omitempty"`
 	Slug           *string  `json:"slug,omitempty"`
 	IsAvailable    *bool    `json:"is_available,omitempty"`
@@ -101,10 +101,10 @@ type ProductOutput struct {
 	Tag              *string   `json:"tag,omitempty"`
 	Images           []string  `json:"images"`
 	CategoryID       string    `json:"category_id"`
-	PriceAmount      int64     `json:"price_amount"`
+	PriceAmount      float64   `json:"price_amount"`
 	PriceCurrency    string    `json:"price_currency"`
-	DiscountAmount   *int64    `json:"discount_amount,omitempty"`
-	FinalPriceAmount int64     `json:"final_price_amount"`
+	DiscountAmount   *float64  `json:"discount_amount,omitempty"`
+	FinalPriceAmount float64   `json:"final_price_amount"`
 	Slug             string    `json:"slug"`
 	IsAvailable      bool      `json:"is_available"`
 	Rating           float64   `json:"rating"`
@@ -128,10 +128,10 @@ type ProductOutputForAdmin struct {
 	TagRu            *string    `json:"tag_ru,omitempty"`
 	Images           []string   `json:"images"`
 	CategoryID       string     `json:"category_id"`
-	PriceAmount      int64      `json:"price_amount"`
+	PriceAmount      float64    `json:"price_amount"`
 	PriceCurrency    string     `json:"price_currency"`
-	DiscountAmount   *int64     `json:"discount_amount,omitempty"`
-	FinalPriceAmount int64      `json:"final_price_amount"`
+	DiscountAmount   *float64   `json:"discount_amount,omitempty"`
+	FinalPriceAmount float64    `json:"final_price_amount"`
 	Slug             string     `json:"slug"`
 	IsAvailable      bool       `json:"is_available"`
 	Rating           float64    `json:"rating"`
@@ -177,7 +177,7 @@ func ToProductOutput(p *domain.Product, lang Lang) *ProductOutput {
 		images = append(images, img.URL)
 	}
 
-	var discountAmount *int64
+	var discountAmount *float64
 	finalPrice := p.Price().Amount()
 	if dp := p.DiscountPrice(); dp != nil {
 		amt := dp.Amount()
@@ -220,7 +220,7 @@ func ToProductOutputForAdmin(p *domain.Product) *ProductOutputForAdmin {
 		images = append(images, img.URL)
 	}
 
-	var discountAmount *int64
+	var discountAmount *float64
 	finalPrice := p.Price().Amount()
 	if dp := p.DiscountPrice(); dp != nil {
 		amt := dp.Amount()

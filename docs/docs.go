@@ -1237,8 +1237,8 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "type": "integer",
-                        "description": "Narx (so'mda, butun son)",
+                        "type": "number",
+                        "description": "Narx (so'mda, kasr son, masalan 19999.99)",
                         "name": "amount",
                         "in": "formData",
                         "required": true
@@ -1251,7 +1251,7 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "type": "integer",
+                        "type": "number",
                         "description": "Chegirma narxi, so'mda (ixtiyoriy)",
                         "name": "discount_amount",
                         "in": "formData"
@@ -1837,10 +1837,10 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "discount_amount": {
-                    "type": "integer"
+                    "type": "number"
                 },
                 "final_price_amount": {
-                    "type": "integer"
+                    "type": "number"
                 },
                 "id": {
                     "type": "string"
@@ -1858,7 +1858,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "price_amount": {
-                    "type": "integer"
+                    "type": "number"
                 },
                 "price_currency": {
                     "type": "string"
@@ -1951,7 +1951,7 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "amount": {
-                    "type": "integer"
+                    "type": "number"
                 },
                 "category_id": {
                     "type": "string"
@@ -1981,7 +1981,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "discount_amount": {
-                    "type": "integer"
+                    "type": "number"
                 },
                 "is_available": {
                     "type": "boolean"

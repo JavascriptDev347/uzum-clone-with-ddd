@@ -8,14 +8,14 @@ var (
 	ErrInvalidCurrency  = errors.New("catalog: noto'g'ri valyuta")
 )
 
-// amount bu yerda so'mda (butun sonlarda) saqlanadi - backend tiyinga konvertatsiya qilmaydi,
+// amount bu yerda so'mda saqlanadi (tiyin/qism qismlari bilan) - backend tiyinga konvertatsiya qilmaydi,
 // qiymat frontenddan qanday kelsa, shundayligicha saqlanadi.
 type Money struct {
-	amount   int64
+	amount   float64
 	currency string
 }
 
-func NewMoney(amount int64, currency string) (Money, error) {
+func NewMoney(amount float64, currency string) (Money, error) {
 	if amount < 0 {
 		return Money{}, ErrNegativeAmount
 	}
@@ -41,7 +41,7 @@ func (m Money) Add(other Money) (Money, error) {
 	}, nil
 }
 
-func (m Money) Amount() int64 {
+func (m Money) Amount() float64 {
 	return m.amount
 }
 

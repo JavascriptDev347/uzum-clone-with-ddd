@@ -118,9 +118,9 @@ definitions:
       description:
         type: string
       discount_amount:
-        type: integer
+        type: number
       final_price_amount:
-        type: integer
+        type: number
       id:
         type: string
       images:
@@ -132,7 +132,7 @@ definitions:
       name:
         type: string
       price_amount:
-        type: integer
+        type: number
       price_currency:
         type: string
       rating:
@@ -193,7 +193,7 @@ definitions:
   application.UpdateProductInput:
     properties:
       amount:
-        type: integer
+        type: number
       category_id:
         type: string
       clear_discount:
@@ -213,7 +213,7 @@ definitions:
       description_uz:
         type: string
       discount_amount:
-        type: integer
+        type: number
       is_available:
         type: boolean
       name_eng:
@@ -1061,11 +1061,11 @@ paths:
         name: category_id
         required: true
         type: string
-      - description: Narx (so'mda, butun son)
+      - description: Narx (so'mda, kasr son, masalan 19999.99)
         in: formData
         name: amount
         required: true
-        type: integer
+        type: number
       - description: 'Valyuta (masalan: UZS)'
         in: formData
         name: currency
@@ -1074,7 +1074,7 @@ paths:
       - description: Chegirma narxi, so'mda (ixtiyoriy)
         in: formData
         name: discount_amount
-        type: integer
+        type: number
       - description: Slug (bo'sh bo'lsa nomidan avtomatik yasaladi)
         in: formData
         name: slug

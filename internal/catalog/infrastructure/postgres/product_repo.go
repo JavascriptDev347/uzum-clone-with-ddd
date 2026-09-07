@@ -41,9 +41,9 @@ func scanProduct(s rowScanner) (*domain.Product, error) {
 		descriptionRu  string
 		imagesRaw      []byte
 		categoryID     string
-		priceAmount    int64
+		priceAmount    float64
 		priceCurrency  string
-		discountAmount sql.NullInt64
+		discountAmount sql.NullFloat64
 		slug           string
 		isAvailable    bool
 		rating         float64
@@ -74,7 +74,7 @@ func scanProduct(s rowScanner) (*domain.Product, error) {
 
 	var discountPrice *domain.Money
 	if discountAmount.Valid {
-		dp, err := domain.NewMoney(discountAmount.Int64, priceCurrency)
+		dp, err := domain.NewMoney(discountAmount.Float64, priceCurrency)
 		if err != nil {
 			return nil, err
 		}
@@ -151,7 +151,7 @@ func (r *PostgresProductRepository) Save(ctx context.Context, p *domain.Product)
 		return err
 	}
 
-	var discountAmount *int64
+	var discountAmount *float64
 	if dp := p.DiscountPrice(); dp != nil {
 		v := dp.Amount()
 		discountAmount = &v
@@ -260,7 +260,7 @@ func (r *PostgresProductRepository) Update(ctx context.Context, p *domain.Produc
 		return err
 	}
 
-	var discountAmount *int64
+	var discountAmount *float64
 	if dp := p.DiscountPrice(); dp != nil {
 		v := dp.Amount()
 		discountAmount = &v

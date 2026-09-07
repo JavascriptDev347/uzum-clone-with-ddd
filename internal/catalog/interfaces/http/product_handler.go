@@ -80,9 +80,9 @@ func parseLang(r *http.Request) application.Lang {
 //		@Param			description_eng			formData	string	false	"Tavsif (inglizcha)"
 //		@Param			description_ru			formData	string	false	"Tavsif (ruscha)"
 //		@Param			category_id				formData	string	true	"Kategoriya ID"
-//		@Param			amount					formData	int		true	"Narx (so'mda, butun son)"
+//		@Param			amount					formData	number	true	"Narx (so'mda, kasr son, masalan 19999.99)"
 //		@Param			currency				formData	string	true	"Valyuta (masalan: UZS)"
-//		@Param			discount_amount			formData	int		false	"Chegirma narxi, so'mda (ixtiyoriy)"
+//		@Param			discount_amount			formData	number	false	"Chegirma narxi, so'mda (ixtiyoriy)"
 //		@Param			slug					formData	string	false	"Slug (bo'sh bo'lsa nomidan avtomatik yasaladi)"
 //		@Param			is_available			formData	boolean	false	"Sotuvda bor yoki yo'qligi (default true)"
 //		@Param			rating					formData	number	false	"Reyting 1-5 (default 1)"
@@ -104,15 +104,15 @@ func (h *ProductHandler) CreateProduct(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	amount, err := strconv.ParseInt(r.FormValue("amount"), 10, 64)
+	amount, err := strconv.ParseFloat(r.FormValue("amount"), 64)
 	if err != nil {
 		response.Error(w, http.StatusBadRequest, "noto'g'ri narx (amount)")
 		return
 	}
 
-	var discountAmount *int64
+	var discountAmount *float64
 	if raw := r.FormValue("discount_amount"); raw != "" {
-		v, err := strconv.ParseInt(raw, 10, 64)
+		v, err := strconv.ParseFloat(raw, 64)
 		if err != nil {
 			response.Error(w, http.StatusBadRequest, "noto'g'ri chegirma narxi (discount_amount)")
 			return

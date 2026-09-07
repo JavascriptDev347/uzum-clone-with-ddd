@@ -572,9 +572,9 @@ POST /api/v1/products
 | `description_eng` | string | ❌ yo'q | Tavsif (inglizcha) |
 | `description_ru` | string | ❌ yo'q | Tavsif (ruscha) |
 | `category_id` | string (uuid) | ✅ ha | Mavjud kategoriya ID'si — backend tekshiradi |
-| `amount` | integer | ✅ ha | Narx, **so'mda** (butun son, tiyinga aylantirilmaydi) |
+| `amount` | number | ✅ ha | Narx, **so'mda** (kasr son, masalan `19999.99`, tiyinga aylantirilmaydi) |
 | `currency` | string | ✅ ha | Valyuta kodi, masalan `"UZS"` |
-| `discount_amount` | integer | ❌ yo'q | Chegirma narxi, so'mda. Berilsa `amount`dan kichik va bir xil valyutada bo'lishi shart |
+| `discount_amount` | number | ❌ yo'q | Chegirma narxi, so'mda. Berilsa `amount`dan kichik va bir xil valyutada bo'lishi shart |
 | `slug` | string | ❌ yo'q | Bo'sh qoldirilsa `name_uz`dan avtomatik hosil qilinadi |
 | `is_available` | `"true"`/`"false"` | ❌ yo'q | Berilmasa `true` deb olinadi |
 | `rating` | number | ❌ yo'q | 1–5, berilmasa `1` |
