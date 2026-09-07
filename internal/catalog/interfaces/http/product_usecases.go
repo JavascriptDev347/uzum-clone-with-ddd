@@ -26,8 +26,12 @@ type UpdateProductUseCase interface {
 	Execute(ctx context.Context, input application.UpdateProductInput) error
 }
 
-type UpdateProductImagesUseCase interface {
+type AddProductImagesUseCase interface {
 	Execute(ctx context.Context, input application.UpdateProductImagesInput) (*application.ProductOutput, error)
+}
+
+type ReplaceProductImageUseCase interface {
+	Execute(ctx context.Context, input application.ReplaceProductImageInput) (*application.ProductOutput, error)
 }
 
 type DeleteProductUseCase interface {

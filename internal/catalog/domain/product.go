@@ -13,6 +13,7 @@ var (
 	ErrEmptyCategoryID      = errors.New("catalog: category ID bo'sh bo'lishi mumkin emas")
 	ErrTooManyProductImages = errors.New("catalog: mahsulot uchun eng ko'pi bilan 5 ta rasm yuklash mumkin")
 	ErrProductImageRequired = errors.New("catalog: mahsulot uchun kamida bitta rasm yuklash shart")
+	ErrProductImageNotFound = errors.New("catalog: berilgan tartib raqamida rasm topilmadi")
 	ErrInvalidRating        = errors.New("catalog: reyting 1 dan 5 gacha bo'lishi kerak")
 	ErrNegativeStock        = errors.New("catalog: stock manfiy bo'lishi mumkin emas")
 	ErrNegativeSoldCount    = errors.New("catalog: sotilgan mahsulotlar soni manfiy bo'lishi mumkin emas")
@@ -242,13 +243,26 @@ func (p *Product) ChangeDescriptions(descriptionUz, descriptionEng, descriptionR
 	p.updatedAt = time.Now()
 }
 
-func (p *Product) ChangeImages(images []ProductImage) error {
-	if len(images) > MaxProductImages {
+// AddImages - mavjud rasmlarga yangi rasm(lar)ni qo'shadi, eskilarini o'chirmaydi.
+func (p *Product) AddImages(newImages []ProductImage) error {
+	if len(p.images)+len(newImages) > MaxProductImages {
 		return ErrTooManyProductImages
 	}
-	p.images = images
+	p.images = append(p.images, newImages...)
 	p.updatedAt = time.Now()
 	return nil
+}
+
+// ReplaceImageAt - berilgan tartib raqamidagi (0 dan boshlanadi) rasmni yangisiga almashtiradi
+// va eski rasmni qaytaradi (uploader'dan o'chirish uchun).
+func (p *Product) ReplaceImageAt(index int, newImage ProductImage) (ProductImage, error) {
+	if index < 0 || index >= len(p.images) {
+		return ProductImage{}, ErrProductImageNotFound
+	}
+	old := p.images[index]
+	p.images[index] = newImage
+	p.updatedAt = time.Now()
+	return old, nil
 }
 
 func (p *Product) ChangeCategory(categoryID string) error {

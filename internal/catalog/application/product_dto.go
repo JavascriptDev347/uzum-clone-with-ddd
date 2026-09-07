@@ -93,10 +93,17 @@ type UpdateProductInput struct {
 	ClearTagRu     bool     `json:"clear_tag_ru,omitempty"`
 }
 
-// UpdateProductImagesInput - mahsulot rasmlar to'plamini butunlay almashtirish uchun.
+// UpdateProductImagesInput - mahsulotga yangi rasm(lar) qo'shish uchun (mavjud rasmlar saqlanib qoladi).
 type UpdateProductImagesInput struct {
 	ID     string
-	Images []media.UploadInput // eng ko'pi bilan 5 ta, hammasi almashtiriladi
+	Images []media.UploadInput // qo'shiladigan yangi rasmlar; jami (eskilar + yangilar) 5 tadan oshmasligi kerak
+}
+
+// ReplaceProductImageInput - mahsulotning bitta rasmini (tartib raqami bo'yicha) yangisiga almashtirish uchun.
+type ReplaceProductImageInput struct {
+	ID    string
+	Index int // almashtiriladigan rasmning tartib raqami, 0 dan boshlanadi
+	Image media.UploadInput
 }
 
 // ProductOutput - so'ralgan tilga moslashtirilgan (localized) mahsulot ma'lumoti, ommaviy endpointlar uchun.

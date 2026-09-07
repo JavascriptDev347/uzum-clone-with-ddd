@@ -33,7 +33,8 @@ func NewModule(cfg Config) *Module {
 	getProductByIDUC := application.NewGetProductUseCase(productRepo)
 	getProductBySlugUC := application.NewGetProductBySlugUseCase(productRepo)
 	updateProductUC := application.NewUpdateProductUseCase(productRepo, categoryRepo)
-	updateProductImagesUC := application.NewUpdateProductImagesUseCase(productRepo, cfg.MediaUploader)
+	addProductImagesUC := application.NewAddProductImagesUseCase(productRepo, cfg.MediaUploader)
+	replaceProductImageUC := application.NewReplaceProductImageUseCase(productRepo, cfg.MediaUploader)
 	deleteProductUC := application.NewDeleteProductUseCase(productRepo)
 	getAllProductsUC := application.NewGetAllProductsIncludingDeletedUseCase(productRepo)
 
@@ -54,7 +55,7 @@ func NewModule(cfg Config) *Module {
 	getAllEventsUC := application.NewGetAllEventsIncludingDeletedUseCase(eventRepo)
 
 	// interfaces
-	productHandler := http.NewProductHandler(createProductUC, getProductsUC, getProductByIDUC, getProductBySlugUC, updateProductUC, updateProductImagesUC, deleteProductUC, getAllProductsUC)
+	productHandler := http.NewProductHandler(createProductUC, getProductsUC, getProductByIDUC, getProductBySlugUC, updateProductUC, addProductImagesUC, replaceProductImageUC, deleteProductUC, getAllProductsUC)
 	categoryHandler := http.NewCategoryHandler(createCategoryUC, getCategoriesUC, getCategoryByIDUC, updateCategoryUC, updateCategoryImageUC, deleteCategoryUC, getAllCategoriesUC)
 	eventHandler := http.NewEventHandler(createEventUC, getEventsUC, getEventByIDUC, updateEventUC, updateEventImageUC, deleteEventUC, getAllEventsUC)
 

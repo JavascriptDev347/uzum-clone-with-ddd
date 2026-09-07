@@ -20,7 +20,8 @@ type ProductHandler struct {
 	getByIdUc      GetProductUseCase
 	getBySlug      GetProductBySlugUseCase
 	updateUc       UpdateProductUseCase
-	updateImagesUc UpdateProductImagesUseCase
+	addImagesUc    AddProductImagesUseCase
+	replaceImageUc ReplaceProductImageUseCase
 	deleteUc       DeleteProductUseCase
 	getAllUc       GetAllProductsIncludingDeletedUseCase
 }
@@ -31,7 +32,8 @@ func NewProductHandler(
 	getByIdUc GetProductUseCase,
 	getBySlug GetProductBySlugUseCase,
 	updateUc UpdateProductUseCase,
-	updateImagesUc UpdateProductImagesUseCase,
+	addImagesUc AddProductImagesUseCase,
+	replaceImageUc ReplaceProductImageUseCase,
 	deleteUc DeleteProductUseCase,
 	getAllUc GetAllProductsIncludingDeletedUseCase,
 ) *ProductHandler {
@@ -41,7 +43,8 @@ func NewProductHandler(
 		getByIdUc:      getByIdUc,
 		getBySlug:      getBySlug,
 		updateUc:       updateUc,
-		updateImagesUc: updateImagesUc,
+		addImagesUc:    addImagesUc,
+		replaceImageUc: replaceImageUc,
 		deleteUc:       deleteUc,
 		getAllUc:       getAllUc,
 	}
@@ -331,7 +334,7 @@ func (h *ProductHandler) GetProductBySlug(w http.ResponseWriter, r *http.Request
 // UpdateProduct godoc
 //
 //		@Summary		Mahsulotni yangilash
-//		@Description	Mahsulotni ID bo'yicha yangilash (JSON body). Rasmlarni yangilash uchun PUT /products/{id}/images dan foydalaning.
+//		@Description	Mahsulotni ID bo'yicha yangilash (JSON body). Rasmlarni yangilash uchun POST /products/{id}/images (qo'shish) yoki PUT /products/{id}/images/{index} (almashtirish) dan foydalaning.
 //		@Tags			products
 //		@Accept			json
 //	 @Security		BearerAuth
@@ -361,22 +364,22 @@ func (h *ProductHandler) UpdateProduct(w http.ResponseWriter, r *http.Request) {
 	response.Success(w, http.StatusOK, nil)
 }
 
-// UpdateProductImages godoc
+// AddProductImages godoc
 //
-//		@Summary		Mahsulot rasmlarini yangilash
-//		@Description	Mahsulotning barcha rasmlarini yangi rasmlar to'plamiga almashtiradi (eski rasmlar avtomatik o'chiriladi). Faqat admin uchun.
+//		@Summary		Mahsulotga rasm(lar) qo'shish
+//		@Description	Mahsulotga yangi rasm(lar)ni qo'shadi, mavjud rasmlar o'chirilmaydi (jami eng ko'pi bilan 5 ta bo'lishi kerak). Faqat admin uchun.
 //		@Tags			products
 //		@Accept			multipart/form-data
 //	 @Security		BearerAuth
 //		@Produce		json
 //		@Param			id		path		string	true	"Mahsulot ID"
-//		@Param			images	formData	file	true	"Yangi rasmlar (eng ko'pi bilan 5 ta, hammasi almashtiriladi)"
-//		@Success		200		{object}	response.Envelope{data=application.ProductOutput}	"Rasmlar yangilash muvaffaqiyatli"
+//		@Param			images	formData	file	true	"Qo'shiladigan yangi rasmlar"
+//		@Success		200		{object}	response.Envelope{data=application.ProductOutput}	"Rasm(lar) qo'shildi"
 //		@Failure		400		{object}	response.Envelope	"Noto'g'ri so'rov tanasi yoki validatsiya xatosi"
 //		@Failure		404		{object}	response.Envelope	"Mahsulot topilmadi"
 //		@Failure		500		{object}	response.Envelope	"Ichki server xatosi"
-//		@Router			/products/{id}/images [put]
-func (h *ProductHandler) UpdateProductImages(w http.ResponseWriter, r *http.Request) {
+//		@Router			/products/{id}/images [post]
+func (h *ProductHandler) AddProductImages(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 
 	if err := r.ParseMultipartForm(20 << 20); err != nil {
@@ -419,7 +422,68 @@ func (h *ProductHandler) UpdateProductImages(w http.ResponseWriter, r *http.Requ
 		Images: images,
 	}
 
-	output, err := h.updateImagesUc.Execute(r.Context(), input)
+	output, err := h.addImagesUc.Execute(r.Context(), input)
+	if err != nil {
+		writeProductError(w, err)
+		return
+	}
+
+	response.Success(w, http.StatusOK, output)
+}
+
+// ReplaceProductImage godoc
+//
+//		@Summary		Mahsulotning bitta rasmini almashtirish
+//		@Description	Mahsulotning berilgan tartib raqamidagi (index, 0 dan boshlanadi, GET javobidagi images massividagi o'rniga mos) rasmini yangisiga almashtiradi, qolgan rasmlar o'zgarmaydi. Eski rasm avtomatik o'chiriladi. Faqat admin uchun.
+//		@Tags			products
+//		@Accept			multipart/form-data
+//	 @Security		BearerAuth
+//		@Produce		json
+//		@Param			id		path		string	true	"Mahsulot ID"
+//		@Param			index	path		int		true	"Almashtiriladigan rasmning tartib raqami (0 dan boshlanadi)"
+//		@Param			image	formData	file	true	"Yangi rasm"
+//		@Success		200		{object}	response.Envelope{data=application.ProductOutput}	"Rasm almashtirildi"
+//		@Failure		400		{object}	response.Envelope	"Noto'g'ri so'rov tanasi, index noto'g'ri yoki validatsiya xatosi"
+//		@Failure		404		{object}	response.Envelope	"Mahsulot topilmadi"
+//		@Failure		500		{object}	response.Envelope	"Ichki server xatosi"
+//		@Router			/products/{id}/images/{index} [put]
+func (h *ProductHandler) ReplaceProductImage(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "id")
+	index, err := strconv.Atoi(chi.URLParam(r, "index"))
+	if err != nil || index < 0 {
+		response.Error(w, http.StatusBadRequest, "noto'g'ri index")
+		return
+	}
+
+	if err := r.ParseMultipartForm(20 << 20); err != nil {
+		response.Error(w, http.StatusBadRequest, "fayl hajmi juda katta yoki noto'g'ri format")
+		return
+	}
+
+	file, header, err := r.FormFile("image")
+	if err != nil {
+		response.Error(w, http.StatusBadRequest, "rasm yuklanmadi")
+		return
+	}
+	defer file.Close()
+
+	data, err := io.ReadAll(file)
+	if err != nil {
+		response.Error(w, http.StatusInternalServerError, "rasmni o'qishda xatolik")
+		return
+	}
+
+	input := application.ReplaceProductImageInput{
+		ID:    id,
+		Index: index,
+		Image: media.UploadInput{
+			FileName:    "product-images/" + uuid.NewString(),
+			ContentType: header.Header.Get("Content-Type"),
+			Data:        data,
+		},
+	}
+
+	output, err := h.replaceImageUc.Execute(r.Context(), input)
 	if err != nil {
 		writeProductError(w, err)
 		return

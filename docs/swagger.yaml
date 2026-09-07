@@ -1305,7 +1305,8 @@ paths:
       consumes:
       - application/json
       description: Mahsulotni ID bo'yicha yangilash (JSON body). Rasmlarni yangilash
-        uchun PUT /products/{id}/images dan foydalaning.
+        uchun POST /products/{id}/images (qo'shish) yoki PUT /products/{id}/images/{index}
+        (almashtirish) dan foydalaning.
       parameters:
       - description: Mahsulot ID
         in: path
@@ -1347,18 +1348,18 @@ paths:
       tags:
       - products
   /products/{id}/images:
-    put:
+    post:
       consumes:
       - multipart/form-data
-      description: Mahsulotning barcha rasmlarini yangi rasmlar to'plamiga almashtiradi
-        (eski rasmlar avtomatik o'chiriladi). Faqat admin uchun.
+      description: Mahsulotga yangi rasm(lar)ni qo'shadi, mavjud rasmlar o'chirilmaydi
+        (jami eng ko'pi bilan 5 ta bo'lishi kerak). Faqat admin uchun.
       parameters:
       - description: Mahsulot ID
         in: path
         name: id
         required: true
         type: string
-      - description: Yangi rasmlar (eng ko'pi bilan 5 ta, hammasi almashtiriladi)
+      - description: Qo'shiladigan yangi rasmlar
         in: formData
         name: images
         required: true
@@ -1367,7 +1368,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: Rasmlar yangilash muvaffaqiyatli
+          description: Rasm(lar) qo'shildi
           schema:
             allOf:
             - $ref: '#/definitions/response.Envelope'
@@ -1389,7 +1390,59 @@ paths:
             $ref: '#/definitions/response.Envelope'
       security:
       - BearerAuth: []
-      summary: Mahsulot rasmlarini yangilash
+      summary: Mahsulotga rasm(lar) qo'shish
+      tags:
+      - products
+  /products/{id}/images/{index}:
+    put:
+      consumes:
+      - multipart/form-data
+      description: Mahsulotning berilgan tartib raqamidagi (index, 0 dan boshlanadi,
+        GET javobidagi images massividagi o'rniga mos) rasmini yangisiga almashtiradi,
+        qolgan rasmlar o'zgarmaydi. Eski rasm avtomatik o'chiriladi. Faqat admin uchun.
+      parameters:
+      - description: Mahsulot ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Almashtiriladigan rasmning tartib raqami (0 dan boshlanadi)
+        in: path
+        name: index
+        required: true
+        type: integer
+      - description: Yangi rasm
+        in: formData
+        name: image
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Rasm almashtirildi
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Envelope'
+            - properties:
+                data:
+                  $ref: '#/definitions/application.ProductOutput'
+              type: object
+        "400":
+          description: Noto'g'ri so'rov tanasi, index noto'g'ri yoki validatsiya xatosi
+          schema:
+            $ref: '#/definitions/response.Envelope'
+        "404":
+          description: Mahsulot topilmadi
+          schema:
+            $ref: '#/definitions/response.Envelope'
+        "500":
+          description: Ichki server xatosi
+          schema:
+            $ref: '#/definitions/response.Envelope'
+      security:
+      - BearerAuth: []
+      summary: Mahsulotning bitta rasmini almashtirish
       tags:
       - products
   /products/admin:

@@ -1697,7 +1697,7 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "Mahsulotni ID bo'yicha yangilash (JSON body). Rasmlarni yangilash uchun PUT /products/{id}/images dan foydalaning.",
+                "description": "Mahsulotni ID bo'yicha yangilash (JSON body). Rasmlarni yangilash uchun POST /products/{id}/images (qo'shish) yoki PUT /products/{id}/images/{index} (almashtirish) dan foydalaning.",
                 "consumes": [
                     "application/json"
                 ],
@@ -1805,13 +1805,13 @@ const docTemplate = `{
             }
         },
         "/products/{id}/images": {
-            "put": {
+            "post": {
                 "security": [
                     {
                         "BearerAuth": []
                     }
                 ],
-                "description": "Mahsulotning barcha rasmlarini yangi rasmlar to'plamiga almashtiradi (eski rasmlar avtomatik o'chiriladi). Faqat admin uchun.",
+                "description": "Mahsulotga yangi rasm(lar)ni qo'shadi, mavjud rasmlar o'chirilmaydi (jami eng ko'pi bilan 5 ta bo'lishi kerak). Faqat admin uchun.",
                 "consumes": [
                     "multipart/form-data"
                 ],
@@ -1821,7 +1821,7 @@ const docTemplate = `{
                 "tags": [
                     "products"
                 ],
-                "summary": "Mahsulot rasmlarini yangilash",
+                "summary": "Mahsulotga rasm(lar) qo'shish",
                 "parameters": [
                     {
                         "type": "string",
@@ -1832,7 +1832,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "file",
-                        "description": "Yangi rasmlar (eng ko'pi bilan 5 ta, hammasi almashtiriladi)",
+                        "description": "Qo'shiladigan yangi rasmlar",
                         "name": "images",
                         "in": "formData",
                         "required": true
@@ -1840,7 +1840,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Rasmlar yangilash muvaffaqiyatli",
+                        "description": "Rasm(lar) qo'shildi",
                         "schema": {
                             "allOf": [
                                 {
@@ -1859,6 +1859,87 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Noto'g'ri so'rov tanasi yoki validatsiya xatosi",
+                        "schema": {
+                            "$ref": "#/definitions/response.Envelope"
+                        }
+                    },
+                    "404": {
+                        "description": "Mahsulot topilmadi",
+                        "schema": {
+                            "$ref": "#/definitions/response.Envelope"
+                        }
+                    },
+                    "500": {
+                        "description": "Ichki server xatosi",
+                        "schema": {
+                            "$ref": "#/definitions/response.Envelope"
+                        }
+                    }
+                }
+            }
+        },
+        "/products/{id}/images/{index}": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Mahsulotning berilgan tartib raqamidagi (index, 0 dan boshlanadi, GET javobidagi images massividagi o'rniga mos) rasmini yangisiga almashtiradi, qolgan rasmlar o'zgarmaydi. Eski rasm avtomatik o'chiriladi. Faqat admin uchun.",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "products"
+                ],
+                "summary": "Mahsulotning bitta rasmini almashtirish",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Mahsulot ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Almashtiriladigan rasmning tartib raqami (0 dan boshlanadi)",
+                        "name": "index",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "Yangi rasm",
+                        "name": "image",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Rasm almashtirildi",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.Envelope"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/application.ProductOutput"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Noto'g'ri so'rov tanasi, index noto'g'ri yoki validatsiya xatosi",
                         "schema": {
                             "$ref": "#/definitions/response.Envelope"
                         }

@@ -668,7 +668,7 @@ PUT /api/v1/products/{id}
 }
 ```
 
-> Diqqat: bu endpoint **JSON body** qabul qiladi (rasm yangilash uchun `multipart/form-data` emas). Rasmlarni yangilash uchun pastdagi **4.8 Mahsulot rasmlarini yangilash** endpointidan foydalaning. `category_id` yuborilsa, backend uni ham mavjudligiga tekshiradi. Nomni yangilashda `name_uz`/`name_eng`/`name_ru`dan **kamida bittasini** yuborsangiz, backend o'zgarmagan tillarni joriy qiymati bilan birga qayta tekshiradi — shuning uchun agar 3 tildan birortasini yangilamoqchi bo'lsangiz ham, xavfsizroq usul barcha 3 tilni birga yuborishdir.
+> Diqqat: bu endpoint **JSON body** qabul qiladi (rasm yangilash uchun `multipart/form-data` emas). Rasmlarni yangilash uchun pastdagi **4.8 Mahsulotga rasm(lar) qo'shish** va **4.9 Mahsulotning bitta rasmini almashtirish** endpointlaridan foydalaning. `category_id` yuborilsa, backend uni ham mavjudligiga tekshiradi. Nomni yangilashda `name_uz`/`name_eng`/`name_ru`dan **kamida bittasini** yuborsangiz, backend o'zgarmagan tillarni joriy qiymati bilan birga qayta tekshiradi — shuning uchun agar 3 tildan birortasini yangilamoqchi bo'lsangiz ham, xavfsizroq usul barcha 3 tilni birga yuborishdir.
 >
 > Maxsus bayroqlar: `clear_discount: true` — chegirmani butunlay o'chiradi (`discount_amount`ni yubormasdan); `clear_tag_uz`/`clear_tag_eng`/`clear_tag_ru: true` — mos tildagi tag'ni `null` qiladi. Bular berilmasa, mos maydon yuborilgan taqdirdagina o'zgaradi.
 
@@ -686,10 +686,10 @@ PUT /api/v1/products/{id}
 
 ---
 
-### 4.8 Mahsulot rasmlarini yangilash
+### 4.8 Mahsulotga rasm(lar) qo'shish
 
 ```
-PUT /api/v1/products/{id}/images
+POST /api/v1/products/{id}/images
 ```
 
 🔒 **Faqat admin**
@@ -698,16 +698,16 @@ PUT /api/v1/products/{id}/images
 
 | Maydon | Tur | Majburiymi | Izoh |
 |---|---|---|---|
-| `images` | file (bir nechta) | ✅ ha | Yangi rasmlar to'plami, kamida 1 ta, eng ko'pi bilan 5 ta |
+| `images` | file (bir nechta) | ✅ ha | Qo'shiladigan yangi rasmlar |
 
-> Diqqat: bu endpoint mahsulotning **barcha** rasmlarini yuborilgan yangi to'plamga to'liq almashtiradi (qisman qo'shish/o'chirish emas). Muvaffaqiyatli saqlangandan keyin eski rasmlar S3'dan avtomatik o'chiriladi.
+> Bu endpoint mavjud rasmlarni **o'chirmaydi** — yangi rasmlarni ularning ustiga qo'shadi. Jami rasmlar soni (eskilar + yangilar) 5 tadan oshsa, `400` qaytadi.
 
-**Javob — `200 OK`:** yangilangan `ProductOutput` (4.1-bo'limdagi shakl bilan bir xil)
+**Javob — `200 OK`:** yangilangan `ProductOutput` (4.1-bo'limdagi shakl bilan bir xil, `images` massivi endi to'liq — eski + yangi rasmlar bilan)
 
 **Xatoliklar:**
 | Status | Sabab |
 |---|---|
-| 400 | rasm yuborilmagan, 5 tadan ortiq, hajmi katta yoki formati noto'g'ri |
+| 400 | rasm yuborilmagan, jami 5 tadan ortiq bo'lib qoladi, hajmi katta yoki formati noto'g'ri |
 | 401 | token yo'q |
 | 403 | admin emas |
 | 404 | mahsulot topilmadi |
@@ -715,7 +715,38 @@ PUT /api/v1/products/{id}/images
 
 ---
 
-### 4.9 Mahsulotni o'chirish
+### 4.9 Mahsulotning bitta rasmini almashtirish
+
+```
+PUT /api/v1/products/{id}/images/{index}
+```
+
+🔒 **Faqat admin**
+
+`{index}` — almashtiriladigan rasmning tartib raqami, **0 dan boshlanadi**, `GET /products/{id}` javobidagi `images` massividagi shu rasmning o'rniga mos keladi (masalan, ro'yxatdagi 2-rasmni almashtirish uchun `index=1`).
+
+**Content-Type:** `multipart/form-data`
+
+| Maydon | Tur | Majburiymi | Izoh |
+|---|---|---|---|
+| `image` | file | ✅ ha | Yangi rasm (shu index'dagi eski rasm o'rniga) |
+
+> Faqat shu bitta rasm almashtiriladi, qolgan rasmlar o'zgarmaydi. Eski rasm muvaffaqiyatli saqlangandan keyin S3'dan avtomatik o'chiriladi.
+
+**Javob — `200 OK`:** yangilangan `ProductOutput` (4.1-bo'limdagi shakl bilan bir xil)
+
+**Xatoliklar:**
+| Status | Sabab |
+|---|---|
+| 400 | rasm yuborilmagan, `index` noto'g'ri/mavjud bo'lmagan, hajmi katta yoki formati noto'g'ri |
+| 401 | token yo'q |
+| 403 | admin emas |
+| 404 | mahsulot topilmadi |
+| 500 | server xatosi |
+
+---
+
+### 4.10 Mahsulotni o'chirish
 
 ```
 DELETE /api/v1/products/{id}
@@ -1034,7 +1065,8 @@ Frontendda: login qilingandan keyin `GET /auth/me` chaqirib, javobdagi `role` ma
 | `/api/v1/products/slug/{slug}` | GET | ❌ | — |
 | `/api/v1/products` | POST | ✅ | admin |
 | `/api/v1/products/{id}` | PUT | ✅ | admin |
-| `/api/v1/products/{id}/images` | PUT | ✅ | admin |
+| `/api/v1/products/{id}/images` | POST | ✅ | admin |
+| `/api/v1/products/{id}/images/{index}` | PUT | ✅ | admin |
 | `/api/v1/products/{id}` | DELETE | ✅ | admin |
 | `/api/v1/products/admin` | GET | ✅ | admin |
 | `/api/v1/events` | GET | ❌ | — |
@@ -1056,4 +1088,4 @@ Frontend ishini rejalashtirishda hisobga oling:
 - ❌ Savat, buyurtma (order) — `internal/ordering` papkasi mavjud, lekin ichida hali HTTP endpoint yo'q
 - ❌ Parolni tiklash / o'zgartirish, logout endpointi
 
-> Eslatma: rasmlarni yangilash endi mumkin — `PUT /categories/{id}/image` (3.6), `PUT /products/{id}/images` (4.8) va `PUT /events/{id}/image` (5.6) orqali.
+> Eslatma: rasmlarni yangilash endi mumkin — `PUT /categories/{id}/image` (3.6), mahsulotda `POST /products/{id}/images` (rasm qo'shish, 4.8) va `PUT /products/{id}/images/{index}` (bitta rasmni almashtirish, 4.9), hamda `PUT /events/{id}/image` (5.6) orqali.
