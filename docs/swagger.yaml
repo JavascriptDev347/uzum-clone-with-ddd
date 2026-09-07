@@ -636,6 +636,52 @@ paths:
       summary: Kategoriyani yangilash
       tags:
       - categories
+  /categories/{id}/image:
+    put:
+      consumes:
+      - multipart/form-data
+      description: Kategoriyaning rasmini yangisiga almashtiradi (eski rasm avtomatik
+        o'chiriladi). Faqat admin uchun.
+      parameters:
+      - description: Kategoriya ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Yangi kategoriya rasmi
+        in: formData
+        name: image
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Rasm yangilash muvaffaqiyatli
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Envelope'
+            - properties:
+                data:
+                  $ref: '#/definitions/application.CategoryOutput'
+              type: object
+        "400":
+          description: Noto'g'ri so'rov tanasi yoki validatsiya xatosi
+          schema:
+            $ref: '#/definitions/response.Envelope'
+        "404":
+          description: Kategoriya topilmadi
+          schema:
+            $ref: '#/definitions/response.Envelope'
+        "500":
+          description: Ichki server xatosi
+          schema:
+            $ref: '#/definitions/response.Envelope'
+      security:
+      - BearerAuth: []
+      summary: Kategoriya rasmini yangilash
+      tags:
+      - categories
   /categories/{id}/products:
     get:
       description: Berilgan category_id ga tegishli faol (o'chirilmagan) mahsulotlar
@@ -916,7 +962,8 @@ paths:
     put:
       consumes:
       - application/json
-      description: Eventni ID bo'yicha yangilash (JSON body, rasm bu yerda o'zgartirilmaydi)
+      description: Eventni ID bo'yicha yangilash (JSON body). Rasmni yangilash uchun
+        PUT /events/{id}/image dan foydalaning.
       parameters:
       - description: Event ID
         in: path
@@ -951,6 +998,52 @@ paths:
       security:
       - BearerAuth: []
       summary: Eventni yangilash
+      tags:
+      - events
+  /events/{id}/image:
+    put:
+      consumes:
+      - multipart/form-data
+      description: Eventning rasmini yangisiga almashtiradi (eski rasm avtomatik o'chiriladi).
+        Faqat admin uchun.
+      parameters:
+      - description: Event ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Yangi event rasmi
+        in: formData
+        name: image
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Rasm yangilash muvaffaqiyatli
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Envelope'
+            - properties:
+                data:
+                  $ref: '#/definitions/application.EventOutput'
+              type: object
+        "400":
+          description: Noto'g'ri so'rov tanasi yoki validatsiya xatosi
+          schema:
+            $ref: '#/definitions/response.Envelope'
+        "404":
+          description: Event topilmadi
+          schema:
+            $ref: '#/definitions/response.Envelope'
+        "500":
+          description: Ichki server xatosi
+          schema:
+            $ref: '#/definitions/response.Envelope'
+      security:
+      - BearerAuth: []
+      summary: Event rasmini yangilash
       tags:
       - events
   /events/admin:
@@ -1211,7 +1304,8 @@ paths:
     put:
       consumes:
       - application/json
-      description: Mahsulotni ID bo'yicha yangilash (JSON body, rasmlar bu yerda o'zgartirilmaydi)
+      description: Mahsulotni ID bo'yicha yangilash (JSON body). Rasmlarni yangilash
+        uchun PUT /products/{id}/images dan foydalaning.
       parameters:
       - description: Mahsulot ID
         in: path
@@ -1250,6 +1344,52 @@ paths:
       security:
       - BearerAuth: []
       summary: Mahsulotni yangilash
+      tags:
+      - products
+  /products/{id}/images:
+    put:
+      consumes:
+      - multipart/form-data
+      description: Mahsulotning barcha rasmlarini yangi rasmlar to'plamiga almashtiradi
+        (eski rasmlar avtomatik o'chiriladi). Faqat admin uchun.
+      parameters:
+      - description: Mahsulot ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Yangi rasmlar (eng ko'pi bilan 5 ta, hammasi almashtiriladi)
+        in: formData
+        name: images
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Rasmlar yangilash muvaffaqiyatli
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Envelope'
+            - properties:
+                data:
+                  $ref: '#/definitions/application.ProductOutput'
+              type: object
+        "400":
+          description: Noto'g'ri so'rov tanasi yoki validatsiya xatosi
+          schema:
+            $ref: '#/definitions/response.Envelope'
+        "404":
+          description: Mahsulot topilmadi
+          schema:
+            $ref: '#/definitions/response.Envelope'
+        "500":
+          description: Ichki server xatosi
+          schema:
+            $ref: '#/definitions/response.Envelope'
+      security:
+      - BearerAuth: []
+      summary: Mahsulot rasmlarini yangilash
       tags:
       - products
   /products/admin:

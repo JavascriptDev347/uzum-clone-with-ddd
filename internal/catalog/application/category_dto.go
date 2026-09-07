@@ -21,6 +21,12 @@ type UpdateCategoryInput struct {
 	NameRu  *string `json:"name_ru,omitempty"`
 }
 
+// UpdateCategoryImageInput - kategoriya rasmini almashtirish uchun.
+type UpdateCategoryImageInput struct {
+	ID    string
+	Image media.UploadInput
+}
+
 // CategoryOutput - so'ralgan tilga moslashtirilgan (localized) kategoriya ma'lumoti, ommaviy endpointlar uchun.
 type CategoryOutput struct {
 	ID            string    `json:"id"`

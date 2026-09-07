@@ -15,13 +15,14 @@ import (
 )
 
 type ProductHandler struct {
-	createUc  CreateProductUseCase
-	getUc     GetProductsUseCase
-	getByIdUc GetProductUseCase
-	getBySlug GetProductBySlugUseCase
-	updateUc  UpdateProductUseCase
-	deleteUc  DeleteProductUseCase
-	getAllUc  GetAllProductsIncludingDeletedUseCase
+	createUc       CreateProductUseCase
+	getUc          GetProductsUseCase
+	getByIdUc      GetProductUseCase
+	getBySlug      GetProductBySlugUseCase
+	updateUc       UpdateProductUseCase
+	updateImagesUc UpdateProductImagesUseCase
+	deleteUc       DeleteProductUseCase
+	getAllUc       GetAllProductsIncludingDeletedUseCase
 }
 
 func NewProductHandler(
@@ -30,17 +31,19 @@ func NewProductHandler(
 	getByIdUc GetProductUseCase,
 	getBySlug GetProductBySlugUseCase,
 	updateUc UpdateProductUseCase,
+	updateImagesUc UpdateProductImagesUseCase,
 	deleteUc DeleteProductUseCase,
 	getAllUc GetAllProductsIncludingDeletedUseCase,
 ) *ProductHandler {
 	return &ProductHandler{
-		createUc:  createUc,
-		getUc:     getUc,
-		getByIdUc: getByIdUc,
-		getBySlug: getBySlug,
-		updateUc:  updateUc,
-		deleteUc:  deleteUc,
-		getAllUc:  getAllUc,
+		createUc:       createUc,
+		getUc:          getUc,
+		getByIdUc:      getByIdUc,
+		getBySlug:      getBySlug,
+		updateUc:       updateUc,
+		updateImagesUc: updateImagesUc,
+		deleteUc:       deleteUc,
+		getAllUc:       getAllUc,
 	}
 }
 
@@ -328,7 +331,7 @@ func (h *ProductHandler) GetProductBySlug(w http.ResponseWriter, r *http.Request
 // UpdateProduct godoc
 //
 //		@Summary		Mahsulotni yangilash
-//		@Description	Mahsulotni ID bo'yicha yangilash (JSON body, rasmlar bu yerda o'zgartirilmaydi)
+//		@Description	Mahsulotni ID bo'yicha yangilash (JSON body). Rasmlarni yangilash uchun PUT /products/{id}/images dan foydalaning.
 //		@Tags			products
 //		@Accept			json
 //	 @Security		BearerAuth
@@ -356,6 +359,73 @@ func (h *ProductHandler) UpdateProduct(w http.ResponseWriter, r *http.Request) {
 	}
 
 	response.Success(w, http.StatusOK, nil)
+}
+
+// UpdateProductImages godoc
+//
+//		@Summary		Mahsulot rasmlarini yangilash
+//		@Description	Mahsulotning barcha rasmlarini yangi rasmlar to'plamiga almashtiradi (eski rasmlar avtomatik o'chiriladi). Faqat admin uchun.
+//		@Tags			products
+//		@Accept			multipart/form-data
+//	 @Security		BearerAuth
+//		@Produce		json
+//		@Param			id		path		string	true	"Mahsulot ID"
+//		@Param			images	formData	file	true	"Yangi rasmlar (eng ko'pi bilan 5 ta, hammasi almashtiriladi)"
+//		@Success		200		{object}	response.Envelope{data=application.ProductOutput}	"Rasmlar yangilash muvaffaqiyatli"
+//		@Failure		400		{object}	response.Envelope	"Noto'g'ri so'rov tanasi yoki validatsiya xatosi"
+//		@Failure		404		{object}	response.Envelope	"Mahsulot topilmadi"
+//		@Failure		500		{object}	response.Envelope	"Ichki server xatosi"
+//		@Router			/products/{id}/images [put]
+func (h *ProductHandler) UpdateProductImages(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "id")
+
+	if err := r.ParseMultipartForm(20 << 20); err != nil {
+		response.Error(w, http.StatusBadRequest, "fayl hajmi juda katta yoki noto'g'ri format")
+		return
+	}
+
+	imageFiles := r.MultipartForm.File["images"]
+	if len(imageFiles) == 0 {
+		response.Error(w, http.StatusBadRequest, "kamida bitta rasm yuklash shart")
+		return
+	}
+	if len(imageFiles) > domain.MaxProductImages {
+		response.Error(w, http.StatusBadRequest, "eng ko'pi bilan 5 ta rasm yuklash mumkin")
+		return
+	}
+
+	images := make([]media.UploadInput, 0, len(imageFiles))
+	for _, fh := range imageFiles {
+		file, err := fh.Open()
+		if err != nil {
+			response.Error(w, http.StatusBadRequest, "rasmni ochib bo'lmadi")
+			return
+		}
+		data, err := io.ReadAll(file)
+		file.Close()
+		if err != nil {
+			response.Error(w, http.StatusInternalServerError, "rasmni o'qishda xatolik")
+			return
+		}
+		images = append(images, media.UploadInput{
+			FileName:    "product-images/" + uuid.NewString(),
+			ContentType: fh.Header.Get("Content-Type"),
+			Data:        data,
+		})
+	}
+
+	input := application.UpdateProductImagesInput{
+		ID:     id,
+		Images: images,
+	}
+
+	output, err := h.updateImagesUc.Execute(r.Context(), input)
+	if err != nil {
+		writeProductError(w, err)
+		return
+	}
+
+	response.Success(w, http.StatusOK, output)
 }
 
 // DeleteProduct godoc

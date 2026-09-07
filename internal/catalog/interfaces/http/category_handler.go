@@ -14,27 +14,30 @@ import (
 )
 
 type CategoryHandler struct {
-	createUc  CreateCategoryUseCase
-	getUc     GetCategoriesUseCase
-	getByIdUc GetCategoryUseCase
-	updateUc  UpdateCategoryUseCase
-	deleteUc  DeleteCategoryUseCase
-	getAllUc  GetAllCategoriesIncludingDeletedUseCase
+	createUc      CreateCategoryUseCase
+	getUc         GetCategoriesUseCase
+	getByIdUc     GetCategoryUseCase
+	updateUc      UpdateCategoryUseCase
+	updateImageUc UpdateCategoryImageUseCase
+	deleteUc      DeleteCategoryUseCase
+	getAllUc      GetAllCategoriesIncludingDeletedUseCase
 }
 
 func NewCategoryHandler(createUc CreateCategoryUseCase,
 	getUc GetCategoriesUseCase,
 	getByIdUc GetCategoryUseCase,
 	updateUc UpdateCategoryUseCase,
+	updateImageUc UpdateCategoryImageUseCase,
 	deleteUc DeleteCategoryUseCase,
 	getAllUc GetAllCategoriesIncludingDeletedUseCase) *CategoryHandler {
 	return &CategoryHandler{
-		createUc:  createUc,
-		getUc:     getUc,
-		getByIdUc: getByIdUc,
-		updateUc:  updateUc,
-		deleteUc:  deleteUc,
-		getAllUc:  getAllUc,
+		createUc:      createUc,
+		getUc:         getUc,
+		getByIdUc:     getByIdUc,
+		updateUc:      updateUc,
+		updateImageUc: updateImageUc,
+		deleteUc:      deleteUc,
+		getAllUc:      getAllUc,
 	}
 }
 
@@ -171,6 +174,61 @@ func (h *CategoryHandler) UpdateCategory(w http.ResponseWriter, r *http.Request)
 	}
 
 	response.Success(w, http.StatusOK, nil)
+}
+
+// UpdateCategoryImage godoc
+//
+//		@Summary		Kategoriya rasmini yangilash
+//		@Description	Kategoriyaning rasmini yangisiga almashtiradi (eski rasm avtomatik o'chiriladi). Faqat admin uchun.
+//		@Tags			categories
+//		@Accept			multipart/form-data
+//	 @Security		BearerAuth
+//		@Produce		json
+//		@Param			id		path		string	true	"Kategoriya ID"
+//		@Param			image	formData	file	true	"Yangi kategoriya rasmi"
+//		@Success		200		{object}	response.Envelope{data=application.CategoryOutput}	"Rasm yangilash muvaffaqiyatli"
+//		@Failure		400		{object}	response.Envelope	"Noto'g'ri so'rov tanasi yoki validatsiya xatosi"
+//		@Failure		404		{object}	response.Envelope	"Kategoriya topilmadi"
+//		@Failure		500		{object}	response.Envelope	"Ichki server xatosi"
+//		@Router			/categories/{id}/image [put]
+func (h *CategoryHandler) UpdateCategoryImage(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "id")
+
+	if err := r.ParseMultipartForm(10 << 20); err != nil {
+		response.Error(w, http.StatusBadRequest, "fayl hajmi juda katta yoki noto'g'ri format")
+		return
+	}
+
+	file, header, err := r.FormFile("image")
+	if err != nil {
+		response.Error(w, http.StatusBadRequest, "rasm yuklanmadi")
+		return
+	}
+	defer file.Close()
+
+	data, err := io.ReadAll(file)
+	if err != nil {
+		response.Error(w, http.StatusInternalServerError, "rasmni o'qishda xatolik")
+		return
+	}
+
+	ext := filepath.Ext(header.Filename)
+	input := application.UpdateCategoryImageInput{
+		ID: id,
+		Image: media.UploadInput{
+			FileName:    uuid.New().String() + ext,
+			ContentType: header.Header.Get("Content-Type"),
+			Data:        data,
+		},
+	}
+
+	output, err := h.updateImageUc.Execute(r.Context(), input)
+	if err != nil {
+		writeCategoryError(w, err)
+		return
+	}
+
+	response.Success(w, http.StatusOK, output)
 }
 
 // DeleteCategory godoc

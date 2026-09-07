@@ -107,3 +107,9 @@ func (c *Category) ChangeNames(nameUz, nameEng, nameRu string) error {
 	c.updatedAt = time.Now()
 	return nil
 }
+
+func (c *Category) ChangeImage(imageURL, imagePublicID string) {
+	c.imageURL = imageURL
+	c.imagePublicID = imagePublicID
+	c.updatedAt = time.Now()
+}

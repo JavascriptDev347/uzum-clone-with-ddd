@@ -14,27 +14,30 @@ import (
 )
 
 type EventHandler struct {
-	createUc  CreateEventUseCase
-	getUc     GetEventsUseCase
-	getByIdUc GetEventUseCase
-	updateUc  UpdateEventUseCase
-	deleteUc  DeleteEventUseCase
-	getAllUc  GetAllEventsIncludingDeletedUseCase
+	createUc      CreateEventUseCase
+	getUc         GetEventsUseCase
+	getByIdUc     GetEventUseCase
+	updateUc      UpdateEventUseCase
+	updateImageUc UpdateEventImageUseCase
+	deleteUc      DeleteEventUseCase
+	getAllUc      GetAllEventsIncludingDeletedUseCase
 }
 
 func NewEventHandler(createUc CreateEventUseCase,
 	getUc GetEventsUseCase,
 	getByIdUc GetEventUseCase,
 	updateUc UpdateEventUseCase,
+	updateImageUc UpdateEventImageUseCase,
 	deleteUc DeleteEventUseCase,
 	getAllUc GetAllEventsIncludingDeletedUseCase) *EventHandler {
 	return &EventHandler{
-		createUc:  createUc,
-		getUc:     getUc,
-		getByIdUc: getByIdUc,
-		updateUc:  updateUc,
-		deleteUc:  deleteUc,
-		getAllUc:  getAllUc,
+		createUc:      createUc,
+		getUc:         getUc,
+		getByIdUc:     getByIdUc,
+		updateUc:      updateUc,
+		updateImageUc: updateImageUc,
+		deleteUc:      deleteUc,
+		getAllUc:      getAllUc,
 	}
 }
 
@@ -167,7 +170,7 @@ func (h *EventHandler) GetEvent(w http.ResponseWriter, r *http.Request) {
 // UpdateEvent godoc
 //
 //		@Summary		Eventni yangilash
-//		@Description	Eventni ID bo'yicha yangilash (JSON body, rasm bu yerda o'zgartirilmaydi)
+//		@Description	Eventni ID bo'yicha yangilash (JSON body). Rasmni yangilash uchun PUT /events/{id}/image dan foydalaning.
 //		@Tags			events
 //		@Accept			json
 //	 @Security		BearerAuth
@@ -194,6 +197,60 @@ func (h *EventHandler) UpdateEvent(w http.ResponseWriter, r *http.Request) {
 	}
 
 	response.Success(w, http.StatusOK, nil)
+}
+
+// UpdateEventImage godoc
+//
+//		@Summary		Event rasmini yangilash
+//		@Description	Eventning rasmini yangisiga almashtiradi (eski rasm avtomatik o'chiriladi). Faqat admin uchun.
+//		@Tags			events
+//		@Accept			multipart/form-data
+//	 @Security		BearerAuth
+//		@Produce		json
+//		@Param			id		path		string	true	"Event ID"
+//		@Param			image	formData	file	true	"Yangi event rasmi"
+//		@Success		200		{object}	response.Envelope{data=application.EventOutput}	"Rasm yangilash muvaffaqiyatli"
+//		@Failure		400		{object}	response.Envelope	"Noto'g'ri so'rov tanasi yoki validatsiya xatosi"
+//		@Failure		404		{object}	response.Envelope	"Event topilmadi"
+//		@Failure		500		{object}	response.Envelope	"Ichki server xatosi"
+//		@Router			/events/{id}/image [put]
+func (h *EventHandler) UpdateEventImage(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "id")
+
+	if err := r.ParseMultipartForm(10 << 20); err != nil {
+		response.Error(w, http.StatusBadRequest, "fayl hajmi juda katta yoki noto'g'ri format")
+		return
+	}
+
+	file, header, err := r.FormFile("image")
+	if err != nil {
+		response.Error(w, http.StatusBadRequest, "rasm yuklanmadi")
+		return
+	}
+	defer file.Close()
+
+	data, err := io.ReadAll(file)
+	if err != nil {
+		response.Error(w, http.StatusInternalServerError, "rasmni o'qishda xatolik")
+		return
+	}
+
+	input := application.UpdateEventImageInput{
+		ID: id,
+		Image: media.UploadInput{
+			FileName:    "event-images/" + uuid.NewString(),
+			ContentType: header.Header.Get("Content-Type"),
+			Data:        data,
+		},
+	}
+
+	output, err := h.updateImageUc.Execute(r.Context(), input)
+	if err != nil {
+		writeEventError(w, err)
+		return
+	}
+
+	response.Success(w, http.StatusOK, output)
 }
 
 // DeleteEvent godoc

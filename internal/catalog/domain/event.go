@@ -229,3 +229,9 @@ func (e *Event) Delete() {
 	now := time.Now()
 	e.deletedAt = &now
 }
+
+func (e *Event) ChangeImage(imageURL, imagePublicID string) {
+	e.imageURL = imageURL
+	e.imagePublicID = imagePublicID
+	e.updatedAt = time.Now()
+}

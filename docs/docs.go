@@ -613,6 +613,80 @@ const docTemplate = `{
                 }
             }
         },
+        "/categories/{id}/image": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Kategoriyaning rasmini yangisiga almashtiradi (eski rasm avtomatik o'chiriladi). Faqat admin uchun.",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "categories"
+                ],
+                "summary": "Kategoriya rasmini yangilash",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Kategoriya ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "Yangi kategoriya rasmi",
+                        "name": "image",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Rasm yangilash muvaffaqiyatli",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.Envelope"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/application.CategoryOutput"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Noto'g'ri so'rov tanasi yoki validatsiya xatosi",
+                        "schema": {
+                            "$ref": "#/definitions/response.Envelope"
+                        }
+                    },
+                    "404": {
+                        "description": "Kategoriya topilmadi",
+                        "schema": {
+                            "$ref": "#/definitions/response.Envelope"
+                        }
+                    },
+                    "500": {
+                        "description": "Ichki server xatosi",
+                        "schema": {
+                            "$ref": "#/definitions/response.Envelope"
+                        }
+                    }
+                }
+            }
+        },
         "/categories/{id}/products": {
             "get": {
                 "description": "Berilgan category_id ga tegishli faol (o'chirilmagan) mahsulotlar ro'yxati",
@@ -1002,7 +1076,7 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "Eventni ID bo'yicha yangilash (JSON body, rasm bu yerda o'zgartirilmaydi)",
+                "description": "Eventni ID bo'yicha yangilash (JSON body). Rasmni yangilash uchun PUT /events/{id}/image dan foydalaning.",
                 "consumes": [
                     "application/json"
                 ],
@@ -1084,6 +1158,80 @@ const docTemplate = `{
                 "responses": {
                     "200": {
                         "description": "Event o'chirish muvaffaqiyatli",
+                        "schema": {
+                            "$ref": "#/definitions/response.Envelope"
+                        }
+                    },
+                    "404": {
+                        "description": "Event topilmadi",
+                        "schema": {
+                            "$ref": "#/definitions/response.Envelope"
+                        }
+                    },
+                    "500": {
+                        "description": "Ichki server xatosi",
+                        "schema": {
+                            "$ref": "#/definitions/response.Envelope"
+                        }
+                    }
+                }
+            }
+        },
+        "/events/{id}/image": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Eventning rasmini yangisiga almashtiradi (eski rasm avtomatik o'chiriladi). Faqat admin uchun.",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "events"
+                ],
+                "summary": "Event rasmini yangilash",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Event ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "Yangi event rasmi",
+                        "name": "image",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Rasm yangilash muvaffaqiyatli",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.Envelope"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/application.EventOutput"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Noto'g'ri so'rov tanasi yoki validatsiya xatosi",
                         "schema": {
                             "$ref": "#/definitions/response.Envelope"
                         }
@@ -1549,7 +1697,7 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "Mahsulotni ID bo'yicha yangilash (JSON body, rasmlar bu yerda o'zgartirilmaydi)",
+                "description": "Mahsulotni ID bo'yicha yangilash (JSON body). Rasmlarni yangilash uchun PUT /products/{id}/images dan foydalaning.",
                 "consumes": [
                     "application/json"
                 ],
@@ -1637,6 +1785,80 @@ const docTemplate = `{
                 "responses": {
                     "200": {
                         "description": "Mahsulot o'chirish muvaffaqiyatli",
+                        "schema": {
+                            "$ref": "#/definitions/response.Envelope"
+                        }
+                    },
+                    "404": {
+                        "description": "Mahsulot topilmadi",
+                        "schema": {
+                            "$ref": "#/definitions/response.Envelope"
+                        }
+                    },
+                    "500": {
+                        "description": "Ichki server xatosi",
+                        "schema": {
+                            "$ref": "#/definitions/response.Envelope"
+                        }
+                    }
+                }
+            }
+        },
+        "/products/{id}/images": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Mahsulotning barcha rasmlarini yangi rasmlar to'plamiga almashtiradi (eski rasmlar avtomatik o'chiriladi). Faqat admin uchun.",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "products"
+                ],
+                "summary": "Mahsulot rasmlarini yangilash",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Mahsulot ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "Yangi rasmlar (eng ko'pi bilan 5 ta, hammasi almashtiriladi)",
+                        "name": "images",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Rasmlar yangilash muvaffaqiyatli",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.Envelope"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/application.ProductOutput"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Noto'g'ri so'rov tanasi yoki validatsiya xatosi",
                         "schema": {
                             "$ref": "#/definitions/response.Envelope"
                         }

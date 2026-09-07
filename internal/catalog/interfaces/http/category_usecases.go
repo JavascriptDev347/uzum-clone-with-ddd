@@ -22,6 +22,10 @@ type UpdateCategoryUseCase interface {
 	Execute(ctx context.Context, input application.UpdateCategoryInput) error
 }
 
+type UpdateCategoryImageUseCase interface {
+	Execute(ctx context.Context, input application.UpdateCategoryImageInput) (*application.CategoryOutput, error)
+}
+
 type DeleteCategoryUseCase interface {
 	Execute(ctx context.Context, id string) error
 }

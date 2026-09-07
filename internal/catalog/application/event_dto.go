@@ -52,6 +52,12 @@ type UpdateEventInput struct {
 	IsRoot     *bool   `json:"is_root,omitempty"`
 }
 
+// UpdateEventImageInput - event rasmini almashtirish uchun.
+type UpdateEventImageInput struct {
+	ID    string
+	Image media.UploadInput
+}
+
 // EventOutput - so'ralgan tilga moslashtirilgan (localized) event ma'lumoti, ommaviy endpointlar uchun.
 type EventOutput struct {
 	ID         string    `json:"id"`

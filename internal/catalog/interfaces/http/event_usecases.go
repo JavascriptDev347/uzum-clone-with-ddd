@@ -22,6 +22,10 @@ type UpdateEventUseCase interface {
 	Execute(ctx context.Context, input application.UpdateEventInput) error
 }
 
+type UpdateEventImageUseCase interface {
+	Execute(ctx context.Context, input application.UpdateEventImageInput) (*application.EventOutput, error)
+}
+
 type DeleteEventUseCase interface {
 	Execute(ctx context.Context, id string) error
 }

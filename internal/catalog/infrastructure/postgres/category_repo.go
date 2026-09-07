@@ -133,15 +133,18 @@ func (r *PostgresCategoryRepository) FindAllIncludingDeleted(ctx context.Context
 func (r *PostgresCategoryRepository) Update(ctx context.Context, category *domain.Category) error {
 	query := `
 			UPDATE categories
-			SET name_uz = :name_uz, name_eng = :name_eng, name_ru = :name_ru, updated_at = :updated_at
+			SET name_uz = :name_uz, name_eng = :name_eng, name_ru = :name_ru,
+				image_url = :image_url, image_public_id = :image_public_id, updated_at = :updated_at
 			WHERE id = :id AND deleted_at IS NULL
 		`
 	params := map[string]any{
-		"name_uz":    category.NameUz(),
-		"name_eng":   category.NameEng(),
-		"name_ru":    category.NameRu(),
-		"updated_at": time.Now(),
-		"id":         category.ID(),
+		"name_uz":         category.NameUz(),
+		"name_eng":        category.NameEng(),
+		"name_ru":         category.NameRu(),
+		"image_url":       category.ImageURL(),
+		"image_public_id": category.ImagePublicID(),
+		"updated_at":      time.Now(),
+		"id":              category.ID(),
 	}
 	result, err := r.db.NamedExecContext(ctx, query, params)
 	if err != nil {

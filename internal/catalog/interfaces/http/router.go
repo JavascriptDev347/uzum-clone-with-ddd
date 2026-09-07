@@ -17,6 +17,8 @@ func NewRouter(h *ProductHandler, c *CategoryHandler, e *EventHandler, tokenServ
 	r.With(middleware.Authenticate(tokenService), middleware.RequireRole(domain.RoleAdmin)).
 		Put("/products/{id}", h.UpdateProduct)
 	r.With(middleware.Authenticate(tokenService), middleware.RequireRole(domain.RoleAdmin)).
+		Put("/products/{id}/images", h.UpdateProductImages)
+	r.With(middleware.Authenticate(tokenService), middleware.RequireRole(domain.RoleAdmin)).
 		Delete("/products/{id}", h.DeleteProduct)
 	r.With(middleware.Authenticate(tokenService), middleware.RequireRole(domain.RoleAdmin)).
 		Get("/products/admin", h.GetAllProducts)
@@ -31,6 +33,8 @@ func NewRouter(h *ProductHandler, c *CategoryHandler, e *EventHandler, tokenServ
 	r.With(middleware.Authenticate(tokenService), middleware.RequireRole(domain.RoleAdmin)).
 		Put("/categories/{id}", c.UpdateCategory)
 	r.With(middleware.Authenticate(tokenService), middleware.RequireRole(domain.RoleAdmin)).
+		Put("/categories/{id}/image", c.UpdateCategoryImage)
+	r.With(middleware.Authenticate(tokenService), middleware.RequireRole(domain.RoleAdmin)).
 		Delete("/categories/{id}", c.DeleteCategory)
 	r.With(middleware.Authenticate(tokenService), middleware.RequireRole(domain.RoleAdmin)).
 		Get("/categories/admin", c.GetAllCategories)
@@ -44,6 +48,8 @@ func NewRouter(h *ProductHandler, c *CategoryHandler, e *EventHandler, tokenServ
 		Post("/events", e.CreateEvent)
 	r.With(middleware.Authenticate(tokenService), middleware.RequireRole(domain.RoleAdmin)).
 		Put("/events/{id}", e.UpdateEvent)
+	r.With(middleware.Authenticate(tokenService), middleware.RequireRole(domain.RoleAdmin)).
+		Put("/events/{id}/image", e.UpdateEventImage)
 	r.With(middleware.Authenticate(tokenService), middleware.RequireRole(domain.RoleAdmin)).
 		Delete("/events/{id}", e.DeleteEvent)
 	r.With(middleware.Authenticate(tokenService), middleware.RequireRole(domain.RoleAdmin)).

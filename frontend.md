@@ -329,7 +329,7 @@ PUT /api/v1/categories/{id}
 }
 ```
 
-> Diqqat: bu endpoint **JSON body** qabul qiladi (rasm yangilash uchun `multipart/form-data` emas!). Rasmni yangilash uchun alohida endpoint yo'q. Nomni yangilashda `name_uz`/`name_eng`/`name_ru`dan **kamida bittasini** yuborsangiz, backend o'zgarmagan tillarni joriy qiymati bilan birga qayta tekshiradi (uchalasi ham bo'sh bo'lmasligi kerak) — shuning uchun xavfsizroq usul barcha 3 tilni birga yuborishdir.
+> Diqqat: bu endpoint **JSON body** qabul qiladi (rasm yangilash uchun `multipart/form-data` emas!). Rasmni yangilash uchun pastdagi **3.6 Kategoriya rasmini yangilash** endpointidan foydalaning. Nomni yangilashda `name_uz`/`name_eng`/`name_ru`dan **kamida bittasini** yuborsangiz, backend o'zgarmagan tillarni joriy qiymati bilan birga qayta tekshiradi (uchalasi ham bo'sh bo'lmasligi kerak) — shuning uchun xavfsizroq usul barcha 3 tilni birga yuborishdir.
 
 **Javob — `200 OK`:**
 ```json
@@ -347,7 +347,36 @@ PUT /api/v1/categories/{id}
 
 ---
 
-### 3.6 Kategoriyani o'chirish
+### 3.6 Kategoriya rasmini yangilash
+
+```
+PUT /api/v1/categories/{id}/image
+```
+
+🔒 **Faqat admin**
+
+**Content-Type:** `multipart/form-data`
+
+| Maydon | Tur | Majburiymi | Izoh |
+|---|---|---|---|
+| `image` | file | ✅ ha | Yangi kategoriya rasmi |
+
+> Eski rasm S3'dan avtomatik o'chiriladi, faqat yangi rasm muvaffaqiyatli saqlangandan keyin.
+
+**Javob — `200 OK`:** yangilangan `CategoryOutput` (3.1-bo'limdagi shakl bilan bir xil)
+
+**Xatoliklar:**
+| Status | Sabab |
+|---|---|
+| 400 | rasm yuborilmagan, hajmi katta yoki formati noto'g'ri |
+| 401 | token yo'q |
+| 403 | admin emas |
+| 404 | kategoriya topilmadi |
+| 500 | server xatosi |
+
+---
+
+### 3.7 Kategoriyani o'chirish
 
 ```
 DELETE /api/v1/categories/{id}
@@ -639,7 +668,7 @@ PUT /api/v1/products/{id}
 }
 ```
 
-> Diqqat: bu endpoint **JSON body** qabul qiladi (rasm yangilash uchun `multipart/form-data` emas — hozircha rasmlarni yangilash uchun alohida endpoint yo'q). `category_id` yuborilsa, backend uni ham mavjudligiga tekshiradi. Nomni yangilashda `name_uz`/`name_eng`/`name_ru`dan **kamida bittasini** yuborsangiz, backend o'zgarmagan tillarni joriy qiymati bilan birga qayta tekshiradi — shuning uchun agar 3 tildan birortasini yangilamoqchi bo'lsangiz ham, xavfsizroq usul barcha 3 tilni birga yuborishdir.
+> Diqqat: bu endpoint **JSON body** qabul qiladi (rasm yangilash uchun `multipart/form-data` emas). Rasmlarni yangilash uchun pastdagi **4.8 Mahsulot rasmlarini yangilash** endpointidan foydalaning. `category_id` yuborilsa, backend uni ham mavjudligiga tekshiradi. Nomni yangilashda `name_uz`/`name_eng`/`name_ru`dan **kamida bittasini** yuborsangiz, backend o'zgarmagan tillarni joriy qiymati bilan birga qayta tekshiradi — shuning uchun agar 3 tildan birortasini yangilamoqchi bo'lsangiz ham, xavfsizroq usul barcha 3 tilni birga yuborishdir.
 >
 > Maxsus bayroqlar: `clear_discount: true` — chegirmani butunlay o'chiradi (`discount_amount`ni yubormasdan); `clear_tag_uz`/`clear_tag_eng`/`clear_tag_ru: true` — mos tildagi tag'ni `null` qiladi. Bular berilmasa, mos maydon yuborilgan taqdirdagina o'zgaradi.
 
@@ -657,7 +686,36 @@ PUT /api/v1/products/{id}
 
 ---
 
-### 4.8 Mahsulotni o'chirish
+### 4.8 Mahsulot rasmlarini yangilash
+
+```
+PUT /api/v1/products/{id}/images
+```
+
+🔒 **Faqat admin**
+
+**Content-Type:** `multipart/form-data`
+
+| Maydon | Tur | Majburiymi | Izoh |
+|---|---|---|---|
+| `images` | file (bir nechta) | ✅ ha | Yangi rasmlar to'plami, kamida 1 ta, eng ko'pi bilan 5 ta |
+
+> Diqqat: bu endpoint mahsulotning **barcha** rasmlarini yuborilgan yangi to'plamga to'liq almashtiradi (qisman qo'shish/o'chirish emas). Muvaffaqiyatli saqlangandan keyin eski rasmlar S3'dan avtomatik o'chiriladi.
+
+**Javob — `200 OK`:** yangilangan `ProductOutput` (4.1-bo'limdagi shakl bilan bir xil)
+
+**Xatoliklar:**
+| Status | Sabab |
+|---|---|
+| 400 | rasm yuborilmagan, 5 tadan ortiq, hajmi katta yoki formati noto'g'ri |
+| 401 | token yo'q |
+| 403 | admin emas |
+| 404 | mahsulot topilmadi |
+| 500 | server xatosi |
+
+---
+
+### 4.9 Mahsulotni o'chirish
 
 ```
 DELETE /api/v1/products/{id}
@@ -868,7 +926,7 @@ PUT /api/v1/events/{id}
 }
 ```
 
-> Diqqat: bu endpoint **JSON body** qabul qiladi. Rasmni bu orqali yangilab bo'lmaydi (hozircha rasmni yangilash uchun alohida endpoint yo'q). `category_id` yuborilsa, backend uni ham mavjudligiga tekshiradi. Nomni (`title`) yangilashda `title_uz`/`title_eng`/`title_ru`dan **kamida bittasini** yuborsangiz, backend o'zgarmagan tillarni joriy qiymati bilan birga qayta tekshiradi (uchalasi ham bo'sh bo'lmasligi kerak) — shuning uchun xavfsizroq usul barcha 3 tilni birga yuborishdir.
+> Diqqat: bu endpoint **JSON body** qabul qiladi. Rasmni bu orqali yangilab bo'lmaydi — pastdagi **5.6 Event rasmini yangilash** endpointidan foydalaning. `category_id` yuborilsa, backend uni ham mavjudligiga tekshiradi. Nomni (`title`) yangilashda `title_uz`/`title_eng`/`title_ru`dan **kamida bittasini** yuborsangiz, backend o'zgarmagan tillarni joriy qiymati bilan birga qayta tekshiradi (uchalasi ham bo'sh bo'lmasligi kerak) — shuning uchun xavfsizroq usul barcha 3 tilni birga yuborishdir.
 
 **Javob — `200 OK`:**
 ```json
@@ -886,7 +944,36 @@ PUT /api/v1/events/{id}
 
 ---
 
-### 5.6 Eventni o'chirish
+### 5.6 Event rasmini yangilash
+
+```
+PUT /api/v1/events/{id}/image
+```
+
+🔒 **Faqat admin**
+
+**Content-Type:** `multipart/form-data`
+
+| Maydon | Tur | Majburiymi | Izoh |
+|---|---|---|---|
+| `image` | file | ✅ ha | Yangi event rasmi |
+
+> Eski rasm S3'dan avtomatik o'chiriladi, faqat yangi rasm muvaffaqiyatli saqlangandan keyin.
+
+**Javob — `200 OK`:** yangilangan `EventOutput` (5.1-bo'limdagi shakl bilan bir xil)
+
+**Xatoliklar:**
+| Status | Sabab |
+|---|---|
+| 400 | rasm yuborilmagan, hajmi katta yoki formati noto'g'ri |
+| 401 | token yo'q |
+| 403 | admin emas |
+| 404 | event topilmadi |
+| 500 | server xatosi |
+
+---
+
+### 5.7 Eventni o'chirish
 
 ```
 DELETE /api/v1/events/{id}
@@ -938,6 +1025,7 @@ Frontendda: login qilingandan keyin `GET /auth/me` chaqirib, javobdagi `role` ma
 | `/api/v1/categories/{id}` | GET | ❌ | — |
 | `/api/v1/categories` | POST | ✅ | admin |
 | `/api/v1/categories/{id}` | PUT | ✅ | admin |
+| `/api/v1/categories/{id}/image` | PUT | ✅ | admin |
 | `/api/v1/categories/{id}` | DELETE | ✅ | admin |
 | `/api/v1/categories/admin` | GET | ✅ | admin |
 | `/api/v1/categories/{id}/products` | GET | ❌ | — |
@@ -946,12 +1034,14 @@ Frontendda: login qilingandan keyin `GET /auth/me` chaqirib, javobdagi `role` ma
 | `/api/v1/products/slug/{slug}` | GET | ❌ | — |
 | `/api/v1/products` | POST | ✅ | admin |
 | `/api/v1/products/{id}` | PUT | ✅ | admin |
+| `/api/v1/products/{id}/images` | PUT | ✅ | admin |
 | `/api/v1/products/{id}` | DELETE | ✅ | admin |
 | `/api/v1/products/admin` | GET | ✅ | admin |
 | `/api/v1/events` | GET | ❌ | — |
 | `/api/v1/events/{id}` | GET | ❌ | — |
 | `/api/v1/events` | POST | ✅ | admin |
 | `/api/v1/events/{id}` | PUT | ✅ | admin |
+| `/api/v1/events/{id}/image` | PUT | ✅ | admin |
 | `/api/v1/events/{id}` | DELETE | ✅ | admin |
 | `/api/v1/events/admin` | GET | ✅ | admin |
 
@@ -962,8 +1052,8 @@ Frontendda: login qilingandan keyin `GET /auth/me` chaqirib, javobdagi `role` ma
 Frontend ishini rejalashtirishda hisobga oling:
 
 - ❌ Mahsulotga izoh/sharh (comments) — foydalanuvchi sotib olgandan keyin izoh qoldirishi kelajakda qo'shiladi, hozircha yo'q
-- ❌ Mahsulot rasmlarini alohida yangilash (PUT productda faqat matn/raqam maydonlari o'zgaradi, `images` emas — rasmlarni o'zgartirish uchun alohida endpoint hali yo'q)
 - ❌ Kategoriya ierarxiyasi (parent/child daraxti) — kategoriyada `parent_id` degan maydon umuman yo'q, barcha kategoriyalar "flat" ro'yxat
-- ❌ Event rasmini alohida yangilash (PUT eventda faqat matn maydonlari o'zgaradi, rasm emas)
 - ❌ Savat, buyurtma (order) — `internal/ordering` papkasi mavjud, lekin ichida hali HTTP endpoint yo'q
 - ❌ Parolni tiklash / o'zgartirish, logout endpointi
+
+> Eslatma: rasmlarni yangilash endi mumkin — `PUT /categories/{id}/image` (3.6), `PUT /products/{id}/images` (4.8) va `PUT /events/{id}/image` (5.6) orqali.
