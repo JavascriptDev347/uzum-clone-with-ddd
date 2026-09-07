@@ -21,6 +21,8 @@ func NewRouter(h *ProductHandler, c *CategoryHandler, e *EventHandler, tokenServ
 	r.With(middleware.Authenticate(tokenService), middleware.RequireRole(domain.RoleAdmin)).
 		Put("/products/{id}/images/{index}", h.ReplaceProductImage)
 	r.With(middleware.Authenticate(tokenService), middleware.RequireRole(domain.RoleAdmin)).
+		Delete("/products/{id}/images/{index}", h.DeleteProductImage)
+	r.With(middleware.Authenticate(tokenService), middleware.RequireRole(domain.RoleAdmin)).
 		Delete("/products/{id}", h.DeleteProduct)
 	r.With(middleware.Authenticate(tokenService), middleware.RequireRole(domain.RoleAdmin)).
 		Get("/products/admin", h.GetAllProducts)

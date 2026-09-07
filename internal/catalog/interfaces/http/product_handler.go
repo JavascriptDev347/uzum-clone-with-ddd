@@ -22,6 +22,7 @@ type ProductHandler struct {
 	updateUc       UpdateProductUseCase
 	addImagesUc    AddProductImagesUseCase
 	replaceImageUc ReplaceProductImageUseCase
+	deleteImageUc  DeleteProductImageUseCase
 	deleteUc       DeleteProductUseCase
 	getAllUc       GetAllProductsIncludingDeletedUseCase
 }
@@ -34,6 +35,7 @@ func NewProductHandler(
 	updateUc UpdateProductUseCase,
 	addImagesUc AddProductImagesUseCase,
 	replaceImageUc ReplaceProductImageUseCase,
+	deleteImageUc DeleteProductImageUseCase,
 	deleteUc DeleteProductUseCase,
 	getAllUc GetAllProductsIncludingDeletedUseCase,
 ) *ProductHandler {
@@ -45,6 +47,7 @@ func NewProductHandler(
 		updateUc:       updateUc,
 		addImagesUc:    addImagesUc,
 		replaceImageUc: replaceImageUc,
+		deleteImageUc:  deleteImageUc,
 		deleteUc:       deleteUc,
 		getAllUc:       getAllUc,
 	}
@@ -484,6 +487,37 @@ func (h *ProductHandler) ReplaceProductImage(w http.ResponseWriter, r *http.Requ
 	}
 
 	output, err := h.replaceImageUc.Execute(r.Context(), input)
+	if err != nil {
+		writeProductError(w, err)
+		return
+	}
+
+	response.Success(w, http.StatusOK, output)
+}
+
+// DeleteProductImage godoc
+//
+//		@Summary		Mahsulotning bitta rasmini o'chirish
+//		@Description	Mahsulotning berilgan tartib raqamidagi (index, 0 dan boshlanadi) rasmini o'chiradi, qolgan rasmlar o'zgarmaydi. Mahsulotda kamida bitta rasm qolishi shart. Faqat admin uchun.
+//		@Tags			products
+//	 @Security		BearerAuth
+//		@Produce		json
+//		@Param			id		path		string	true	"Mahsulot ID"
+//		@Param			index	path		int		true	"O'chiriladigan rasmning tartib raqami (0 dan boshlanadi)"
+//		@Success		200		{object}	response.Envelope{data=application.ProductOutput}	"Rasm o'chirildi"
+//		@Failure		400		{object}	response.Envelope	"index noto'g'ri/mavjud emas, yoki mahsulotda yagona rasmni o'chirishga urinish"
+//		@Failure		404		{object}	response.Envelope	"Mahsulot topilmadi"
+//		@Failure		500		{object}	response.Envelope	"Ichki server xatosi"
+//		@Router			/products/{id}/images/{index} [delete]
+func (h *ProductHandler) DeleteProductImage(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "id")
+	index, err := strconv.Atoi(chi.URLParam(r, "index"))
+	if err != nil || index < 0 {
+		response.Error(w, http.StatusBadRequest, "noto'g'ri index")
+		return
+	}
+
+	output, err := h.deleteImageUc.Execute(r.Context(), application.DeleteProductImageInput{ID: id, Index: index})
 	if err != nil {
 		writeProductError(w, err)
 		return

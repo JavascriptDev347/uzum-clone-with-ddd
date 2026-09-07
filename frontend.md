@@ -746,7 +746,32 @@ PUT /api/v1/products/{id}/images/{index}
 
 ---
 
-### 4.10 Mahsulotni o'chirish
+### 4.10 Mahsulotning bitta rasmini o'chirish
+
+```
+DELETE /api/v1/products/{id}/images/{index}
+```
+
+🔒 **Faqat admin**
+
+`{index}` — o'chiriladigan rasmning tartib raqami, **0 dan boshlanadi**, `GET /products/{id}` javobidagi `images` massividagi shu rasmning o'rniga mos keladi.
+
+> Faqat shu bitta rasm o'chiriladi, qolgan rasmlar o'zgarmaydi. Mahsulotda **kamida bitta rasm** qolishi shart — agar bu oxirgi (yagona) rasm bo'lsa, `400` xatosi qaytadi (avval yangi rasm qo'shing yoki almashtiring). Rasm bazadan muvaffaqiyatli o'chirilgandan keyin S3'dan ham o'chiriladi.
+
+**Javob — `200 OK`:** yangilangan `ProductOutput` (4.1-bo'limdagi shakl bilan bir xil)
+
+**Xatoliklar:**
+| Status | Sabab |
+|---|---|
+| 400 | `index` noto'g'ri/mavjud bo'lmagan, yoki mahsulotdagi yagona rasmni o'chirishga urinish |
+| 401 | token yo'q |
+| 403 | admin emas |
+| 404 | mahsulot topilmadi |
+| 500 | server xatosi |
+
+---
+
+### 4.11 Mahsulotni o'chirish
 
 ```
 DELETE /api/v1/products/{id}
@@ -1067,6 +1092,7 @@ Frontendda: login qilingandan keyin `GET /auth/me` chaqirib, javobdagi `role` ma
 | `/api/v1/products/{id}` | PUT | ✅ | admin |
 | `/api/v1/products/{id}/images` | POST | ✅ | admin |
 | `/api/v1/products/{id}/images/{index}` | PUT | ✅ | admin |
+| `/api/v1/products/{id}/images/{index}` | DELETE | ✅ | admin |
 | `/api/v1/products/{id}` | DELETE | ✅ | admin |
 | `/api/v1/products/admin` | GET | ✅ | admin |
 | `/api/v1/events` | GET | ❌ | — |

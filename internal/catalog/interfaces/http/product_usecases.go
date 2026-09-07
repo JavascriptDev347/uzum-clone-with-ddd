@@ -34,6 +34,10 @@ type ReplaceProductImageUseCase interface {
 	Execute(ctx context.Context, input application.ReplaceProductImageInput) (*application.ProductOutput, error)
 }
 
+type DeleteProductImageUseCase interface {
+	Execute(ctx context.Context, input application.DeleteProductImageInput) (*application.ProductOutput, error)
+}
+
 type DeleteProductUseCase interface {
 	Execute(ctx context.Context, id string) error
 }

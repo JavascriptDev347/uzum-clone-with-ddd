@@ -106,6 +106,12 @@ type ReplaceProductImageInput struct {
 	Image media.UploadInput
 }
 
+// DeleteProductImageInput - mahsulotning bitta rasmini (tartib raqami bo'yicha) o'chirish uchun.
+type DeleteProductImageInput struct {
+	ID    string
+	Index int // o'chiriladigan rasmning tartib raqami, 0 dan boshlanadi
+}
+
 // ProductOutput - so'ralgan tilga moslashtirilgan (localized) mahsulot ma'lumoti, ommaviy endpointlar uchun.
 type ProductOutput struct {
 	ID               string    `json:"id"`

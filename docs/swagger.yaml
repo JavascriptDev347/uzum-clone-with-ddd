@@ -1394,6 +1394,51 @@ paths:
       tags:
       - products
   /products/{id}/images/{index}:
+    delete:
+      description: Mahsulotning berilgan tartib raqamidagi (index, 0 dan boshlanadi)
+        rasmini o'chiradi, qolgan rasmlar o'zgarmaydi. Mahsulotda kamida bitta rasm
+        qolishi shart. Faqat admin uchun.
+      parameters:
+      - description: Mahsulot ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: O'chiriladigan rasmning tartib raqami (0 dan boshlanadi)
+        in: path
+        name: index
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Rasm o'chirildi
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Envelope'
+            - properties:
+                data:
+                  $ref: '#/definitions/application.ProductOutput'
+              type: object
+        "400":
+          description: index noto'g'ri/mavjud emas, yoki mahsulotda yagona rasmni
+            o'chirishga urinish
+          schema:
+            $ref: '#/definitions/response.Envelope'
+        "404":
+          description: Mahsulot topilmadi
+          schema:
+            $ref: '#/definitions/response.Envelope'
+        "500":
+          description: Ichki server xatosi
+          schema:
+            $ref: '#/definitions/response.Envelope'
+      security:
+      - BearerAuth: []
+      summary: Mahsulotning bitta rasmini o'chirish
+      tags:
+      - products
     put:
       consumes:
       - multipart/form-data

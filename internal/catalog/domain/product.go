@@ -265,6 +265,22 @@ func (p *Product) ReplaceImageAt(index int, newImage ProductImage) (ProductImage
 	return old, nil
 }
 
+// RemoveImageAt - berilgan tartib raqamidagi (0 dan boshlanadi) rasmni ro'yxatdan olib tashlaydi
+// va o'chirilgan rasmni qaytaradi (uploader'dan o'chirish uchun). Mahsulotda kamida bitta rasm
+// qolishi shart, shuning uchun oxirgi rasmni o'chirishga urinilsa xatolik qaytadi.
+func (p *Product) RemoveImageAt(index int) (ProductImage, error) {
+	if index < 0 || index >= len(p.images) {
+		return ProductImage{}, ErrProductImageNotFound
+	}
+	if len(p.images) <= 1 {
+		return ProductImage{}, ErrProductImageRequired
+	}
+	old := p.images[index]
+	p.images = append(p.images[:index:index], p.images[index+1:]...)
+	p.updatedAt = time.Now()
+	return old, nil
+}
+
 func (p *Product) ChangeCategory(categoryID string) error {
 	if categoryID == "" {
 		return ErrEmptyCategoryID
