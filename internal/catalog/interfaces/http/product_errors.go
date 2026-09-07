@@ -18,6 +18,7 @@ func writeProductError(w http.ResponseWriter, err error) {
 		errors.Is(err, domain.ErrEmptyCategoryID),
 		errors.Is(err, domain.ErrCategoryNotFound), // category_id noto'g'ri/mavjud emas - so'rov xatosi
 		errors.Is(err, domain.ErrTooManyProductImages),
+		errors.Is(err, domain.ErrProductImageRequired),
 		errors.Is(err, domain.ErrInvalidRating),
 		errors.Is(err, domain.ErrNegativeStock),
 		errors.Is(err, domain.ErrNegativeSoldCount),

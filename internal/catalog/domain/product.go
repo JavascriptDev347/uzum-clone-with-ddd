@@ -12,6 +12,7 @@ var (
 	ErrEmptyProductSlug     = errors.New("catalog: product slug bo'sh bo'lishi mumkin emas")
 	ErrEmptyCategoryID      = errors.New("catalog: category ID bo'sh bo'lishi mumkin emas")
 	ErrTooManyProductImages = errors.New("catalog: mahsulot uchun eng ko'pi bilan 5 ta rasm yuklash mumkin")
+	ErrProductImageRequired = errors.New("catalog: mahsulot uchun kamida bitta rasm yuklash shart")
 	ErrInvalidRating        = errors.New("catalog: reyting 1 dan 5 gacha bo'lishi kerak")
 	ErrNegativeStock        = errors.New("catalog: stock manfiy bo'lishi mumkin emas")
 	ErrNegativeSoldCount    = errors.New("catalog: sotilgan mahsulotlar soni manfiy bo'lishi mumkin emas")

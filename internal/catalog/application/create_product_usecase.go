@@ -23,6 +23,9 @@ func (uc *CreateProductUseCase) Execute(ctx context.Context, input CreateProduct
 		return nil, err
 	}
 
+	if len(input.Images) == 0 {
+		return nil, domain.ErrProductImageRequired
+	}
 	if len(input.Images) > domain.MaxProductImages {
 		return nil, domain.ErrTooManyProductImages
 	}
