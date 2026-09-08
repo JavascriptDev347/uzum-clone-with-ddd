@@ -17,6 +17,7 @@ import (
 	"github.com/JavascriptDev347/uzum-clone-with-ddd.git/internal/catalog"
 	"github.com/JavascriptDev347/uzum-clone-with-ddd.git/internal/identity"
 	"github.com/JavascriptDev347/uzum-clone-with-ddd.git/internal/shared/media"
+	"github.com/JavascriptDev347/uzum-clone-with-ddd.git/internal/wishlist"
 	"github.com/JavascriptDev347/uzum-clone-with-ddd.git/pkg/config"
 	"github.com/JavascriptDev347/uzum-clone-with-ddd.git/pkg/database"
 	"github.com/go-chi/chi/v5"
@@ -70,6 +71,11 @@ func main() {
 		MediaUploader: s3Uploader,
 	})
 
+	wishlistModule := wishlist.NewModule(wishlist.Config{
+		DB:           db,
+		TokenService: identityModule.TokenService,
+	})
+
 	// standart middlewares
 	r := chi.NewRouter()
 	// cors
@@ -92,6 +98,7 @@ func main() {
 
 	r.Mount("/api/v1/auth", identityModule.Router)
 	r.Mount("/api/v1", catalogModule.Router)
+	r.Mount("/api/v1/wishlist", wishlistModule.Router)
 
 	// ── Swagger UI: http://localhost:8080/swagger/index.html ──
 	r.Get("/swagger/*", httpSwagger.WrapHandler)

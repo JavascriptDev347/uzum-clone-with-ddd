@@ -938,7 +938,7 @@ POST /api/v1/events
 | `is_root` | `"true"` / `"false"` | ❌ yo'q | Berilmasa `false` deb olinadi |
 | `image` | file | ✅ ha | Event rasmi — majburiy |
 
-**Rasm cheklovi:** maks. 3MB, formatlar `jpeg`/`png`/`webp` (categories/products bilan bir xil — [6-bo'lim](#6-fayl-yuklash-haqida-umumiy-qoidalar)ga qarang).
+**Rasm cheklovi:** maks. 3MB, formatlar `jpeg`/`png`/`webp` (categories/products bilan bir xil — [7-bo'lim](#7-fayl-yuklash-haqida-umumiy-qoidalar)ga qarang).
 
 **Muvaffaqiyatli javob — `201 Created`:** `{ "data": <Event obyekti — public shakl, lang=uz> }`
 
@@ -1048,7 +1048,93 @@ DELETE /api/v1/events/{id}
 
 ---
 
-## 6. Fayl yuklash haqida umumiy qoidalar
+## 6. Sevimlilar (Wishlist)
+
+Foydalanuvchining "sevimlilar" ro'yxati — mahsulotni yurakcha bosib saqlab qo'yish. Prefiks: **`/api/v1/wishlist`**
+
+🔒 **Uchala endpoint ham autentifikatsiya talab qiladi** (`Authorization: Bearer <access_token>`) — `customer` yoki `admin`, farqi yo'q, faqat token to'g'ri va muddati o'tmagan bo'lishi kerak. Har bir foydalanuvchining **faqat bitta** wishlist'i bo'ladi (token ichidagi `user_id` bo'yicha avtomatik topiladi/yaratiladi — frontend wishlist ID yubormaydi, faqat `product_id`).
+
+> Diqqat: bu bo'lim `/api/v1/wishlist` ostida — yuqoridagi Categories/Products/Events kabi to'g'ridan-to'g'ri `/api/v1` ostida emas, alohida `/api/v1/wishlist` prefiksida joylashgan.
+
+### Wishlist item obyekti
+
+```json
+{
+  "product_id": "uuid",
+  "added_at": "2026-09-08T10:00:00Z"
+}
+```
+
+---
+
+### 6.1 Sevimlilar ro'yxatini olish
+
+```
+GET /api/v1/wishlist
+```
+
+🔒 Autentifikatsiya talab qilinadi.
+
+- Foydalanuvchining hali wishlist'i yaratilmagan bo'lsa ham xato qaytmaydi — bo'sh `items` massivi bilan `200 OK` qaytadi.
+
+**Javob — `200 OK`:**
+```json
+{
+  "data": {
+    "user_id": "uuid",
+    "items": [
+      { "product_id": "uuid", "added_at": "2026-09-08T10:00:00Z" }
+    ]
+  }
+}
+```
+
+**Xatoliklar:** `401` — token yo'q/noto'g'ri
+
+---
+
+### 6.2 Mahsulotni sevimlilarga qo'shish
+
+```
+POST /api/v1/wishlist/items/{product_id}
+```
+
+🔒 Autentifikatsiya talab qilinadi.
+
+- `{product_id}` — qo'shiladigan mahsulot ID'si (URL path'da).
+- Foydalanuvchining wishlist'i hali mavjud bo'lmasa, avtomatik yaratiladi.
+- Backend hozircha `product_id`ning haqiqatan mavjud mahsulotga tegishli ekanligini **tekshirmaydi** — frontend faqat haqiqiy mahsulot ID'sini yuborishi kerak (masalan mahsulot sahifasidagi `id` maydonidan).
+
+**Javob — `204 No Content`** (body yo'q)
+
+**Xatoliklar:**
+| Status | Sabab |
+|---|---|
+| 400 | `product_id` bo'sh |
+| 401 | token yo'q/noto'g'ri |
+| 409 | mahsulot allaqachon wishlist'da bor |
+
+---
+
+### 6.3 Mahsulotni sevimlilardan o'chirish
+
+```
+DELETE /api/v1/wishlist/items/{product_id}
+```
+
+🔒 Autentifikatsiya talab qilinadi.
+
+**Javob — `204 No Content`** (body yo'q)
+
+**Xatoliklar:**
+| Status | Sabab |
+|---|---|
+| 401 | token yo'q/noto'g'ri |
+| 404 | foydalanuvchining wishlist'i mavjud emas, yoki bu mahsulot wishlist'da yo'q |
+
+---
+
+## 7. Fayl yuklash haqida umumiy qoidalar
 
 Categories, Products va Events — barchasida rasm quyidagi qoidalarga bo'ysunadi:
 
@@ -1058,18 +1144,18 @@ Categories, Products va Events — barchasida rasm quyidagi qoidalarga bo'ysunad
 
 ---
 
-## 7. Rollar (Roles)
+## 8. Rollar (Roles)
 
 | Rol | Qanday beriladi | Nima qila oladi |
 |---|---|---|
-| `customer` | Har bir yangi `register` shu rolda yaratiladi (default) | Faqat public GET endpointlar (`/categories`, `/events`, `/auth/me`) |
-| `admin` | Faqat DB orqali qo'lda beriladi, frontendda tanlash yo'q | Category/Product/Event yaratish-o'chirish-yangilash, `/categories/admin`, `/events/admin` |
+| `customer` | Har bir yangi `register` shu rolda yaratiladi (default) | Public GET endpointlar (`/categories`, `/events`, `/auth/me`) + o'zining `/wishlist`'i (login qilgan bo'lsa) |
+| `admin` | Faqat DB orqali qo'lda beriladi, frontendda tanlash yo'q | Category/Product/Event yaratish-o'chirish-yangilash, `/categories/admin`, `/events/admin`, + o'zining `/wishlist`'i |
 
 Frontendda: login qilingandan keyin `GET /auth/me` chaqirib, javobdagi `role` maydoniga qarab admin panelni ko'rsatish/yashirishni belgilang.
 
 ---
 
-## 8. Tezkor cheat-sheet
+## 9. Tezkor cheat-sheet
 
 | Endpoint | Method | Auth | Rol |
 |---|---|---|---|
@@ -1102,10 +1188,13 @@ Frontendda: login qilingandan keyin `GET /auth/me` chaqirib, javobdagi `role` ma
 | `/api/v1/events/{id}/image` | PUT | ✅ | admin |
 | `/api/v1/events/{id}` | DELETE | ✅ | admin |
 | `/api/v1/events/admin` | GET | ✅ | admin |
+| `/api/v1/wishlist` | GET | ✅ | har qanday |
+| `/api/v1/wishlist/items/{product_id}` | POST | ✅ | har qanday |
+| `/api/v1/wishlist/items/{product_id}` | DELETE | ✅ | har qanday |
 
 ---
 
-## 9. Hali tayyor bo'lmagan (backendda yo'q) narsalar
+## 10. Hali tayyor bo'lmagan (backendda yo'q) narsalar
 
 Frontend ishini rejalashtirishda hisobga oling:
 
@@ -1114,4 +1203,4 @@ Frontend ishini rejalashtirishda hisobga oling:
 - ❌ Savat, buyurtma (order) — `internal/ordering` papkasi mavjud, lekin ichida hali HTTP endpoint yo'q
 - ❌ Parolni tiklash / o'zgartirish, logout endpointi
 
-> Eslatma: rasmlarni yangilash endi mumkin — `PUT /categories/{id}/image` (3.6), mahsulotda `POST /products/{id}/images` (rasm qo'shish, 4.8) va `PUT /products/{id}/images/{index}` (bitta rasmni almashtirish, 4.9), hamda `PUT /events/{id}/image` (5.6) orqali.
+> Eslatma: rasmlarni yangilash endi mumkin — `PUT /categories/{id}/image` (3.6), mahsulotda `POST /products/{id}/images` (rasm qo'shish, 4.8) va `PUT /products/{id}/images/{index}` (bitta rasmni almashtirish, 4.9), hamda `PUT /events/{id}/image` (5.6) orqali. Sevimlilar (wishlist) ham endi tayyor — [6-bo'lim](#6-sevimlilar-wishlist)ga qarang.

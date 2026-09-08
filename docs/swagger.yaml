@@ -109,6 +109,15 @@ definitions:
       user_id:
         type: string
     type: object
+  application.GetWishlistOutput:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/application.WishlistItemOutput'
+        type: array
+      user_id:
+        type: string
+    type: object
   application.ProductOutput:
     properties:
       category_id:
@@ -235,6 +244,14 @@ definitions:
       tag_ru:
         type: string
       tag_uz:
+        type: string
+    type: object
+  application.WishlistItemOutput:
+    properties:
+      added_at:
+        description: RFC3339 formatida, time.Time emas
+        type: string
+      product_id:
         type: string
     type: object
   http.LoginRequest:
@@ -1568,6 +1585,66 @@ paths:
       summary: Mahsulotni slug bo'yicha olish
       tags:
       - products
+  /wishlist:
+    get:
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Envelope'
+            - properties:
+                data:
+                  $ref: '#/definitions/application.GetWishlistOutput'
+              type: object
+      security:
+      - BearerAuth: []
+      summary: Get current user's wishlist
+      tags:
+      - wishlist
+  /wishlist/items/{product_id}:
+    delete:
+      parameters:
+      - description: Product ID
+        in: path
+        name: product_id
+        required: true
+        type: string
+      responses:
+        "204":
+          description: No Content
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Envelope'
+      security:
+      - BearerAuth: []
+      summary: Remove product from wishlist
+      tags:
+      - wishlist
+    post:
+      parameters:
+      - description: Product ID
+        in: path
+        name: product_id
+        required: true
+        type: string
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Envelope'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/response.Envelope'
+      security:
+      - BearerAuth: []
+      summary: Add product to wishlist
+      tags:
+      - wishlist
 securityDefinitions:
   BearerAuth:
     in: header

@@ -2027,6 +2027,109 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/wishlist": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "tags": [
+                    "wishlist"
+                ],
+                "summary": "Get current user's wishlist",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.Envelope"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/application.GetWishlistOutput"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/wishlist/items/{product_id}": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "tags": [
+                    "wishlist"
+                ],
+                "summary": "Add product to wishlist",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Product ID",
+                        "name": "product_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.Envelope"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/response.Envelope"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "tags": [
+                    "wishlist"
+                ],
+                "summary": "Remove product from wishlist",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Product ID",
+                        "name": "product_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/response.Envelope"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -2190,6 +2293,20 @@ const docTemplate = `{
                 },
                 "role": {
                     "type": "string"
+                },
+                "user_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "application.GetWishlistOutput": {
+            "type": "object",
+            "properties": {
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/application.WishlistItemOutput"
+                    }
                 },
                 "user_id": {
                     "type": "string"
@@ -2386,6 +2503,18 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "tag_uz": {
+                    "type": "string"
+                }
+            }
+        },
+        "application.WishlistItemOutput": {
+            "type": "object",
+            "properties": {
+                "added_at": {
+                    "description": "RFC3339 formatida, time.Time emas",
+                    "type": "string"
+                },
+                "product_id": {
                     "type": "string"
                 }
             }
