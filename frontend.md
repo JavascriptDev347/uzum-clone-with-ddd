@@ -1105,7 +1105,10 @@ POST /api/v1/wishlist/items/{product_id}
 - Foydalanuvchining wishlist'i hali mavjud bo'lmasa, avtomatik yaratiladi.
 - Backend hozircha `product_id`ning haqiqatan mavjud mahsulotga tegishli ekanligini **tekshirmaydi** — frontend faqat haqiqiy mahsulot ID'sini yuborishi kerak (masalan mahsulot sahifasidagi `id` maydonidan).
 
-**Javob — `204 No Content`** (body yo'q)
+**Javob — `200 OK`:**
+```json
+{ "data": "Muvaffaqiyatli wishlistga qo'shildi" }
+```
 
 **Xatoliklar:**
 | Status | Sabab |
@@ -1124,7 +1127,10 @@ DELETE /api/v1/wishlist/items/{product_id}
 
 🔒 Autentifikatsiya talab qilinadi.
 
-**Javob — `204 No Content`** (body yo'q)
+**Javob — `200 OK`:**
+```json
+{ "data": "Muvaffaqiyatli wishlistdan o'chirildi" }
+```
 
 **Xatoliklar:**
 | Status | Sabab |

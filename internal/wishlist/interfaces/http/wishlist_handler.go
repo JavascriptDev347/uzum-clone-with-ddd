@@ -32,7 +32,7 @@ func NewWishlistHandler(
 // @Tags wishlist
 // @Security BearerAuth
 // @Param product_id path string true "Product ID"
-// @Success 204
+// @Success 200 {object} response.Envelope
 // @Failure 400 {object} response.Envelope
 // @Failure 409 {object} response.Envelope
 // @Router /wishlist/items/{product_id} [post]
@@ -54,14 +54,14 @@ func (h *WishlistHandler) AddItem(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.WriteHeader(http.StatusNoContent)
+	response.Success(w, http.StatusOK, "Muvaffaqiyatli wishlistga qo'shildi")
 }
 
 // @Summary Remove product from wishlist
 // @Tags wishlist
 // @Security BearerAuth
 // @Param product_id path string true "Product ID"
-// @Success 204
+// @Success 200 {object} response.Envelope
 // @Failure 404 {object} response.Envelope
 // @Router /wishlist/items/{product_id} [delete]
 func (h *WishlistHandler) RemoveItem(w http.ResponseWriter, r *http.Request) {
@@ -82,7 +82,7 @@ func (h *WishlistHandler) RemoveItem(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.WriteHeader(http.StatusNoContent)
+	response.Success(w, http.StatusOK, "Muvaffaqiyatli wishlistdan o'chirildi")
 }
 
 // @Summary Get current user's wishlist
