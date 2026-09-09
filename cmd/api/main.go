@@ -14,6 +14,7 @@ import (
 	"net/http"
 
 	_ "github.com/JavascriptDev347/uzum-clone-with-ddd.git/docs"
+	"github.com/JavascriptDev347/uzum-clone-with-ddd.git/internal/cart"
 	"github.com/JavascriptDev347/uzum-clone-with-ddd.git/internal/catalog"
 	"github.com/JavascriptDev347/uzum-clone-with-ddd.git/internal/identity"
 	"github.com/JavascriptDev347/uzum-clone-with-ddd.git/internal/shared/media"
@@ -76,6 +77,11 @@ func main() {
 		TokenService: identityModule.TokenService,
 	})
 
+	cartModule := cart.NewModule(cart.Config{
+		DB:           db,
+		TokenService: identityModule.TokenService,
+	})
+
 	// standart middlewares
 	r := chi.NewRouter()
 	// cors
@@ -99,12 +105,13 @@ func main() {
 	r.Mount("/api/v1/auth", identityModule.Router)
 	r.Mount("/api/v1", catalogModule.Router)
 	r.Mount("/api/v1/wishlist", wishlistModule.Router)
+	r.Mount("/api/v1/cart", cartModule.Router)
 
 	// ── Swagger UI: http://localhost:8080/swagger/index.html ──
 	r.Get("/swagger/*", httpSwagger.WrapHandler)
 
 	// ── Server ────────────────────────────────────────────────
-	log.Printf("server started on :%s", cfg.AppPort)
+	log.Printf("server started on :%d", cfg.AppPort)
 	if err := http.ListenAndServe(":8080", r); err != nil {
 		log.Fatalf("server error: %v", err)
 	}

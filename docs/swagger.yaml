@@ -1,5 +1,37 @@
 basePath: /api/v1
 definitions:
+  application.CartItemView:
+    properties:
+      available:
+        type: boolean
+      currency:
+        type: string
+      discount_price:
+        type: number
+      product_id:
+        type: string
+      product_name:
+        type: string
+      quantity:
+        type: integer
+      subtotal:
+        description: discount bo'lsa discount narxidan, aks holda asl narxdan hisoblanadi
+        type: number
+      unit_price:
+        type: number
+    type: object
+  application.CartView:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/application.CartItemView'
+        type: array
+      total_items:
+        type: integer
+      total_price:
+        description: barcha item'lar subtotal'larining yig'indisi
+        type: number
+    type: object
   application.CategoryOutput:
     properties:
       created_at:
@@ -287,6 +319,18 @@ definitions:
       refresh_token:
         type: string
     type: object
+  http.addItemRequest:
+    properties:
+      product_id:
+        type: string
+      quantity:
+        type: integer
+    type: object
+  http.updateItemQuantityRequest:
+    properties:
+      quantity:
+        type: integer
+    type: object
   response.Envelope:
     properties:
       data: {}
@@ -467,6 +511,119 @@ paths:
       summary: Yangi foydalanuvchi ro'yxatdan o'tkazish
       tags:
       - auth
+  /cart:
+    get:
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Envelope'
+            - properties:
+                data:
+                  $ref: '#/definitions/application.CartView'
+              type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.Envelope'
+      security:
+      - BearerAuth: []
+      summary: Get current user's cart
+      tags:
+      - cart
+  /cart/items:
+    post:
+      parameters:
+      - description: Product ID and quantity
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/http.addItemRequest'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Envelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Envelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.Envelope'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Envelope'
+      security:
+      - BearerAuth: []
+      summary: Add product to cart
+      tags:
+      - cart
+  /cart/items/{product_id}:
+    delete:
+      parameters:
+      - description: Product ID
+        in: path
+        name: product_id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Envelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.Envelope'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Envelope'
+      security:
+      - BearerAuth: []
+      summary: Remove product from cart
+      tags:
+      - cart
+    put:
+      parameters:
+      - description: Product ID
+        in: path
+        name: product_id
+        required: true
+        type: string
+      - description: New quantity
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/http.updateItemQuantityRequest'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Envelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Envelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.Envelope'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Envelope'
+      security:
+      - BearerAuth: []
+      summary: Update cart item quantity
+      tags:
+      - cart
   /categories:
     get:
       consumes:
