@@ -12,6 +12,12 @@ import (
 
 type Module struct {
 	Router chi.Router
+
+	// GetCartUseCase va ClearCartUseCase boshqa context'lar (masalan ordering) uchun
+	// ochiq qilingan - bu cart'ning application-layer chegarasi (ACL): tashqi context'lar
+	// cart'ning domain yoki repository qatlamiga to'g'ridan-to'g'ri kirmasdan shu orqali ishlaydi.
+	GetCartUseCase   *application.GetCartUseCase
+	ClearCartUseCase *application.ClearCartUseCase
 }
 
 type Config struct {
@@ -27,10 +33,13 @@ func NewModule(cfg Config) *Module {
 	removeItemUC := application.NewRemoveItemUseCase(cartRepo)
 	updateItemQuantityUC := application.NewUpdateItemQuantityUseCase(cartRepo, productRepo)
 	getCartUC := application.NewGetCartUseCase(cartRepo, productRepo)
+	clearCartUC := application.NewClearCartUseCase(cartRepo)
 
 	cartHandler := carthttp.NewCartHandler(addItemUC, removeItemUC, updateItemQuantityUC, getCartUC)
 
 	return &Module{
-		Router: carthttp.NewRouter(cartHandler, cfg.TokenService),
+		Router:           carthttp.NewRouter(cartHandler, cfg.TokenService),
+		GetCartUseCase:   getCartUC,
+		ClearCartUseCase: clearCartUC,
 	}
 }

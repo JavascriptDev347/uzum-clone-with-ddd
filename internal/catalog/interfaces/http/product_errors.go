@@ -7,6 +7,7 @@ import (
 
 	"github.com/JavascriptDev347/uzum-clone-with-ddd.git/internal/catalog/domain"
 	"github.com/JavascriptDev347/uzum-clone-with-ddd.git/internal/shared/media"
+	"github.com/JavascriptDev347/uzum-clone-with-ddd.git/internal/shared/money"
 	"github.com/JavascriptDev347/uzum-clone-with-ddd.git/pkg/response"
 )
 
@@ -24,9 +25,9 @@ func writeProductError(w http.ResponseWriter, err error) {
 		errors.Is(err, domain.ErrNegativeStock),
 		errors.Is(err, domain.ErrNegativeSoldCount),
 		errors.Is(err, domain.ErrDiscountTooHigh),
-		errors.Is(err, domain.ErrNegativeAmount),
-		errors.Is(err, domain.ErrInvalidCurrency),
-		errors.Is(err, domain.ErrCurrencyMismatch),
+		errors.Is(err, money.ErrNegativeAmount),
+		errors.Is(err, money.ErrInvalidCurrency),
+		errors.Is(err, money.ErrCurrencyMismatch),
 		errors.Is(err, media.ErrEmptyFile),
 		errors.Is(err, media.ErrFileTooLarge),
 		errors.Is(err, media.ErrUnsupportedType):

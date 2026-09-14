@@ -1,4 +1,9 @@
-package domain
+// Package money - Money value object'i, avval catalog/domain'da yashagan, endi
+// internal/shared/money'ga ko'chirilgan. Uni ordering va (agar kerak bo'lsa) review kabi
+// bir nechta bounded context import qilgani uchun, bitta context'ning domenida "tasodifan"
+// baham ko'rilishi o'rniga aniq, atayin "shared kernel" sifatida shu yerda joylashadi. Bu
+// paket hech qanday bounded context'ga bog'liq emas.
+package money
 
 import "errors"
 

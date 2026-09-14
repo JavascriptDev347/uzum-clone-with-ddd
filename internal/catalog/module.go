@@ -2,6 +2,7 @@ package catalog
 
 import (
 	"github.com/JavascriptDev347/uzum-clone-with-ddd.git/internal/catalog/application"
+	"github.com/JavascriptDev347/uzum-clone-with-ddd.git/internal/catalog/domain"
 	"github.com/JavascriptDev347/uzum-clone-with-ddd.git/internal/catalog/infrastructure/postgres"
 	"github.com/JavascriptDev347/uzum-clone-with-ddd.git/internal/catalog/interfaces/http"
 	producthttp "github.com/JavascriptDev347/uzum-clone-with-ddd.git/internal/catalog/interfaces/http"
@@ -13,6 +14,10 @@ import (
 
 type Module struct {
 	Router chi.Router
+
+	// ProductRepo boshqa context'lar (masalan cart, ordering) uchun ochiq qilingan -
+	// ular hozircha catalog'ning repository qatlamiga to'g'ridan-to'g'ri murojaat qiladi.
+	ProductRepo domain.ProductRepository
 }
 
 type Config struct {
@@ -61,6 +66,7 @@ func NewModule(cfg Config) *Module {
 	eventHandler := http.NewEventHandler(createEventUC, getEventsUC, getEventByIDUC, updateEventUC, updateEventImageUC, deleteEventUC, getAllEventsUC)
 
 	return &Module{
-		Router: producthttp.NewRouter(productHandler, categoryHandler, eventHandler, cfg.TokenService),
+		Router:      producthttp.NewRouter(productHandler, categoryHandler, eventHandler, cfg.TokenService),
+		ProductRepo: productRepo,
 	}
 }

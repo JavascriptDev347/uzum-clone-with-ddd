@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/JavascriptDev347/uzum-clone-with-ddd.git/internal/catalog/domain"
+	"github.com/JavascriptDev347/uzum-clone-with-ddd.git/internal/shared/money"
 	"github.com/jmoiron/sqlx"
 	"github.com/lib/pq"
 )
@@ -67,14 +68,14 @@ func scanProduct(s rowScanner) (*domain.Product, error) {
 		return nil, err
 	}
 
-	price, err := domain.NewMoney(priceAmount, priceCurrency)
+	price, err := money.NewMoney(priceAmount, priceCurrency)
 	if err != nil {
 		return nil, err
 	}
 
-	var discountPrice *domain.Money
+	var discountPrice *money.Money
 	if discountAmount.Valid {
-		dp, err := domain.NewMoney(discountAmount.Float64, priceCurrency)
+		dp, err := money.NewMoney(discountAmount.Float64, priceCurrency)
 		if err != nil {
 			return nil, err
 		}
@@ -298,5 +299,43 @@ func (r *PostgresProductRepository) Update(ctx context.Context, p *domain.Produc
 func (r *PostgresProductRepository) SoftDelete(ctx context.Context, productID string) error {
 	query := `UPDATE products SET deleted_at=$1 WHERE id=$2 AND deleted_at IS NULL`
 	_, err := r.db.ExecContext(ctx, query, time.Now(), productID)
+	return err
+}
+
+// DecrementStock - zaxirani bitta atomik UPDATE bilan kamaytiradi: WHERE shartidagi
+// "stock >= :quantity" tekshiruvi va o'zgartirish bir vaqtda bajariladi, shuning uchun
+// bir nechta checkout parallel ishlaganda ham zaxira nolning ostiga tushmaydi (oversell yo'q).
+func (r *PostgresProductRepository) DecrementStock(ctx context.Context, productID string, quantity int) error {
+	query := `UPDATE products SET stock = stock - :quantity WHERE id = :product_id AND stock >= :quantity`
+	params := map[string]any{
+		"quantity":   quantity,
+		"product_id": productID,
+	}
+
+	result, err := r.db.NamedExecContext(ctx, query, params)
+	if err != nil {
+		return err
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if rowsAffected == 0 {
+		return domain.ErrInsufficientStock
+	}
+	return nil
+}
+
+// IncrementStock - muvaffaqiyatsiz checkout'da avval kamaytirilgan zaxirani orqaga qaytaradi.
+// Pastki chegara tekshiruvi shart emas - bu faqat oldin ayirilgan miqdorni tiklaydi.
+func (r *PostgresProductRepository) IncrementStock(ctx context.Context, productID string, quantity int) error {
+	query := `UPDATE products SET stock = stock + :quantity WHERE id = :product_id`
+	params := map[string]any{
+		"quantity":   quantity,
+		"product_id": productID,
+	}
+
+	_, err := r.db.NamedExecContext(ctx, query, params)
 	return err
 }

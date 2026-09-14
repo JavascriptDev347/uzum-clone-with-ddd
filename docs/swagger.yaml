@@ -286,11 +286,120 @@ definitions:
       product_id:
         type: string
     type: object
+  dashboard.LowStockProduct:
+    properties:
+      id:
+        type: string
+      name_uz:
+        type: string
+      stock:
+        type: integer
+    type: object
+  dashboard.RevenuePoint:
+    properties:
+      period:
+        type: string
+      revenue:
+        type: number
+    type: object
+  dashboard.SummaryResponse:
+    properties:
+      total_products:
+        type: integer
+      total_revenue:
+        type: number
+      total_units_sold:
+        type: integer
+    type: object
+  http.CheckoutRequest:
+    properties:
+      address:
+        type: string
+      note:
+        type: string
+      phone:
+        type: string
+    type: object
+  http.CreateManualOrderRequest:
+    properties:
+      address:
+        type: string
+      items:
+        items:
+          $ref: '#/definitions/http.ManualOrderItemRequest'
+        type: array
+      note:
+        type: string
+      payment_status:
+        type: string
+      phone:
+        type: string
+    type: object
+  http.GalleryPostResponse:
+    properties:
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      image_urls:
+        items:
+          type: string
+        type: array
+    type: object
   http.LoginRequest:
     properties:
       email:
         type: string
       password:
+        type: string
+    type: object
+  http.ManualOrderItemRequest:
+    properties:
+      product_id:
+        type: string
+      quantity:
+        type: integer
+    type: object
+  http.OrderItemResponse:
+    properties:
+      currency:
+        type: string
+      product_id:
+        type: string
+      product_name:
+        type: string
+      quantity:
+        type: integer
+      unit_price:
+        type: number
+    type: object
+  http.OrderResponse:
+    properties:
+      address:
+        type: string
+      created_at:
+        type: string
+      delivery_status:
+        type: string
+      id:
+        type: string
+      items:
+        items:
+          $ref: '#/definitions/http.OrderItemResponse'
+        type: array
+      note:
+        type: string
+      payment_status:
+        type: string
+      phone:
+        type: string
+      total_amount:
+        type: number
+      total_currency:
+        type: string
+      user_id:
         type: string
     type: object
   http.RefreshRequest:
@@ -312,11 +421,47 @@ definitions:
       user_id:
         type: string
     type: object
+  http.ReviewResponse:
+    properties:
+      comment:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: string
+      order_id:
+        type: string
+      product_id:
+        type: string
+      rating:
+        type: integer
+      user_id:
+        type: string
+    type: object
+  http.SubmitReviewRequest:
+    properties:
+      comment:
+        type: string
+      product_id:
+        type: string
+      rating:
+        type: integer
+    type: object
   http.TokenResponse:
     properties:
       access_token:
         type: string
       refresh_token:
+        type: string
+    type: object
+  http.UpdateDeliveryStatusRequest:
+    properties:
+      status:
+        type: string
+    type: object
+  http.UpdatePaymentStatusRequest:
+    properties:
+      status:
         type: string
     type: object
   http.addItemRequest:
@@ -362,6 +507,315 @@ info:
   title: Uzum Clone API
   version: "1.0"
 paths:
+  /admin/dashboard/low-stock:
+    get:
+      description: Eng kam zaxiraga ega (o'chirilmagan) top-5 mahsulot. Faqat admin
+        uchun.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Kam zaxirali mahsulotlar
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Envelope'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/dashboard.LowStockProduct'
+                  type: array
+              type: object
+        "401":
+          description: Autentifikatsiya talab qilinadi
+          schema:
+            $ref: '#/definitions/response.Envelope'
+        "403":
+          description: Faqat admin uchun
+          schema:
+            $ref: '#/definitions/response.Envelope'
+        "500":
+          description: Ichki server xatosi
+          schema:
+            $ref: '#/definitions/response.Envelope'
+      security:
+      - BearerAuth: []
+      summary: Kam zaxirali mahsulotlar
+      tags:
+      - admin-dashboard
+  /admin/dashboard/revenue-history:
+    get:
+      description: Daromadni davr (kun yoki oy) bo'yicha guruhlab qaytaradi, faqat
+        to'langan va bekor qilinmagan buyurtmalar bo'yicha - frontend'dagi oddiy grafik
+        uchun. Faqat admin uchun.
+      parameters:
+      - description: 'Guruhlash davri: day yoki month'
+        in: query
+        name: period
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Daromad tarixi
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Envelope'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/dashboard.RevenuePoint'
+                  type: array
+              type: object
+        "400":
+          description: period 'day' yoki 'month' bo'lishi kerak
+          schema:
+            $ref: '#/definitions/response.Envelope'
+        "401":
+          description: Autentifikatsiya talab qilinadi
+          schema:
+            $ref: '#/definitions/response.Envelope'
+        "403":
+          description: Faqat admin uchun
+          schema:
+            $ref: '#/definitions/response.Envelope'
+        "500":
+          description: Ichki server xatosi
+          schema:
+            $ref: '#/definitions/response.Envelope'
+      security:
+      - BearerAuth: []
+      summary: Daromad tarixi
+      tags:
+      - admin-dashboard
+  /admin/dashboard/summary:
+    get:
+      description: Jami mahsulotlar soni (o'chirilganlardan tashqari), jami sotilgan
+        birliklar va jami daromad (faqat to'langan va bekor qilinmagan buyurtmalar
+        bo'yicha). Faqat admin uchun.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Umumiy statistika
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Envelope'
+            - properties:
+                data:
+                  $ref: '#/definitions/dashboard.SummaryResponse'
+              type: object
+        "401":
+          description: Autentifikatsiya talab qilinadi
+          schema:
+            $ref: '#/definitions/response.Envelope'
+        "403":
+          description: Faqat admin uchun
+          schema:
+            $ref: '#/definitions/response.Envelope'
+        "500":
+          description: Ichki server xatosi
+          schema:
+            $ref: '#/definitions/response.Envelope'
+      security:
+      - BearerAuth: []
+      summary: Umumiy statistika
+      tags:
+      - admin-dashboard
+  /admin/gallery:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Rasm(lar) (eng ko'pi bilan 3 ta) va ixtiyoriy tavsif bilan yangi
+        galereya posti yaratadi. Faqat admin uchun.
+      parameters:
+      - description: Rasmlar (eng ko'pi bilan 3 ta)
+        in: formData
+        name: images
+        type: file
+      - description: Tavsif
+        in: formData
+        name: description
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Post yaratildi
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Envelope'
+            - properties:
+                data:
+                  $ref: '#/definitions/http.GalleryPostResponse'
+              type: object
+        "400":
+          description: Noto'g'ri so'rov, 3 tadan ortiq rasm yoki yaroqsiz fayl
+          schema:
+            $ref: '#/definitions/response.Envelope'
+        "401":
+          description: Autentifikatsiya talab qilinadi
+          schema:
+            $ref: '#/definitions/response.Envelope'
+        "403":
+          description: Faqat admin uchun
+          schema:
+            $ref: '#/definitions/response.Envelope'
+        "500":
+          description: Ichki server xatosi
+          schema:
+            $ref: '#/definitions/response.Envelope'
+      security:
+      - BearerAuth: []
+      summary: Yangi galereya posti yaratish
+      tags:
+      - gallery
+  /admin/gallery/{id}:
+    delete:
+      description: Postni bazadan o'chiradi va uning rasmlarini S3'dan ham tozalaydi.
+        Faqat admin uchun.
+      parameters:
+      - description: Post ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Post o'chirildi
+          schema:
+            $ref: '#/definitions/response.Envelope'
+        "401":
+          description: Autentifikatsiya talab qilinadi
+          schema:
+            $ref: '#/definitions/response.Envelope'
+        "403":
+          description: Faqat admin uchun
+          schema:
+            $ref: '#/definitions/response.Envelope'
+        "404":
+          description: Post topilmadi
+          schema:
+            $ref: '#/definitions/response.Envelope'
+        "500":
+          description: Ichki server xatosi
+          schema:
+            $ref: '#/definitions/response.Envelope'
+      security:
+      - BearerAuth: []
+      summary: Galereya postini o'chirish
+      tags:
+      - gallery
+  /admin/orders:
+    post:
+      consumes:
+      - application/json
+      description: Admin tomonidan cart'siz, to'g'ridan-to'g'ri buyurtma yaratadi
+        (masalan, telefon orqali qabul qilingan yoki do'kondagi offline savdo). Catalog'dan
+        joriy nom/narxni "surat" qiladi va zaxirani atomik ravishda kamaytiradi (Checkout
+        bilan bir xil mantiq). Faqat admin uchun.
+      parameters:
+      - description: Mijoz ma'lumotlari, mahsulotlar ro'yxati va boshlang'ich to'lov
+          holati
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/http.CreateManualOrderRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Buyurtma yaratildi
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Envelope'
+            - properties:
+                data:
+                  $ref: '#/definitions/http.OrderResponse'
+              type: object
+        "400":
+          description: Noto'g'ri so'rov, bo'sh ro'yxat yoki noto'g'ri holat/manzil/telefon
+            qiymati
+          schema:
+            $ref: '#/definitions/response.Envelope'
+        "401":
+          description: Autentifikatsiya talab qilinadi
+          schema:
+            $ref: '#/definitions/response.Envelope'
+        "403":
+          description: Faqat admin uchun
+          schema:
+            $ref: '#/definitions/response.Envelope'
+        "404":
+          description: Mahsulot topilmadi
+          schema:
+            $ref: '#/definitions/response.Envelope'
+        "409":
+          description: Mahsulot uchun yetarli zaxira yo'q
+          schema:
+            $ref: '#/definitions/response.Envelope'
+        "500":
+          description: Ichki server xatosi
+          schema:
+            $ref: '#/definitions/response.Envelope'
+      security:
+      - BearerAuth: []
+      summary: Qo'lda buyurtma yaratish (offline savdo)
+      tags:
+      - orders
+  /admin/orders/{id}/cancel:
+    patch:
+      description: Buyurtmani bekor qiladi va Checkout/CreateManualOrder paytida kamaytirilgan
+        zaxirani Catalog'ga qaytaradi. Faqat Preparing holatidagi buyurtmalar bekor
+        qilinishi mumkin - courier'ga topshirilgan yoki yetkazilgan buyurtmani bu
+        yo'l bilan bekor qilib bo'lmaydi. Faqat admin uchun.
+      parameters:
+      - description: Buyurtma ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Bekor qilingan buyurtma
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Envelope'
+            - properties:
+                data:
+                  $ref: '#/definitions/http.OrderResponse'
+              type: object
+        "401":
+          description: Autentifikatsiya talab qilinadi
+          schema:
+            $ref: '#/definitions/response.Envelope'
+        "403":
+          description: Faqat admin uchun
+          schema:
+            $ref: '#/definitions/response.Envelope'
+        "404":
+          description: Buyurtma topilmadi
+          schema:
+            $ref: '#/definitions/response.Envelope'
+        "409":
+          description: Courier'ga topshirilgan yoki yetkazilgan buyurtmani bekor qilib
+            bo'lmaydi
+          schema:
+            $ref: '#/definitions/response.Envelope'
+        "500":
+          description: Ichki server xatosi
+          schema:
+            $ref: '#/definitions/response.Envelope'
+      security:
+      - BearerAuth: []
+      summary: Buyurtmani bekor qilish
+      tags:
+      - orders
   /auth/login:
     post:
       consumes:
@@ -935,6 +1389,57 @@ paths:
       summary: Kategoriyalarni olish - admin (o'chirilganlar bilan birga)
       tags:
       - categories
+  /checkout:
+    post:
+      consumes:
+      - application/json
+      description: 'Joriy foydalanuvchining savatidagi mahsulotlarni buyurtmaga aylantiradi:
+        Catalog''dan joriy nom/narxni "surat" qiladi, zaxirani atomik ravishda kamaytiradi
+        va savatni bo''shatadi'
+      parameters:
+      - description: Yetkazib berish ma'lumotlari
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/http.CheckoutRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Buyurtma yaratildi
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Envelope'
+            - properties:
+                data:
+                  $ref: '#/definitions/http.OrderResponse'
+              type: object
+        "400":
+          description: Noto'g'ri so'rov, bo'sh savat yoki yaroqsiz telefon/manzil
+          schema:
+            $ref: '#/definitions/response.Envelope'
+        "401":
+          description: Autentifikatsiya talab qilinadi
+          schema:
+            $ref: '#/definitions/response.Envelope'
+        "404":
+          description: Mahsulot topilmadi
+          schema:
+            $ref: '#/definitions/response.Envelope'
+        "409":
+          description: Mahsulot uchun yetarli zaxira yo'q
+          schema:
+            $ref: '#/definitions/response.Envelope'
+        "500":
+          description: Ichki server xatosi
+          schema:
+            $ref: '#/definitions/response.Envelope'
+      security:
+      - BearerAuth: []
+      summary: Savatni buyurtmaga aylantirish
+      tags:
+      - orders
   /events:
     get:
       description: Faol (o'chirilmagan) eventlar ro'yxati. is_root=true bo'lganlar
@@ -1246,6 +1751,261 @@ paths:
       summary: Eventlarni olish - admin (o'chirilganlar bilan birga)
       tags:
       - events
+  /gallery:
+    get:
+      description: Barcha galereya postlarini sahifalab qaytaradi. Ochiq - autentifikatsiya
+        shart emas.
+      parameters:
+      - description: Sahifa raqami (default 1)
+        in: query
+        name: page
+        type: integer
+      - description: Sahifadagi elementlar soni (default 20, max 100)
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Postlar ro'yxati
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Envelope'
+            - properties:
+                data:
+                  $ref: '#/definitions/response.PaginatedResult'
+              type: object
+        "500":
+          description: Ichki server xatosi
+          schema:
+            $ref: '#/definitions/response.Envelope'
+      summary: Galereya postlari
+      tags:
+      - gallery
+  /orders:
+    get:
+      description: Joriy autentifikatsiya qilingan foydalanuvchining barcha buyurtmalari
+        ro'yxati (buyurtma holati sahifasi uchun)
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Buyurtmalar ro'yxati
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Envelope'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/http.OrderResponse'
+                  type: array
+              type: object
+        "401":
+          description: Autentifikatsiya talab qilinadi
+          schema:
+            $ref: '#/definitions/response.Envelope'
+        "500":
+          description: Ichki server xatosi
+          schema:
+            $ref: '#/definitions/response.Envelope'
+      security:
+      - BearerAuth: []
+      summary: Mening buyurtmalarim
+      tags:
+      - orders
+  /orders/{id}:
+    get:
+      description: Bitta buyurtmani ID bo'yicha oladi. Faqat buyurtma egasi yoki admin
+        ko'ra oladi.
+      parameters:
+      - description: Buyurtma ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Buyurtma
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Envelope'
+            - properties:
+                data:
+                  $ref: '#/definitions/http.OrderResponse'
+              type: object
+        "401":
+          description: Autentifikatsiya talab qilinadi
+          schema:
+            $ref: '#/definitions/response.Envelope'
+        "403":
+          description: Bu buyurtmani ko'rish huquqi yo'q
+          schema:
+            $ref: '#/definitions/response.Envelope'
+        "404":
+          description: Buyurtma topilmadi
+          schema:
+            $ref: '#/definitions/response.Envelope'
+        "500":
+          description: Ichki server xatosi
+          schema:
+            $ref: '#/definitions/response.Envelope'
+      security:
+      - BearerAuth: []
+      summary: Buyurtma tafsilotlari
+      tags:
+      - orders
+  /orders/{id}/delivery-status:
+    patch:
+      consumes:
+      - application/json
+      description: Buyurtmaning yetkazib berish holatini o'zgartiradi (preparing/handed_to_courier/delivered).
+        Faqat oldinga qarab o'zgarishi mumkin. Faqat admin uchun.
+      parameters:
+      - description: Buyurtma ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Yangi yetkazib berish holati
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/http.UpdateDeliveryStatusRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Yangilangan buyurtma
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Envelope'
+            - properties:
+                data:
+                  $ref: '#/definitions/http.OrderResponse'
+              type: object
+        "400":
+          description: Noto'g'ri so'rov yoki noto'g'ri holat qiymati
+          schema:
+            $ref: '#/definitions/response.Envelope'
+        "401":
+          description: Autentifikatsiya talab qilinadi
+          schema:
+            $ref: '#/definitions/response.Envelope'
+        "403":
+          description: Faqat admin uchun
+          schema:
+            $ref: '#/definitions/response.Envelope'
+        "404":
+          description: Buyurtma topilmadi
+          schema:
+            $ref: '#/definitions/response.Envelope'
+        "409":
+          description: Holatni orqaga qaytarib bo'lmaydi
+          schema:
+            $ref: '#/definitions/response.Envelope'
+        "500":
+          description: Ichki server xatosi
+          schema:
+            $ref: '#/definitions/response.Envelope'
+      security:
+      - BearerAuth: []
+      summary: Yetkazib berish holatini o'zgartirish
+      tags:
+      - orders
+  /orders/{id}/payment-status:
+    patch:
+      consumes:
+      - application/json
+      description: Buyurtmaning to'lov holatini o'zgartiradi (unpaid/paid). Faqat
+        admin uchun.
+      parameters:
+      - description: Buyurtma ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Yangi to'lov holati
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/http.UpdatePaymentStatusRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Yangilangan buyurtma
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Envelope'
+            - properties:
+                data:
+                  $ref: '#/definitions/http.OrderResponse'
+              type: object
+        "400":
+          description: Noto'g'ri so'rov yoki noto'g'ri holat qiymati
+          schema:
+            $ref: '#/definitions/response.Envelope'
+        "401":
+          description: Autentifikatsiya talab qilinadi
+          schema:
+            $ref: '#/definitions/response.Envelope'
+        "403":
+          description: Faqat admin uchun
+          schema:
+            $ref: '#/definitions/response.Envelope'
+        "404":
+          description: Buyurtma topilmadi
+          schema:
+            $ref: '#/definitions/response.Envelope'
+        "500":
+          description: Ichki server xatosi
+          schema:
+            $ref: '#/definitions/response.Envelope'
+      security:
+      - BearerAuth: []
+      summary: To'lov holatini o'zgartirish
+      tags:
+      - orders
+  /orders/admin:
+    get:
+      description: Barcha foydalanuvchilarning barcha buyurtmalari ro'yxati. Faqat
+        admin uchun.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Buyurtmalar ro'yxati
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Envelope'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/http.OrderResponse'
+                  type: array
+              type: object
+        "401":
+          description: Autentifikatsiya talab qilinadi
+          schema:
+            $ref: '#/definitions/response.Envelope'
+        "403":
+          description: Faqat admin uchun
+          schema:
+            $ref: '#/definitions/response.Envelope'
+        "500":
+          description: Ichki server xatosi
+          schema:
+            $ref: '#/definitions/response.Envelope'
+      security:
+      - BearerAuth: []
+      summary: Barcha buyurtmalar (admin navbati)
+      tags:
+      - orders
   /products:
     get:
       description: Faol (o'chirilmagan) mahsulotlar ro'yxati, nomi va/yoki category_id
@@ -1664,6 +2424,43 @@ paths:
       summary: Mahsulotning bitta rasmini almashtirish
       tags:
       - products
+  /products/{id}/reviews:
+    get:
+      description: Berilgan mahsulot uchun barcha sharhlar ro'yxatini sahifalab qaytaradi.
+        Ochiq - autentifikatsiya shart emas.
+      parameters:
+      - description: Mahsulot ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Sahifa raqami (default 1)
+        in: query
+        name: page
+        type: integer
+      - description: Sahifadagi elementlar soni (default 20, max 100)
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Sharhlar ro'yxati
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Envelope'
+            - properties:
+                data:
+                  $ref: '#/definitions/response.PaginatedResult'
+              type: object
+        "500":
+          description: Ichki server xatosi
+          schema:
+            $ref: '#/definitions/response.Envelope'
+      summary: Mahsulot sharhlari
+      tags:
+      - reviews
   /products/admin:
     get:
       description: Barcha mahsulotlarni (o'chirilganlarni ham), 3 ta tildagi to'liq
@@ -1742,6 +2539,58 @@ paths:
       summary: Mahsulotni slug bo'yicha olish
       tags:
       - products
+  /reviews:
+    post:
+      consumes:
+      - application/json
+      description: Joriy foydalanuvchi nomidan mahsulotga sharh qoldiradi. Faqat shu
+        mahsulotni sotib olib, yetkazib berilgan (Delivered) buyurtmasi bo'lgan foydalanuvchilar
+        sharh qoldira oladi, va har bir foydalanuvchi bitta mahsulotga faqat bitta
+        marta sharh qoldirishi mumkin.
+      parameters:
+      - description: Sharh ma'lumotlari
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/http.SubmitReviewRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Sharh yaratildi
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Envelope'
+            - properties:
+                data:
+                  $ref: '#/definitions/http.ReviewResponse'
+              type: object
+        "400":
+          description: Noto'g'ri so'rov yoki reyting 1-5 oralig'ida emas
+          schema:
+            $ref: '#/definitions/response.Envelope'
+        "401":
+          description: Autentifikatsiya talab qilinadi
+          schema:
+            $ref: '#/definitions/response.Envelope'
+        "403":
+          description: Bu mahsulot uchun sharh qoldirish huquqi yo'q
+          schema:
+            $ref: '#/definitions/response.Envelope'
+        "409":
+          description: Bu mahsulot uchun sharh allaqachon qoldirilgan
+          schema:
+            $ref: '#/definitions/response.Envelope'
+        "500":
+          description: Ichki server xatosi
+          schema:
+            $ref: '#/definitions/response.Envelope'
+      security:
+      - BearerAuth: []
+      summary: Mahsulotga sharh qoldirish
+      tags:
+      - reviews
   /wishlist:
     get:
       responses:

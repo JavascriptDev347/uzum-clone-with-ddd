@@ -4,6 +4,8 @@ import (
 	"errors"
 	"strings"
 	"time"
+
+	"github.com/JavascriptDev347/uzum-clone-with-ddd.git/internal/shared/money"
 )
 
 var (
@@ -48,8 +50,8 @@ type Product struct {
 	images     []ProductImage
 	categoryID string
 
-	price         Money
-	discountPrice *Money // ixtiyoriy, bo'lsa umumiy summa shu bo'yicha hisoblanadi
+	price         money.Money
+	discountPrice *money.Money // ixtiyoriy, bo'lsa umumiy summa shu bo'yicha hisoblanadi
 
 	slug        string
 	isAvailable bool
@@ -79,8 +81,8 @@ type NewProductParams struct {
 	DescriptionRu  string
 	Images         []ProductImage
 	CategoryID     string
-	Price          Money
-	DiscountPrice  *Money
+	Price          money.Money
+	DiscountPrice  *money.Money
 	Slug           string
 	IsAvailable    bool
 	Rating         float64
@@ -161,8 +163,8 @@ type ProductFromRepositoryParams struct {
 	DescriptionRu  string
 	Images         []ProductImage
 	CategoryID     string
-	Price          Money
-	DiscountPrice  *Money
+	Price          money.Money
+	DiscountPrice  *money.Money
 	Slug           string
 	IsAvailable    bool
 	Rating         float64
@@ -290,12 +292,12 @@ func (p *Product) ChangeCategory(categoryID string) error {
 	return nil
 }
 
-func (p *Product) ChangePrice(price Money) {
+func (p *Product) ChangePrice(price money.Money) {
 	p.price = price
 	p.updatedAt = time.Now()
 }
 
-func (p *Product) ChangeDiscountPrice(discount *Money) error {
+func (p *Product) ChangeDiscountPrice(discount *money.Money) error {
 	if discount != nil {
 		if discount.Currency() != p.price.Currency() || discount.Amount() >= p.price.Amount() {
 			return ErrDiscountTooHigh
@@ -365,25 +367,25 @@ func (p *Product) IsDeleted() bool {
 
 // getters
 
-func (p *Product) ID() string             { return p.id }
-func (p *Product) NameUz() string         { return p.nameUz }
-func (p *Product) NameEng() string        { return p.nameEng }
-func (p *Product) NameRu() string         { return p.nameRu }
-func (p *Product) DescriptionUz() string  { return p.descriptionUz }
-func (p *Product) DescriptionEng() string { return p.descriptionEng }
-func (p *Product) DescriptionRu() string  { return p.descriptionRu }
-func (p *Product) Images() []ProductImage { return p.images }
-func (p *Product) CategoryID() string     { return p.categoryID }
-func (p *Product) Price() Money           { return p.price }
-func (p *Product) DiscountPrice() *Money  { return p.discountPrice }
-func (p *Product) Slug() string           { return p.slug }
-func (p *Product) IsAvailable() bool      { return p.isAvailable }
-func (p *Product) Rating() float64        { return p.rating }
-func (p *Product) Stock() int             { return p.stock }
-func (p *Product) SoldCount() int         { return p.soldCount }
-func (p *Product) TagUz() *string         { return p.tagUz }
-func (p *Product) TagEng() *string        { return p.tagEng }
-func (p *Product) TagRu() *string         { return p.tagRu }
-func (p *Product) CreatedAt() time.Time   { return p.createdAt }
-func (p *Product) UpdatedAt() time.Time   { return p.updatedAt }
-func (p *Product) DeletedAt() *time.Time  { return p.deletedAt }
+func (p *Product) ID() string                  { return p.id }
+func (p *Product) NameUz() string              { return p.nameUz }
+func (p *Product) NameEng() string             { return p.nameEng }
+func (p *Product) NameRu() string              { return p.nameRu }
+func (p *Product) DescriptionUz() string       { return p.descriptionUz }
+func (p *Product) DescriptionEng() string      { return p.descriptionEng }
+func (p *Product) DescriptionRu() string       { return p.descriptionRu }
+func (p *Product) Images() []ProductImage      { return p.images }
+func (p *Product) CategoryID() string          { return p.categoryID }
+func (p *Product) Price() money.Money          { return p.price }
+func (p *Product) DiscountPrice() *money.Money { return p.discountPrice }
+func (p *Product) Slug() string                { return p.slug }
+func (p *Product) IsAvailable() bool           { return p.isAvailable }
+func (p *Product) Rating() float64             { return p.rating }
+func (p *Product) Stock() int                  { return p.stock }
+func (p *Product) SoldCount() int              { return p.soldCount }
+func (p *Product) TagUz() *string              { return p.tagUz }
+func (p *Product) TagEng() *string             { return p.tagEng }
+func (p *Product) TagRu() *string              { return p.tagRu }
+func (p *Product) CreatedAt() time.Time        { return p.createdAt }
+func (p *Product) UpdatedAt() time.Time        { return p.updatedAt }
+func (p *Product) DeletedAt() *time.Time       { return p.deletedAt }

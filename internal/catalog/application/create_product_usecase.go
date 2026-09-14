@@ -5,6 +5,7 @@ import (
 
 	"github.com/JavascriptDev347/uzum-clone-with-ddd.git/internal/catalog/domain"
 	"github.com/JavascriptDev347/uzum-clone-with-ddd.git/internal/shared/media"
+	"github.com/JavascriptDev347/uzum-clone-with-ddd.git/internal/shared/money"
 	"github.com/google/uuid"
 )
 
@@ -30,14 +31,14 @@ func (uc *CreateProductUseCase) Execute(ctx context.Context, input CreateProduct
 		return nil, domain.ErrTooManyProductImages
 	}
 
-	price, err := domain.NewMoney(input.Amount, input.Currency)
+	price, err := money.NewMoney(input.Amount, input.Currency)
 	if err != nil {
 		return nil, err
 	}
 
-	var discountPrice *domain.Money
+	var discountPrice *money.Money
 	if input.DiscountAmount != nil {
-		dp, err := domain.NewMoney(*input.DiscountAmount, input.Currency)
+		dp, err := money.NewMoney(*input.DiscountAmount, input.Currency)
 		if err != nil {
 			return nil, err
 		}

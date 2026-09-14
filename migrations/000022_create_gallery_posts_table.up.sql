@@ -1,0 +1,6 @@
+CREATE TABLE gallery_posts (
+    id UUID PRIMARY KEY,
+    images JSONB NOT NULL DEFAULT '[]',
+    description TEXT NOT NULL DEFAULT '',
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);

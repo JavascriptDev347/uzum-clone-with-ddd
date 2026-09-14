@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/JavascriptDev347/uzum-clone-with-ddd.git/internal/catalog/domain"
+	"github.com/JavascriptDev347/uzum-clone-with-ddd.git/internal/shared/money"
 )
 
 type UpdateProductUseCase struct {
@@ -69,7 +70,7 @@ func (uc *UpdateProductUseCase) Execute(ctx context.Context, input UpdateProduct
 		if input.Currency != nil {
 			currency = *input.Currency
 		}
-		price, err := domain.NewMoney(amount, currency)
+		price, err := money.NewMoney(amount, currency)
 		if err != nil {
 			return err
 		}
@@ -81,7 +82,7 @@ func (uc *UpdateProductUseCase) Execute(ctx context.Context, input UpdateProduct
 			return err
 		}
 	} else if input.DiscountAmount != nil {
-		discountPrice, err := domain.NewMoney(*input.DiscountAmount, product.Price().Currency())
+		discountPrice, err := money.NewMoney(*input.DiscountAmount, product.Price().Currency())
 		if err != nil {
 			return err
 		}

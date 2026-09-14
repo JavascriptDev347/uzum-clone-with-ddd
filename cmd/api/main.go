@@ -14,9 +14,13 @@ import (
 	"net/http"
 
 	_ "github.com/JavascriptDev347/uzum-clone-with-ddd.git/docs"
+	"github.com/JavascriptDev347/uzum-clone-with-ddd.git/internal/admin/dashboard"
 	"github.com/JavascriptDev347/uzum-clone-with-ddd.git/internal/cart"
 	"github.com/JavascriptDev347/uzum-clone-with-ddd.git/internal/catalog"
+	"github.com/JavascriptDev347/uzum-clone-with-ddd.git/internal/gallery"
 	"github.com/JavascriptDev347/uzum-clone-with-ddd.git/internal/identity"
+	"github.com/JavascriptDev347/uzum-clone-with-ddd.git/internal/ordering"
+	"github.com/JavascriptDev347/uzum-clone-with-ddd.git/internal/review"
 	"github.com/JavascriptDev347/uzum-clone-with-ddd.git/internal/shared/media"
 	"github.com/JavascriptDev347/uzum-clone-with-ddd.git/internal/wishlist"
 	"github.com/JavascriptDev347/uzum-clone-with-ddd.git/pkg/config"
@@ -82,6 +86,26 @@ func main() {
 		TokenService: identityModule.TokenService,
 	})
 
+	orderingModule := ordering.NewModule(ordering.Config{
+		DB:               db,
+		TokenService:     identityModule.TokenService,
+		ProductRepo:      catalogModule.ProductRepo,
+		GetCartUseCase:   cartModule.GetCartUseCase,
+		ClearCartUseCase: cartModule.ClearCartUseCase,
+	})
+
+	reviewModule := review.NewModule(review.Config{
+		DB:                         db,
+		TokenService:               identityModule.TokenService,
+		HasDeliveredProductUseCase: orderingModule.HasDeliveredProductUseCase,
+	})
+
+	galleryModule := gallery.NewModule(gallery.Config{
+		DB:            db,
+		TokenService:  identityModule.TokenService,
+		MediaUploader: s3Uploader,
+	})
+
 	// standart middlewares
 	r := chi.NewRouter()
 	// cors
@@ -106,6 +130,25 @@ func main() {
 	r.Mount("/api/v1", catalogModule.Router)
 	r.Mount("/api/v1/wishlist", wishlistModule.Router)
 	r.Mount("/api/v1/cart", cartModule.Router)
+	// Catalog'ning router'i bare "/api/v1"ni egallagani uchun (chi bir xil prefiksni ikki
+	// marta mount qilishga ruxsat bermaydi), checkout va orders alohida, aniq prefikslar bilan
+	// mount qilinadi.
+	r.Mount("/api/v1/checkout", orderingModule.CheckoutRouter)
+	r.Mount("/api/v1/orders", orderingModule.OrdersRouter)
+	r.Mount("/api/v1/admin/orders", orderingModule.AdminOrdersRouter)
+	// Xuddi shu sabab bilan (Catalog bare "/api/v1"ni egallagan) - review'ning ikkala router'i
+	// ham aniq, mos ravishda "/api/v1/products"dan ham ustuvor bo'ladigan ("/{id}/reviews"
+	// bilan tugaydigan, chi'ning radix daraxti bo'yicha aniqroq mos kelish) prefikslar bilan
+	// mount qilinadi.
+	r.Mount("/api/v1/reviews", reviewModule.ReviewsRouter)
+	r.Mount("/api/v1/products/{id}/reviews", reviewModule.ProductReviewsRouter)
+	// "/api/v1/gallery" va "/api/v1/admin/gallery" ham bare "/api/v1"dan farqli, aniq
+	// prefikslar - Catalog bilan to'qnashmaydi.
+	r.Mount("/api/v1/gallery", galleryModule.GalleryRouter)
+	r.Mount("/api/v1/admin/gallery", galleryModule.AdminGalleryRouter)
+	// admin/dashboard - bounded context emas, module.go yo'q, to'g'ridan-to'g'ri *sqlx.DB'ga
+	// tayanadi (internal/admin/dashboard/router.go'ga qarang).
+	r.Mount("/api/v1/admin/dashboard", dashboard.NewRouter(db, identityModule.TokenService))
 
 	// ── Swagger UI: http://localhost:8080/swagger/index.html ──
 	r.Get("/swagger/*", httpSwagger.WrapHandler)

@@ -8,6 +8,7 @@ import (
 	"github.com/JavascriptDev347/uzum-clone-with-ddd.git/internal/cart/application"
 	"github.com/JavascriptDev347/uzum-clone-with-ddd.git/internal/cart/domain"
 	catalog "github.com/JavascriptDev347/uzum-clone-with-ddd.git/internal/catalog/domain"
+	"github.com/JavascriptDev347/uzum-clone-with-ddd.git/internal/shared/money"
 )
 
 // fakeCartRepository - domain.CartRepository ning xotiradagi implementatsiyasi, testlar uchun.
@@ -76,9 +77,17 @@ func (f *fakeProductRepository) SoftDelete(ctx context.Context, id string) error
 	return nil
 }
 
+func (f *fakeProductRepository) DecrementStock(ctx context.Context, id string, quantity int) error {
+	return nil
+}
+
+func (f *fakeProductRepository) IncrementStock(ctx context.Context, id string, quantity int) error {
+	return nil
+}
+
 func mustNewProduct(t *testing.T, id, nameUz string, amount float64, currency string, stock int) *catalog.Product {
 	t.Helper()
-	price, err := catalog.NewMoney(amount, currency)
+	price, err := money.NewMoney(amount, currency)
 	if err != nil {
 		t.Fatalf("unexpected error creating money: %v", err)
 	}
@@ -100,11 +109,11 @@ func mustNewProduct(t *testing.T, id, nameUz string, amount float64, currency st
 
 func mustNewProductWithDiscount(t *testing.T, id, nameUz string, amount, discountAmount float64, currency string, stock int) *catalog.Product {
 	t.Helper()
-	price, err := catalog.NewMoney(amount, currency)
+	price, err := money.NewMoney(amount, currency)
 	if err != nil {
 		t.Fatalf("unexpected error creating money: %v", err)
 	}
-	discountPrice, err := catalog.NewMoney(discountAmount, currency)
+	discountPrice, err := money.NewMoney(discountAmount, currency)
 	if err != nil {
 		t.Fatalf("unexpected error creating discount money: %v", err)
 	}
