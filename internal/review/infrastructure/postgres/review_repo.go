@@ -134,6 +134,23 @@ func (r *PostgresReviewRepository) ExistsForUserAndProduct(ctx context.Context, 
 	return exists, nil
 }
 
+func (r *PostgresReviewRepository) Delete(ctx context.Context, id string) error {
+	query := `DELETE FROM reviews WHERE id = :id`
+	result, err := r.db.NamedExecContext(ctx, query, map[string]any{"id": id})
+	if err != nil {
+		return err
+	}
+
+	rows, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if rows == 0 {
+		return domain.ErrReviewNotFound
+	}
+	return nil
+}
+
 func rowsToReviews(rows []reviewRow) []*domain.Review {
 	reviews := make([]*domain.Review, 0, len(rows))
 	for _, row := range rows {

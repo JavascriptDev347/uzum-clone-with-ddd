@@ -136,12 +136,13 @@ func main() {
 	r.Mount("/api/v1/checkout", orderingModule.CheckoutRouter)
 	r.Mount("/api/v1/orders", orderingModule.OrdersRouter)
 	r.Mount("/api/v1/admin/orders", orderingModule.AdminOrdersRouter)
-	// Xuddi shu sabab bilan (Catalog bare "/api/v1"ni egallagan) - review'ning ikkala router'i
-	// ham aniq, mos ravishda "/api/v1/products"dan ham ustuvor bo'ladigan ("/{id}/reviews"
-	// bilan tugaydigan, chi'ning radix daraxti bo'yicha aniqroq mos kelish) prefikslar bilan
-	// mount qilinadi.
+	// Xuddi shu sabab bilan (Catalog bare "/api/v1"ni egallagan) - review'ning barcha
+	// router'lari ham aniq, mos ravishda "/api/v1/products"dan ham ustuvor bo'ladigan
+	// ("/{id}/reviews" bilan tugaydigan, chi'ning radix daraxti bo'yicha aniqroq mos kelish)
+	// prefikslar bilan mount qilinadi.
 	r.Mount("/api/v1/reviews", reviewModule.ReviewsRouter)
 	r.Mount("/api/v1/products/{id}/reviews", reviewModule.ProductReviewsRouter)
+	r.Mount("/api/v1/admin/reviews", reviewModule.AdminReviewsRouter)
 	// "/api/v1/gallery" va "/api/v1/admin/gallery" ham bare "/api/v1"dan farqli, aniq
 	// prefikslar - Catalog bilan to'qnashmaydi.
 	r.Mount("/api/v1/gallery", galleryModule.GalleryRouter)

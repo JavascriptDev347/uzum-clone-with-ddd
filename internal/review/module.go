@@ -11,15 +11,17 @@ import (
 )
 
 type Module struct {
-	// ReviewsRouter va ProductReviewsRouter alohida mount qilinadi (main.go'da) - Catalog'ning
-	// router'i allaqachon bare "/api/v1" prefiksini egallagan (ordering'da ham xuddi shunday
-	// muammo hal qilingan edi).
+	// ReviewsRouter, ProductReviewsRouter va AdminReviewsRouter alohida mount qilinadi
+	// (main.go'da) - Catalog'ning router'i allaqachon bare "/api/v1" prefiksini egallagan
+	// (ordering'da ham xuddi shunday muammo hal qilingan edi).
 	ReviewsRouter        chi.Router
 	ProductReviewsRouter chi.Router
+	AdminReviewsRouter   chi.Router
 
 	SubmitReviewUseCase      *application.SubmitReviewUseCase
 	GetProductReviewsUseCase *application.GetProductReviewsUseCase
 	GetUserReviewsUseCase    *application.GetUserReviewsUseCase
+	DeleteReviewUseCase      *application.DeleteReviewUseCase
 }
 
 type Config struct {
@@ -41,14 +43,17 @@ func NewModule(cfg Config) *Module {
 	submitReviewUC := application.NewSubmitReviewUseCase(reviewRepo, purchaseChecker)
 	getProductReviewsUC := application.NewGetProductReviewsUseCase(reviewRepo)
 	getUserReviewsUC := application.NewGetUserReviewsUseCase(reviewRepo)
+	deleteReviewUC := application.NewDeleteReviewUseCase(reviewRepo)
 
-	reviewHandler := reviewhttp.NewReviewHandler(submitReviewUC, getProductReviewsUC, getUserReviewsUC)
+	reviewHandler := reviewhttp.NewReviewHandler(submitReviewUC, getProductReviewsUC, getUserReviewsUC, deleteReviewUC)
 
 	return &Module{
 		ReviewsRouter:            reviewhttp.NewReviewsRouter(reviewHandler, cfg.TokenService),
 		ProductReviewsRouter:     reviewhttp.NewProductReviewsRouter(reviewHandler),
+		AdminReviewsRouter:       reviewhttp.NewAdminReviewsRouter(reviewHandler, cfg.TokenService),
 		SubmitReviewUseCase:      submitReviewUC,
 		GetProductReviewsUseCase: getProductReviewsUC,
 		GetUserReviewsUseCase:    getUserReviewsUC,
+		DeleteReviewUseCase:      deleteReviewUC,
 	}
 }

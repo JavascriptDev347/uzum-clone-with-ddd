@@ -14,4 +14,8 @@ type ReviewRepository interface {
 	// ExistsForUserAndProduct - foydalanuvchi shu mahsulotga allaqachon sharh qoldirganini
 	// tekshiradi (bitta foydalanuvchi - bitta mahsulot uchun bitta sharh qoidasi).
 	ExistsForUserAndProduct(ctx context.Context, userID, productID string) (bool, error)
+
+	// Delete - sharhni bazadan butunlay o'chiradi (admin moderatsiyasi uchun). Topilmasa
+	// ErrReviewNotFound qaytaradi.
+	Delete(ctx context.Context, id string) error
 }

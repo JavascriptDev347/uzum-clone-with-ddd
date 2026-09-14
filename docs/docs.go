@@ -36,7 +36,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Envelope"
+                                    "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                                 },
                                 {
                                     "type": "object",
@@ -44,7 +44,7 @@ const docTemplate = `{
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/dashboard.LowStockProduct"
+                                                "$ref": "#/definitions/internal_admin_dashboard.LowStockProduct"
                                             }
                                         }
                                     }
@@ -55,19 +55,19 @@ const docTemplate = `{
                     "401": {
                         "description": "Autentifikatsiya talab qilinadi",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     },
                     "403": {
                         "description": "Faqat admin uchun",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     },
                     "500": {
                         "description": "Ichki server xatosi",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     }
                 }
@@ -103,7 +103,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Envelope"
+                                    "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                                 },
                                 {
                                     "type": "object",
@@ -111,7 +111,7 @@ const docTemplate = `{
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/dashboard.RevenuePoint"
+                                                "$ref": "#/definitions/internal_admin_dashboard.RevenuePoint"
                                             }
                                         }
                                     }
@@ -122,25 +122,25 @@ const docTemplate = `{
                     "400": {
                         "description": "period 'day' yoki 'month' bo'lishi kerak",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     },
                     "401": {
                         "description": "Autentifikatsiya talab qilinadi",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     },
                     "403": {
                         "description": "Faqat admin uchun",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     },
                     "500": {
                         "description": "Ichki server xatosi",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     }
                 }
@@ -167,13 +167,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Envelope"
+                                    "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/dashboard.SummaryResponse"
+                                            "$ref": "#/definitions/internal_admin_dashboard.SummaryResponse"
                                         }
                                     }
                                 }
@@ -183,19 +183,19 @@ const docTemplate = `{
                     "401": {
                         "description": "Autentifikatsiya talab qilinadi",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     },
                     "403": {
                         "description": "Faqat admin uchun",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     },
                     "500": {
                         "description": "Ichki server xatosi",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     }
                 }
@@ -239,13 +239,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Envelope"
+                                    "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/http.GalleryPostResponse"
+                                            "$ref": "#/definitions/internal_gallery_interfaces_http.GalleryPostResponse"
                                         }
                                     }
                                 }
@@ -255,25 +255,25 @@ const docTemplate = `{
                     "400": {
                         "description": "Noto'g'ri so'rov, 3 tadan ortiq rasm yoki yaroqsiz fayl",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     },
                     "401": {
                         "description": "Autentifikatsiya talab qilinadi",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     },
                     "403": {
                         "description": "Faqat admin uchun",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     },
                     "500": {
                         "description": "Ichki server xatosi",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     }
                 }
@@ -307,31 +307,31 @@ const docTemplate = `{
                     "200": {
                         "description": "Post o'chirildi",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     },
                     "401": {
                         "description": "Autentifikatsiya talab qilinadi",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     },
                     "403": {
                         "description": "Faqat admin uchun",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     },
                     "404": {
                         "description": "Post topilmadi",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     },
                     "500": {
                         "description": "Ichki server xatosi",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     }
                 }
@@ -362,7 +362,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/http.CreateManualOrderRequest"
+                            "$ref": "#/definitions/internal_ordering_interfaces_http.CreateManualOrderRequest"
                         }
                     }
                 ],
@@ -372,13 +372,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Envelope"
+                                    "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/http.OrderResponse"
+                                            "$ref": "#/definitions/internal_ordering_interfaces_http.OrderResponse"
                                         }
                                     }
                                 }
@@ -388,37 +388,37 @@ const docTemplate = `{
                     "400": {
                         "description": "Noto'g'ri so'rov, bo'sh ro'yxat yoki noto'g'ri holat/manzil/telefon qiymati",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     },
                     "401": {
                         "description": "Autentifikatsiya talab qilinadi",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     },
                     "403": {
                         "description": "Faqat admin uchun",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     },
                     "404": {
                         "description": "Mahsulot topilmadi",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     },
                     "409": {
                         "description": "Mahsulot uchun yetarli zaxira yo'q",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     },
                     "500": {
                         "description": "Ichki server xatosi",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     }
                 }
@@ -454,13 +454,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Envelope"
+                                    "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/http.OrderResponse"
+                                            "$ref": "#/definitions/internal_ordering_interfaces_http.OrderResponse"
                                         }
                                     }
                                 }
@@ -470,31 +470,89 @@ const docTemplate = `{
                     "401": {
                         "description": "Autentifikatsiya talab qilinadi",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     },
                     "403": {
                         "description": "Faqat admin uchun",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     },
                     "404": {
                         "description": "Buyurtma topilmadi",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     },
                     "409": {
                         "description": "Courier'ga topshirilgan yoki yetkazilgan buyurtmani bekor qilib bo'lmaydi",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     },
                     "500": {
                         "description": "Ichki server xatosi",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/reviews/{id}": {
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Istalgan foydalanuvchi yozgan sharhni butunlay o'chiradi (moderatsiya). Faqat admin uchun.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "reviews"
+                ],
+                "summary": "Sharhni o'chirish",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Sharh ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Sharh o'chirildi",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
+                        }
+                    },
+                    "401": {
+                        "description": "Autentifikatsiya talab qilinadi",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
+                        }
+                    },
+                    "403": {
+                        "description": "Faqat admin uchun",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
+                        }
+                    },
+                    "404": {
+                        "description": "Sharh topilmadi",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
+                        }
+                    },
+                    "500": {
+                        "description": "Ichki server xatosi",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     }
                 }
@@ -520,7 +578,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/http.LoginRequest"
+                            "$ref": "#/definitions/internal_identity_interfaces_http.LoginRequest"
                         }
                     }
                 ],
@@ -530,13 +588,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Envelope"
+                                    "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/http.TokenResponse"
+                                            "$ref": "#/definitions/internal_identity_interfaces_http.TokenResponse"
                                         }
                                     }
                                 }
@@ -546,19 +604,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Noto'g'ri so'rov tanasi",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     },
                     "401": {
                         "description": "Email yoki parol noto'g'ri",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     },
                     "500": {
                         "description": "Ichki server xatosi",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     }
                 }
@@ -588,13 +646,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Envelope"
+                                    "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/application.GetMeOutput"
+                                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_internal_identity_application.GetMeOutput"
                                         }
                                     }
                                 }
@@ -604,13 +662,13 @@ const docTemplate = `{
                     "401": {
                         "description": "Token yaroqsiz yoki mavjud emas",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     },
                     "500": {
                         "description": "Ichki server xatosi",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     }
                 }
@@ -636,7 +694,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/http.RefreshRequest"
+                            "$ref": "#/definitions/internal_identity_interfaces_http.RefreshRequest"
                         }
                     }
                 ],
@@ -646,13 +704,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Envelope"
+                                    "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/http.TokenResponse"
+                                            "$ref": "#/definitions/internal_identity_interfaces_http.TokenResponse"
                                         }
                                     }
                                 }
@@ -662,19 +720,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Noto'g'ri so'rov tanasi",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     },
                     "401": {
                         "description": "Refresh token yaroqsiz yoki muddati o'tgan",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     },
                     "500": {
                         "description": "Ichki server xatosi",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     }
                 }
@@ -700,7 +758,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/http.RegisterRequest"
+                            "$ref": "#/definitions/internal_identity_interfaces_http.RegisterRequest"
                         }
                     }
                 ],
@@ -710,13 +768,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Envelope"
+                                    "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/http.RegisterResponse"
+                                            "$ref": "#/definitions/internal_identity_interfaces_http.RegisterResponse"
                                         }
                                     }
                                 }
@@ -726,19 +784,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Noto'g'ri so'rov yoki email formati",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     },
                     "409": {
                         "description": "Email allaqachon band",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     },
                     "500": {
                         "description": "Ichki server xatosi",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     }
                 }
@@ -761,13 +819,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Envelope"
+                                    "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/application.CartView"
+                                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_internal_cart_application.CartView"
                                         }
                                     }
                                 }
@@ -777,7 +835,7 @@ const docTemplate = `{
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     }
                 }
@@ -801,7 +859,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/http.addItemRequest"
+                            "$ref": "#/definitions/internal_cart_interfaces_http.addItemRequest"
                         }
                     }
                 ],
@@ -809,25 +867,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     }
                 }
@@ -858,7 +916,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/http.updateItemQuantityRequest"
+                            "$ref": "#/definitions/internal_cart_interfaces_http.updateItemQuantityRequest"
                         }
                     }
                 ],
@@ -866,25 +924,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     }
                 }
@@ -912,19 +970,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     }
                 }
@@ -963,7 +1021,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Envelope"
+                                    "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                                 },
                                 {
                                     "type": "object",
@@ -971,7 +1029,7 @@ const docTemplate = `{
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/application.CategoryOutput"
+                                                "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_internal_catalog_application.CategoryOutput"
                                             }
                                         }
                                     }
@@ -982,7 +1040,7 @@ const docTemplate = `{
                     "500": {
                         "description": "Ichki server xatosi",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     }
                 }
@@ -1040,13 +1098,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Envelope"
+                                    "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/application.CategoryOutput"
+                                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_internal_catalog_application.CategoryOutput"
                                         }
                                     }
                                 }
@@ -1056,13 +1114,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Noto'g'ri so'rov tanasi yoki validatsiya xatosi",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     },
                     "500": {
                         "description": "Ichki server xatosi",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     }
                 }
@@ -1100,7 +1158,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Envelope"
+                                    "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                                 },
                                 {
                                     "type": "object",
@@ -1108,7 +1166,7 @@ const docTemplate = `{
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/application.CategoryOutputForAdmin"
+                                                "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_internal_catalog_application.CategoryOutputForAdmin"
                                             }
                                         }
                                     }
@@ -1119,7 +1177,7 @@ const docTemplate = `{
                     "500": {
                         "description": "Ichki server xatosi",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     }
                 }
@@ -1159,13 +1217,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Envelope"
+                                    "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/application.CategoryOutput"
+                                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_internal_catalog_application.CategoryOutput"
                                         }
                                     }
                                 }
@@ -1175,7 +1233,7 @@ const docTemplate = `{
                     "500": {
                         "description": "Ichki server xatosi",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     }
                 }
@@ -1211,7 +1269,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/application.UpdateCategoryInput"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_internal_catalog_application.UpdateCategoryInput"
                         }
                     }
                 ],
@@ -1219,25 +1277,25 @@ const docTemplate = `{
                     "200": {
                         "description": "Kategoriya yangilash muvaffaqiyatli",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     },
                     "400": {
                         "description": "Validatsiya xatosi",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     },
                     "404": {
                         "description": "Kategoriya topilmadi",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     },
                     "500": {
                         "description": "Ichki server xatosi",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     }
                 }
@@ -1272,13 +1330,13 @@ const docTemplate = `{
                     "200": {
                         "description": "Kategoriya o'chirish muvaffaqiyatli",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     },
                     "500": {
                         "description": "Ichki server xatosi",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     }
                 }
@@ -1324,13 +1382,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Envelope"
+                                    "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/application.CategoryOutput"
+                                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_internal_catalog_application.CategoryOutput"
                                         }
                                     }
                                 }
@@ -1340,19 +1398,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Noto'g'ri so'rov tanasi yoki validatsiya xatosi",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     },
                     "404": {
                         "description": "Kategoriya topilmadi",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     },
                     "500": {
                         "description": "Ichki server xatosi",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     }
                 }
@@ -1407,13 +1465,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Envelope"
+                                    "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/response.PaginatedResult"
+                                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.PaginatedResult"
                                         }
                                     }
                                 }
@@ -1423,7 +1481,7 @@ const docTemplate = `{
                     "500": {
                         "description": "Ichki server xatosi",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     }
                 }
@@ -1454,7 +1512,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/http.CheckoutRequest"
+                            "$ref": "#/definitions/internal_ordering_interfaces_http.CheckoutRequest"
                         }
                     }
                 ],
@@ -1464,13 +1522,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Envelope"
+                                    "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/http.OrderResponse"
+                                            "$ref": "#/definitions/internal_ordering_interfaces_http.OrderResponse"
                                         }
                                     }
                                 }
@@ -1480,31 +1538,31 @@ const docTemplate = `{
                     "400": {
                         "description": "Noto'g'ri so'rov, bo'sh savat yoki yaroqsiz telefon/manzil",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     },
                     "401": {
                         "description": "Autentifikatsiya talab qilinadi",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     },
                     "404": {
                         "description": "Mahsulot topilmadi",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     },
                     "409": {
                         "description": "Mahsulot uchun yetarli zaxira yo'q",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     },
                     "500": {
                         "description": "Ichki server xatosi",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     }
                 }
@@ -1534,7 +1592,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Envelope"
+                                    "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                                 },
                                 {
                                     "type": "object",
@@ -1542,7 +1600,7 @@ const docTemplate = `{
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/application.EventOutput"
+                                                "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_internal_catalog_application.EventOutput"
                                             }
                                         }
                                     }
@@ -1553,7 +1611,7 @@ const docTemplate = `{
                     "500": {
                         "description": "Ichki server xatosi",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     }
                 }
@@ -1678,13 +1736,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Envelope"
+                                    "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/application.EventOutput"
+                                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_internal_catalog_application.EventOutput"
                                         }
                                     }
                                 }
@@ -1694,25 +1752,25 @@ const docTemplate = `{
                     "400": {
                         "description": "Noto'g'ri so'rov tanasi yoki validatsiya xatosi",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     },
                     "401": {
                         "description": "Autentifikatsiyadan o'tilmagan",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     },
                     "403": {
                         "description": "Huquq yetarli emas",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     },
                     "500": {
                         "description": "Ichki server xatosi",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     }
                 }
@@ -1739,7 +1797,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Envelope"
+                                    "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                                 },
                                 {
                                     "type": "object",
@@ -1747,7 +1805,7 @@ const docTemplate = `{
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/application.EventOutputForAdmin"
+                                                "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_internal_catalog_application.EventOutputForAdmin"
                                             }
                                         }
                                     }
@@ -1758,7 +1816,7 @@ const docTemplate = `{
                     "500": {
                         "description": "Ichki server xatosi",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     }
                 }
@@ -1795,13 +1853,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Envelope"
+                                    "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/application.EventOutput"
+                                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_internal_catalog_application.EventOutput"
                                         }
                                     }
                                 }
@@ -1811,13 +1869,13 @@ const docTemplate = `{
                     "404": {
                         "description": "Event topilmadi",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     },
                     "500": {
                         "description": "Ichki server xatosi",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     }
                 }
@@ -1853,7 +1911,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/application.UpdateEventInput"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_internal_catalog_application.UpdateEventInput"
                         }
                     }
                 ],
@@ -1861,25 +1919,25 @@ const docTemplate = `{
                     "200": {
                         "description": "Event yangilash muvaffaqiyatli",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     },
                     "400": {
                         "description": "Validatsiya xatosi",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     },
                     "404": {
                         "description": "Event topilmadi",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     },
                     "500": {
                         "description": "Ichki server xatosi",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     }
                 }
@@ -1911,19 +1969,19 @@ const docTemplate = `{
                     "200": {
                         "description": "Event o'chirish muvaffaqiyatli",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     },
                     "404": {
                         "description": "Event topilmadi",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     },
                     "500": {
                         "description": "Ichki server xatosi",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     }
                 }
@@ -1969,13 +2027,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Envelope"
+                                    "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/application.EventOutput"
+                                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_internal_catalog_application.EventOutput"
                                         }
                                     }
                                 }
@@ -1985,19 +2043,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Noto'g'ri so'rov tanasi yoki validatsiya xatosi",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     },
                     "404": {
                         "description": "Event topilmadi",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     },
                     "500": {
                         "description": "Ichki server xatosi",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     }
                 }
@@ -2033,13 +2091,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Envelope"
+                                    "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/response.PaginatedResult"
+                                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.PaginatedResult"
                                         }
                                     }
                                 }
@@ -2049,7 +2107,7 @@ const docTemplate = `{
                     "500": {
                         "description": "Ichki server xatosi",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     }
                 }
@@ -2076,7 +2134,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Envelope"
+                                    "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                                 },
                                 {
                                     "type": "object",
@@ -2084,7 +2142,7 @@ const docTemplate = `{
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/http.OrderResponse"
+                                                "$ref": "#/definitions/internal_ordering_interfaces_http.OrderResponse"
                                             }
                                         }
                                     }
@@ -2095,13 +2153,13 @@ const docTemplate = `{
                     "401": {
                         "description": "Autentifikatsiya talab qilinadi",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     },
                     "500": {
                         "description": "Ichki server xatosi",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     }
                 }
@@ -2128,7 +2186,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Envelope"
+                                    "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                                 },
                                 {
                                     "type": "object",
@@ -2136,7 +2194,7 @@ const docTemplate = `{
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/http.OrderResponse"
+                                                "$ref": "#/definitions/internal_ordering_interfaces_http.OrderResponse"
                                             }
                                         }
                                     }
@@ -2147,19 +2205,19 @@ const docTemplate = `{
                     "401": {
                         "description": "Autentifikatsiya talab qilinadi",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     },
                     "403": {
                         "description": "Faqat admin uchun",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     },
                     "500": {
                         "description": "Ichki server xatosi",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     }
                 }
@@ -2195,13 +2253,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Envelope"
+                                    "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/http.OrderResponse"
+                                            "$ref": "#/definitions/internal_ordering_interfaces_http.OrderResponse"
                                         }
                                     }
                                 }
@@ -2211,25 +2269,25 @@ const docTemplate = `{
                     "401": {
                         "description": "Autentifikatsiya talab qilinadi",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     },
                     "403": {
                         "description": "Bu buyurtmani ko'rish huquqi yo'q",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     },
                     "404": {
                         "description": "Buyurtma topilmadi",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     },
                     "500": {
                         "description": "Ichki server xatosi",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     }
                 }
@@ -2267,7 +2325,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/http.UpdateDeliveryStatusRequest"
+                            "$ref": "#/definitions/internal_ordering_interfaces_http.UpdateDeliveryStatusRequest"
                         }
                     }
                 ],
@@ -2277,13 +2335,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Envelope"
+                                    "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/http.OrderResponse"
+                                            "$ref": "#/definitions/internal_ordering_interfaces_http.OrderResponse"
                                         }
                                     }
                                 }
@@ -2293,37 +2351,37 @@ const docTemplate = `{
                     "400": {
                         "description": "Noto'g'ri so'rov yoki noto'g'ri holat qiymati",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     },
                     "401": {
                         "description": "Autentifikatsiya talab qilinadi",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     },
                     "403": {
                         "description": "Faqat admin uchun",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     },
                     "404": {
                         "description": "Buyurtma topilmadi",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     },
                     "409": {
                         "description": "Holatni orqaga qaytarib bo'lmaydi",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     },
                     "500": {
                         "description": "Ichki server xatosi",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     }
                 }
@@ -2361,7 +2419,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/http.UpdatePaymentStatusRequest"
+                            "$ref": "#/definitions/internal_ordering_interfaces_http.UpdatePaymentStatusRequest"
                         }
                     }
                 ],
@@ -2371,13 +2429,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Envelope"
+                                    "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/http.OrderResponse"
+                                            "$ref": "#/definitions/internal_ordering_interfaces_http.OrderResponse"
                                         }
                                     }
                                 }
@@ -2387,31 +2445,31 @@ const docTemplate = `{
                     "400": {
                         "description": "Noto'g'ri so'rov yoki noto'g'ri holat qiymati",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     },
                     "401": {
                         "description": "Autentifikatsiya talab qilinadi",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     },
                     "403": {
                         "description": "Faqat admin uchun",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     },
                     "404": {
                         "description": "Buyurtma topilmadi",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     },
                     "500": {
                         "description": "Ichki server xatosi",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     }
                 }
@@ -2465,13 +2523,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Envelope"
+                                    "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/response.PaginatedResult"
+                                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.PaginatedResult"
                                         }
                                     }
                                 }
@@ -2481,7 +2539,7 @@ const docTemplate = `{
                     "500": {
                         "description": "Ichki server xatosi",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     }
                 }
@@ -2625,13 +2683,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Envelope"
+                                    "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/application.ProductOutput"
+                                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_internal_catalog_application.ProductOutput"
                                         }
                                     }
                                 }
@@ -2641,31 +2699,31 @@ const docTemplate = `{
                     "400": {
                         "description": "Noto'g'ri so'rov tanasi yoki validatsiya xatosi",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     },
                     "401": {
                         "description": "Autentifikatsiyadan o'tilmagan",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     },
                     "403": {
                         "description": "Huquq yetarli emas",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     },
                     "409": {
                         "description": "Slug band",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     },
                     "500": {
                         "description": "Ichki server xatosi",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     }
                 }
@@ -2718,13 +2776,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Envelope"
+                                    "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/response.PaginatedResult"
+                                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.PaginatedResult"
                                         }
                                     }
                                 }
@@ -2734,7 +2792,7 @@ const docTemplate = `{
                     "500": {
                         "description": "Ichki server xatosi",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     }
                 }
@@ -2771,13 +2829,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Envelope"
+                                    "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/application.ProductOutput"
+                                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_internal_catalog_application.ProductOutput"
                                         }
                                     }
                                 }
@@ -2787,13 +2845,13 @@ const docTemplate = `{
                     "404": {
                         "description": "Mahsulot topilmadi",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     },
                     "500": {
                         "description": "Ichki server xatosi",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     }
                 }
@@ -2830,13 +2888,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Envelope"
+                                    "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/application.ProductOutput"
+                                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_internal_catalog_application.ProductOutput"
                                         }
                                     }
                                 }
@@ -2846,13 +2904,13 @@ const docTemplate = `{
                     "404": {
                         "description": "Mahsulot topilmadi",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     },
                     "500": {
                         "description": "Ichki server xatosi",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     }
                 }
@@ -2888,7 +2946,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/application.UpdateProductInput"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_internal_catalog_application.UpdateProductInput"
                         }
                     }
                 ],
@@ -2896,31 +2954,31 @@ const docTemplate = `{
                     "200": {
                         "description": "Mahsulot yangilash muvaffaqiyatli",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     },
                     "400": {
                         "description": "Validatsiya xatosi",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     },
                     "404": {
                         "description": "Mahsulot topilmadi",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     },
                     "409": {
                         "description": "Slug band",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     },
                     "500": {
                         "description": "Ichki server xatosi",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     }
                 }
@@ -2952,19 +3010,19 @@ const docTemplate = `{
                     "200": {
                         "description": "Mahsulot o'chirish muvaffaqiyatli",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     },
                     "404": {
                         "description": "Mahsulot topilmadi",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     },
                     "500": {
                         "description": "Ichki server xatosi",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     }
                 }
@@ -3010,13 +3068,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Envelope"
+                                    "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/application.ProductOutput"
+                                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_internal_catalog_application.ProductOutput"
                                         }
                                     }
                                 }
@@ -3026,19 +3084,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Noto'g'ri so'rov tanasi yoki validatsiya xatosi",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     },
                     "404": {
                         "description": "Mahsulot topilmadi",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     },
                     "500": {
                         "description": "Ichki server xatosi",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     }
                 }
@@ -3091,13 +3149,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Envelope"
+                                    "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/application.ProductOutput"
+                                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_internal_catalog_application.ProductOutput"
                                         }
                                     }
                                 }
@@ -3107,19 +3165,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Noto'g'ri so'rov tanasi, index noto'g'ri yoki validatsiya xatosi",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     },
                     "404": {
                         "description": "Mahsulot topilmadi",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     },
                     "500": {
                         "description": "Ichki server xatosi",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     }
                 }
@@ -3160,13 +3218,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Envelope"
+                                    "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/application.ProductOutput"
+                                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_internal_catalog_application.ProductOutput"
                                         }
                                     }
                                 }
@@ -3176,19 +3234,19 @@ const docTemplate = `{
                     "400": {
                         "description": "index noto'g'ri/mavjud emas, yoki mahsulotda yagona rasmni o'chirishga urinish",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     },
                     "404": {
                         "description": "Mahsulot topilmadi",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     },
                     "500": {
                         "description": "Ichki server xatosi",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     }
                 }
@@ -3231,13 +3289,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Envelope"
+                                    "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/response.PaginatedResult"
+                                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.PaginatedResult"
                                         }
                                     }
                                 }
@@ -3247,7 +3305,7 @@ const docTemplate = `{
                     "500": {
                         "description": "Ichki server xatosi",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     }
                 }
@@ -3278,7 +3336,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/http.SubmitReviewRequest"
+                            "$ref": "#/definitions/internal_review_interfaces_http.SubmitReviewRequest"
                         }
                     }
                 ],
@@ -3288,13 +3346,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Envelope"
+                                    "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/http.ReviewResponse"
+                                            "$ref": "#/definitions/internal_review_interfaces_http.ReviewResponse"
                                         }
                                     }
                                 }
@@ -3304,31 +3362,31 @@ const docTemplate = `{
                     "400": {
                         "description": "Noto'g'ri so'rov yoki reyting 1-5 oralig'ida emas",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     },
                     "401": {
                         "description": "Autentifikatsiya talab qilinadi",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     },
                     "403": {
                         "description": "Bu mahsulot uchun sharh qoldirish huquqi yo'q",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     },
                     "409": {
                         "description": "Bu mahsulot uchun sharh allaqachon qoldirilgan",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     },
                     "500": {
                         "description": "Ichki server xatosi",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     }
                 }
@@ -3351,13 +3409,13 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/response.Envelope"
+                                    "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/application.GetWishlistOutput"
+                                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_internal_wishlist_application.GetWishlistOutput"
                                         }
                                     }
                                 }
@@ -3391,19 +3449,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     },
                     "409": {
                         "description": "Conflict",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     }
                 }
@@ -3431,13 +3489,13 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.Envelope"
+                            "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope"
                         }
                     }
                 }
@@ -3445,7 +3503,7 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "application.CartItemView": {
+        "github_com_JavascriptDev347_uzum-clone-with-ddd_git_internal_cart_application.CartItemView": {
             "type": "object",
             "properties": {
                 "available": {
@@ -3475,13 +3533,13 @@ const docTemplate = `{
                 }
             }
         },
-        "application.CartView": {
+        "github_com_JavascriptDev347_uzum-clone-with-ddd_git_internal_cart_application.CartView": {
             "type": "object",
             "properties": {
                 "items": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/application.CartItemView"
+                        "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_internal_cart_application.CartItemView"
                     }
                 },
                 "total_items": {
@@ -3493,7 +3551,7 @@ const docTemplate = `{
                 }
             }
         },
-        "application.CategoryOutput": {
+        "github_com_JavascriptDev347_uzum-clone-with-ddd_git_internal_catalog_application.CategoryOutput": {
             "type": "object",
             "properties": {
                 "created_at": {
@@ -3516,7 +3574,7 @@ const docTemplate = `{
                 }
             }
         },
-        "application.CategoryOutputForAdmin": {
+        "github_com_JavascriptDev347_uzum-clone-with-ddd_git_internal_catalog_application.CategoryOutputForAdmin": {
             "type": "object",
             "properties": {
                 "created_at": {
@@ -3548,7 +3606,7 @@ const docTemplate = `{
                 }
             }
         },
-        "application.EventOutput": {
+        "github_com_JavascriptDev347_uzum-clone-with-ddd_git_internal_catalog_application.EventOutput": {
             "type": "object",
             "properties": {
                 "category_id": {
@@ -3583,7 +3641,7 @@ const docTemplate = `{
                 }
             }
         },
-        "application.EventOutputForAdmin": {
+        "github_com_JavascriptDev347_uzum-clone-with-ddd_git_internal_catalog_application.EventOutputForAdmin": {
             "type": "object",
             "properties": {
                 "category_id": {
@@ -3645,35 +3703,7 @@ const docTemplate = `{
                 }
             }
         },
-        "application.GetMeOutput": {
-            "type": "object",
-            "properties": {
-                "email": {
-                    "type": "string"
-                },
-                "role": {
-                    "type": "string"
-                },
-                "user_id": {
-                    "type": "string"
-                }
-            }
-        },
-        "application.GetWishlistOutput": {
-            "type": "object",
-            "properties": {
-                "items": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/application.WishlistItemOutput"
-                    }
-                },
-                "user_id": {
-                    "type": "string"
-                }
-            }
-        },
-        "application.ProductOutput": {
+        "github_com_JavascriptDev347_uzum-clone-with-ddd_git_internal_catalog_application.ProductOutput": {
             "type": "object",
             "properties": {
                 "category_id": {
@@ -3732,7 +3762,7 @@ const docTemplate = `{
                 }
             }
         },
-        "application.UpdateCategoryInput": {
+        "github_com_JavascriptDev347_uzum-clone-with-ddd_git_internal_catalog_application.UpdateCategoryInput": {
             "type": "object",
             "properties": {
                 "id": {
@@ -3749,7 +3779,7 @@ const docTemplate = `{
                 }
             }
         },
-        "application.UpdateEventInput": {
+        "github_com_JavascriptDev347_uzum-clone-with-ddd_git_internal_catalog_application.UpdateEventInput": {
             "type": "object",
             "properties": {
                 "category_id": {
@@ -3796,7 +3826,7 @@ const docTemplate = `{
                 }
             }
         },
-        "application.UpdateProductInput": {
+        "github_com_JavascriptDev347_uzum-clone-with-ddd_git_internal_catalog_application.UpdateProductInput": {
             "type": "object",
             "properties": {
                 "amount": {
@@ -3867,7 +3897,35 @@ const docTemplate = `{
                 }
             }
         },
-        "application.WishlistItemOutput": {
+        "github_com_JavascriptDev347_uzum-clone-with-ddd_git_internal_identity_application.GetMeOutput": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "role": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_JavascriptDev347_uzum-clone-with-ddd_git_internal_wishlist_application.GetWishlistOutput": {
+            "type": "object",
+            "properties": {
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_internal_wishlist_application.WishlistItemOutput"
+                    }
+                },
+                "user_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_JavascriptDev347_uzum-clone-with-ddd_git_internal_wishlist_application.WishlistItemOutput": {
             "type": "object",
             "properties": {
                 "added_at": {
@@ -3879,7 +3937,45 @@ const docTemplate = `{
                 }
             }
         },
-        "dashboard.LowStockProduct": {
+        "github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope": {
+            "type": "object",
+            "properties": {
+                "data": {},
+                "error": {
+                    "type": "string"
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.PaginatedResult": {
+            "type": "object",
+            "properties": {
+                "items": {},
+                "pagination": {
+                    "$ref": "#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Pagination"
+                }
+            }
+        },
+        "github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Pagination": {
+            "type": "object",
+            "properties": {
+                "page": {
+                    "type": "integer"
+                },
+                "page_size": {
+                    "type": "integer"
+                },
+                "total_items": {
+                    "type": "integer"
+                },
+                "total_pages": {
+                    "type": "integer"
+                }
+            }
+        },
+        "internal_admin_dashboard.LowStockProduct": {
             "type": "object",
             "properties": {
                 "id": {
@@ -3893,7 +3989,7 @@ const docTemplate = `{
                 }
             }
         },
-        "dashboard.RevenuePoint": {
+        "internal_admin_dashboard.RevenuePoint": {
             "type": "object",
             "properties": {
                 "period": {
@@ -3904,7 +4000,7 @@ const docTemplate = `{
                 }
             }
         },
-        "dashboard.SummaryResponse": {
+        "internal_admin_dashboard.SummaryResponse": {
             "type": "object",
             "properties": {
                 "total_products": {
@@ -3918,44 +4014,26 @@ const docTemplate = `{
                 }
             }
         },
-        "http.CheckoutRequest": {
+        "internal_cart_interfaces_http.addItemRequest": {
             "type": "object",
             "properties": {
-                "address": {
+                "product_id": {
                     "type": "string"
                 },
-                "note": {
-                    "type": "string"
-                },
-                "phone": {
-                    "type": "string"
+                "quantity": {
+                    "type": "integer"
                 }
             }
         },
-        "http.CreateManualOrderRequest": {
+        "internal_cart_interfaces_http.updateItemQuantityRequest": {
             "type": "object",
             "properties": {
-                "address": {
-                    "type": "string"
-                },
-                "items": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/http.ManualOrderItemRequest"
-                    }
-                },
-                "note": {
-                    "type": "string"
-                },
-                "payment_status": {
-                    "type": "string"
-                },
-                "phone": {
-                    "type": "string"
+                "quantity": {
+                    "type": "integer"
                 }
             }
         },
-        "http.GalleryPostResponse": {
+        "internal_gallery_interfaces_http.GalleryPostResponse": {
             "type": "object",
             "properties": {
                 "created_at": {
@@ -3975,7 +4053,7 @@ const docTemplate = `{
                 }
             }
         },
-        "http.LoginRequest": {
+        "internal_identity_interfaces_http.LoginRequest": {
             "type": "object",
             "properties": {
                 "email": {
@@ -3986,7 +4064,85 @@ const docTemplate = `{
                 }
             }
         },
-        "http.ManualOrderItemRequest": {
+        "internal_identity_interfaces_http.RefreshRequest": {
+            "type": "object",
+            "properties": {
+                "refresh_token": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_identity_interfaces_http.RegisterRequest": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_identity_interfaces_http.RegisterResponse": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_identity_interfaces_http.TokenResponse": {
+            "type": "object",
+            "properties": {
+                "access_token": {
+                    "type": "string"
+                },
+                "refresh_token": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_ordering_interfaces_http.CheckoutRequest": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "note": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_ordering_interfaces_http.CreateManualOrderRequest": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/internal_ordering_interfaces_http.ManualOrderItemRequest"
+                    }
+                },
+                "note": {
+                    "type": "string"
+                },
+                "payment_status": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_ordering_interfaces_http.ManualOrderItemRequest": {
             "type": "object",
             "properties": {
                 "product_id": {
@@ -3997,7 +4153,7 @@ const docTemplate = `{
                 }
             }
         },
-        "http.OrderItemResponse": {
+        "internal_ordering_interfaces_http.OrderItemResponse": {
             "type": "object",
             "properties": {
                 "currency": {
@@ -4017,7 +4173,7 @@ const docTemplate = `{
                 }
             }
         },
-        "http.OrderResponse": {
+        "internal_ordering_interfaces_http.OrderResponse": {
             "type": "object",
             "properties": {
                 "address": {
@@ -4035,7 +4191,7 @@ const docTemplate = `{
                 "items": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/http.OrderItemResponse"
+                        "$ref": "#/definitions/internal_ordering_interfaces_http.OrderItemResponse"
                     }
                 },
                 "note": {
@@ -4058,37 +4214,23 @@ const docTemplate = `{
                 }
             }
         },
-        "http.RefreshRequest": {
+        "internal_ordering_interfaces_http.UpdateDeliveryStatusRequest": {
             "type": "object",
             "properties": {
-                "refresh_token": {
+                "status": {
                     "type": "string"
                 }
             }
         },
-        "http.RegisterRequest": {
+        "internal_ordering_interfaces_http.UpdatePaymentStatusRequest": {
             "type": "object",
             "properties": {
-                "email": {
-                    "type": "string"
-                },
-                "password": {
+                "status": {
                     "type": "string"
                 }
             }
         },
-        "http.RegisterResponse": {
-            "type": "object",
-            "properties": {
-                "email": {
-                    "type": "string"
-                },
-                "user_id": {
-                    "type": "string"
-                }
-            }
-        },
-        "http.ReviewResponse": {
+        "internal_review_interfaces_http.ReviewResponse": {
             "type": "object",
             "properties": {
                 "comment": {
@@ -4114,7 +4256,7 @@ const docTemplate = `{
                 }
             }
         },
-        "http.SubmitReviewRequest": {
+        "internal_review_interfaces_http.SubmitReviewRequest": {
             "type": "object",
             "properties": {
                 "comment": {
@@ -4124,90 +4266,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "rating": {
-                    "type": "integer"
-                }
-            }
-        },
-        "http.TokenResponse": {
-            "type": "object",
-            "properties": {
-                "access_token": {
-                    "type": "string"
-                },
-                "refresh_token": {
-                    "type": "string"
-                }
-            }
-        },
-        "http.UpdateDeliveryStatusRequest": {
-            "type": "object",
-            "properties": {
-                "status": {
-                    "type": "string"
-                }
-            }
-        },
-        "http.UpdatePaymentStatusRequest": {
-            "type": "object",
-            "properties": {
-                "status": {
-                    "type": "string"
-                }
-            }
-        },
-        "http.addItemRequest": {
-            "type": "object",
-            "properties": {
-                "product_id": {
-                    "type": "string"
-                },
-                "quantity": {
-                    "type": "integer"
-                }
-            }
-        },
-        "http.updateItemQuantityRequest": {
-            "type": "object",
-            "properties": {
-                "quantity": {
-                    "type": "integer"
-                }
-            }
-        },
-        "response.Envelope": {
-            "type": "object",
-            "properties": {
-                "data": {},
-                "error": {
-                    "type": "string"
-                },
-                "message": {
-                    "type": "string"
-                }
-            }
-        },
-        "response.PaginatedResult": {
-            "type": "object",
-            "properties": {
-                "items": {},
-                "pagination": {
-                    "$ref": "#/definitions/response.Pagination"
-                }
-            }
-        },
-        "response.Pagination": {
-            "type": "object",
-            "properties": {
-                "page": {
-                    "type": "integer"
-                },
-                "page_size": {
-                    "type": "integer"
-                },
-                "total_items": {
-                    "type": "integer"
-                },
-                "total_pages": {
                     "type": "integer"
                 }
             }

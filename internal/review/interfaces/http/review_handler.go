@@ -15,17 +15,20 @@ type ReviewHandler struct {
 	submitReviewUseCase      *application.SubmitReviewUseCase
 	getProductReviewsUseCase *application.GetProductReviewsUseCase
 	getUserReviewsUseCase    *application.GetUserReviewsUseCase
+	deleteReviewUseCase      *application.DeleteReviewUseCase
 }
 
 func NewReviewHandler(
 	submitReviewUC *application.SubmitReviewUseCase,
 	getProductReviewsUC *application.GetProductReviewsUseCase,
 	getUserReviewsUC *application.GetUserReviewsUseCase,
+	deleteReviewUC *application.DeleteReviewUseCase,
 ) *ReviewHandler {
 	return &ReviewHandler{
 		submitReviewUseCase:      submitReviewUC,
 		getProductReviewsUseCase: getProductReviewsUC,
 		getUserReviewsUseCase:    getUserReviewsUC,
+		deleteReviewUseCase:      deleteReviewUC,
 	}
 }
 
@@ -112,4 +115,29 @@ func (h *ReviewHandler) GetProductReviews(w http.ResponseWriter, r *http.Request
 
 	page, pageSize = application.NormalizeReviewPagination(page, pageSize)
 	response.Success(w, http.StatusOK, response.NewPaginatedResult(ToReviewResponses(reviews), total, page, pageSize))
+}
+
+// DeleteReview godoc
+//
+//	@Summary		Sharhni o'chirish
+//	@Description	Istalgan foydalanuvchi yozgan sharhni butunlay o'chiradi (moderatsiya). Faqat admin uchun.
+//	@Tags			reviews
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			id	path		string	true	"Sharh ID"
+//	@Success		200	{object}	response.Envelope	"Sharh o'chirildi"
+//	@Failure		401	{object}	response.Envelope	"Autentifikatsiya talab qilinadi"
+//	@Failure		403	{object}	response.Envelope	"Faqat admin uchun"
+//	@Failure		404	{object}	response.Envelope	"Sharh topilmadi"
+//	@Failure		500	{object}	response.Envelope	"Ichki server xatosi"
+//	@Router			/admin/reviews/{id} [delete]
+func (h *ReviewHandler) DeleteReview(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "id")
+
+	if err := h.deleteReviewUseCase.Execute(r.Context(), id); err != nil {
+		writeReviewError(w, err)
+		return
+	}
+
+	response.Success(w, http.StatusOK, "Sharh o'chirildi")
 }

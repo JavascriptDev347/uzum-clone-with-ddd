@@ -55,6 +55,16 @@ func (f *fakeReviewRepository) FindByUserID(ctx context.Context, userID string) 
 	return result, nil
 }
 
+func (f *fakeReviewRepository) Delete(ctx context.Context, id string) error {
+	for key, r := range f.reviews {
+		if r.ID().String() == id {
+			delete(f.reviews, key)
+			return nil
+		}
+	}
+	return domain.ErrReviewNotFound
+}
+
 func (f *fakeReviewRepository) ExistsForUserAndProduct(ctx context.Context, userID, productID string) (bool, error) {
 	if f.existsErr != nil {
 		return false, f.existsErr

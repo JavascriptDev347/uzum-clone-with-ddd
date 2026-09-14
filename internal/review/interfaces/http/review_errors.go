@@ -18,6 +18,8 @@ func writeReviewError(w http.ResponseWriter, err error) {
 		response.Error(w, http.StatusForbidden, err.Error())
 	case errors.Is(err, domain.ErrReviewAlreadyExists):
 		response.Error(w, http.StatusConflict, err.Error())
+	case errors.Is(err, domain.ErrReviewNotFound):
+		response.Error(w, http.StatusNotFound, err.Error())
 	case errors.Is(err, ErrUnauthorized):
 		response.Error(w, http.StatusUnauthorized, "unauthorized")
 	default:

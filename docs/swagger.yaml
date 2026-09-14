@@ -1,6 +1,6 @@
 basePath: /api/v1
 definitions:
-  application.CartItemView:
+  github_com_JavascriptDev347_uzum-clone-with-ddd_git_internal_cart_application.CartItemView:
     properties:
       available:
         type: boolean
@@ -20,11 +20,11 @@ definitions:
       unit_price:
         type: number
     type: object
-  application.CartView:
+  github_com_JavascriptDev347_uzum-clone-with-ddd_git_internal_cart_application.CartView:
     properties:
       items:
         items:
-          $ref: '#/definitions/application.CartItemView'
+          $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_internal_cart_application.CartItemView'
         type: array
       total_items:
         type: integer
@@ -32,7 +32,7 @@ definitions:
         description: barcha item'lar subtotal'larining yig'indisi
         type: number
     type: object
-  application.CategoryOutput:
+  github_com_JavascriptDev347_uzum-clone-with-ddd_git_internal_catalog_application.CategoryOutput:
     properties:
       created_at:
         type: string
@@ -47,7 +47,7 @@ definitions:
       updated_at:
         type: string
     type: object
-  application.CategoryOutputForAdmin:
+  github_com_JavascriptDev347_uzum-clone-with-ddd_git_internal_catalog_application.CategoryOutputForAdmin:
     properties:
       created_at:
         type: string
@@ -68,7 +68,7 @@ definitions:
       updated_at:
         type: string
     type: object
-  application.EventOutput:
+  github_com_JavascriptDev347_uzum-clone-with-ddd_git_internal_catalog_application.EventOutput:
     properties:
       category_id:
         type: string
@@ -91,7 +91,7 @@ definitions:
       updated_at:
         type: string
     type: object
-  application.EventOutputForAdmin:
+  github_com_JavascriptDev347_uzum-clone-with-ddd_git_internal_catalog_application.EventOutputForAdmin:
     properties:
       category_id:
         type: string
@@ -132,25 +132,7 @@ definitions:
       updated_at:
         type: string
     type: object
-  application.GetMeOutput:
-    properties:
-      email:
-        type: string
-      role:
-        type: string
-      user_id:
-        type: string
-    type: object
-  application.GetWishlistOutput:
-    properties:
-      items:
-        items:
-          $ref: '#/definitions/application.WishlistItemOutput'
-        type: array
-      user_id:
-        type: string
-    type: object
-  application.ProductOutput:
+  github_com_JavascriptDev347_uzum-clone-with-ddd_git_internal_catalog_application.ProductOutput:
     properties:
       category_id:
         type: string
@@ -189,7 +171,7 @@ definitions:
       updated_at:
         type: string
     type: object
-  application.UpdateCategoryInput:
+  github_com_JavascriptDev347_uzum-clone-with-ddd_git_internal_catalog_application.UpdateCategoryInput:
     properties:
       id:
         type: string
@@ -200,7 +182,7 @@ definitions:
       name_uz:
         type: string
     type: object
-  application.UpdateEventInput:
+  github_com_JavascriptDev347_uzum-clone-with-ddd_git_internal_catalog_application.UpdateEventInput:
     properties:
       category_id:
         type: string
@@ -231,7 +213,7 @@ definitions:
       title_uz:
         type: string
     type: object
-  application.UpdateProductInput:
+  github_com_JavascriptDev347_uzum-clone-with-ddd_git_internal_catalog_application.UpdateProductInput:
     properties:
       amount:
         type: number
@@ -278,7 +260,25 @@ definitions:
       tag_uz:
         type: string
     type: object
-  application.WishlistItemOutput:
+  github_com_JavascriptDev347_uzum-clone-with-ddd_git_internal_identity_application.GetMeOutput:
+    properties:
+      email:
+        type: string
+      role:
+        type: string
+      user_id:
+        type: string
+    type: object
+  github_com_JavascriptDev347_uzum-clone-with-ddd_git_internal_wishlist_application.GetWishlistOutput:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_internal_wishlist_application.WishlistItemOutput'
+        type: array
+      user_id:
+        type: string
+    type: object
+  github_com_JavascriptDev347_uzum-clone-with-ddd_git_internal_wishlist_application.WishlistItemOutput:
     properties:
       added_at:
         description: RFC3339 formatida, time.Time emas
@@ -286,7 +286,32 @@ definitions:
       product_id:
         type: string
     type: object
-  dashboard.LowStockProduct:
+  github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope:
+    properties:
+      data: {}
+      error:
+        type: string
+      message:
+        type: string
+    type: object
+  github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.PaginatedResult:
+    properties:
+      items: {}
+      pagination:
+        $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Pagination'
+    type: object
+  github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Pagination:
+    properties:
+      page:
+        type: integer
+      page_size:
+        type: integer
+      total_items:
+        type: integer
+      total_pages:
+        type: integer
+    type: object
+  internal_admin_dashboard.LowStockProduct:
     properties:
       id:
         type: string
@@ -295,14 +320,14 @@ definitions:
       stock:
         type: integer
     type: object
-  dashboard.RevenuePoint:
+  internal_admin_dashboard.RevenuePoint:
     properties:
       period:
         type: string
       revenue:
         type: number
     type: object
-  dashboard.SummaryResponse:
+  internal_admin_dashboard.SummaryResponse:
     properties:
       total_products:
         type: integer
@@ -311,31 +336,19 @@ definitions:
       total_units_sold:
         type: integer
     type: object
-  http.CheckoutRequest:
+  internal_cart_interfaces_http.addItemRequest:
     properties:
-      address:
+      product_id:
         type: string
-      note:
-        type: string
-      phone:
-        type: string
+      quantity:
+        type: integer
     type: object
-  http.CreateManualOrderRequest:
+  internal_cart_interfaces_http.updateItemQuantityRequest:
     properties:
-      address:
-        type: string
-      items:
-        items:
-          $ref: '#/definitions/http.ManualOrderItemRequest'
-        type: array
-      note:
-        type: string
-      payment_status:
-        type: string
-      phone:
-        type: string
+      quantity:
+        type: integer
     type: object
-  http.GalleryPostResponse:
+  internal_gallery_interfaces_http.GalleryPostResponse:
     properties:
       created_at:
         type: string
@@ -348,21 +361,71 @@ definitions:
           type: string
         type: array
     type: object
-  http.LoginRequest:
+  internal_identity_interfaces_http.LoginRequest:
     properties:
       email:
         type: string
       password:
         type: string
     type: object
-  http.ManualOrderItemRequest:
+  internal_identity_interfaces_http.RefreshRequest:
+    properties:
+      refresh_token:
+        type: string
+    type: object
+  internal_identity_interfaces_http.RegisterRequest:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    type: object
+  internal_identity_interfaces_http.RegisterResponse:
+    properties:
+      email:
+        type: string
+      user_id:
+        type: string
+    type: object
+  internal_identity_interfaces_http.TokenResponse:
+    properties:
+      access_token:
+        type: string
+      refresh_token:
+        type: string
+    type: object
+  internal_ordering_interfaces_http.CheckoutRequest:
+    properties:
+      address:
+        type: string
+      note:
+        type: string
+      phone:
+        type: string
+    type: object
+  internal_ordering_interfaces_http.CreateManualOrderRequest:
+    properties:
+      address:
+        type: string
+      items:
+        items:
+          $ref: '#/definitions/internal_ordering_interfaces_http.ManualOrderItemRequest'
+        type: array
+      note:
+        type: string
+      payment_status:
+        type: string
+      phone:
+        type: string
+    type: object
+  internal_ordering_interfaces_http.ManualOrderItemRequest:
     properties:
       product_id:
         type: string
       quantity:
         type: integer
     type: object
-  http.OrderItemResponse:
+  internal_ordering_interfaces_http.OrderItemResponse:
     properties:
       currency:
         type: string
@@ -375,7 +438,7 @@ definitions:
       unit_price:
         type: number
     type: object
-  http.OrderResponse:
+  internal_ordering_interfaces_http.OrderResponse:
     properties:
       address:
         type: string
@@ -387,7 +450,7 @@ definitions:
         type: string
       items:
         items:
-          $ref: '#/definitions/http.OrderItemResponse'
+          $ref: '#/definitions/internal_ordering_interfaces_http.OrderItemResponse'
         type: array
       note:
         type: string
@@ -402,26 +465,17 @@ definitions:
       user_id:
         type: string
     type: object
-  http.RefreshRequest:
+  internal_ordering_interfaces_http.UpdateDeliveryStatusRequest:
     properties:
-      refresh_token:
+      status:
         type: string
     type: object
-  http.RegisterRequest:
+  internal_ordering_interfaces_http.UpdatePaymentStatusRequest:
     properties:
-      email:
-        type: string
-      password:
+      status:
         type: string
     type: object
-  http.RegisterResponse:
-    properties:
-      email:
-        type: string
-      user_id:
-        type: string
-    type: object
-  http.ReviewResponse:
+  internal_review_interfaces_http.ReviewResponse:
     properties:
       comment:
         type: string
@@ -438,67 +492,13 @@ definitions:
       user_id:
         type: string
     type: object
-  http.SubmitReviewRequest:
+  internal_review_interfaces_http.SubmitReviewRequest:
     properties:
       comment:
         type: string
       product_id:
         type: string
       rating:
-        type: integer
-    type: object
-  http.TokenResponse:
-    properties:
-      access_token:
-        type: string
-      refresh_token:
-        type: string
-    type: object
-  http.UpdateDeliveryStatusRequest:
-    properties:
-      status:
-        type: string
-    type: object
-  http.UpdatePaymentStatusRequest:
-    properties:
-      status:
-        type: string
-    type: object
-  http.addItemRequest:
-    properties:
-      product_id:
-        type: string
-      quantity:
-        type: integer
-    type: object
-  http.updateItemQuantityRequest:
-    properties:
-      quantity:
-        type: integer
-    type: object
-  response.Envelope:
-    properties:
-      data: {}
-      error:
-        type: string
-      message:
-        type: string
-    type: object
-  response.PaginatedResult:
-    properties:
-      items: {}
-      pagination:
-        $ref: '#/definitions/response.Pagination'
-    type: object
-  response.Pagination:
-    properties:
-      page:
-        type: integer
-      page_size:
-        type: integer
-      total_items:
-        type: integer
-      total_pages:
         type: integer
     type: object
 info:
@@ -518,25 +518,25 @@ paths:
           description: Kam zaxirali mahsulotlar
           schema:
             allOf:
-            - $ref: '#/definitions/response.Envelope'
+            - $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
             - properties:
                 data:
                   items:
-                    $ref: '#/definitions/dashboard.LowStockProduct'
+                    $ref: '#/definitions/internal_admin_dashboard.LowStockProduct'
                   type: array
               type: object
         "401":
           description: Autentifikatsiya talab qilinadi
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
         "403":
           description: Faqat admin uchun
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
         "500":
           description: Ichki server xatosi
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
       security:
       - BearerAuth: []
       summary: Kam zaxirali mahsulotlar
@@ -560,29 +560,29 @@ paths:
           description: Daromad tarixi
           schema:
             allOf:
-            - $ref: '#/definitions/response.Envelope'
+            - $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
             - properties:
                 data:
                   items:
-                    $ref: '#/definitions/dashboard.RevenuePoint'
+                    $ref: '#/definitions/internal_admin_dashboard.RevenuePoint'
                   type: array
               type: object
         "400":
           description: period 'day' yoki 'month' bo'lishi kerak
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
         "401":
           description: Autentifikatsiya talab qilinadi
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
         "403":
           description: Faqat admin uchun
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
         "500":
           description: Ichki server xatosi
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
       security:
       - BearerAuth: []
       summary: Daromad tarixi
@@ -600,23 +600,23 @@ paths:
           description: Umumiy statistika
           schema:
             allOf:
-            - $ref: '#/definitions/response.Envelope'
+            - $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
             - properties:
                 data:
-                  $ref: '#/definitions/dashboard.SummaryResponse'
+                  $ref: '#/definitions/internal_admin_dashboard.SummaryResponse'
               type: object
         "401":
           description: Autentifikatsiya talab qilinadi
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
         "403":
           description: Faqat admin uchun
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
         "500":
           description: Ichki server xatosi
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
       security:
       - BearerAuth: []
       summary: Umumiy statistika
@@ -644,27 +644,27 @@ paths:
           description: Post yaratildi
           schema:
             allOf:
-            - $ref: '#/definitions/response.Envelope'
+            - $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
             - properties:
                 data:
-                  $ref: '#/definitions/http.GalleryPostResponse'
+                  $ref: '#/definitions/internal_gallery_interfaces_http.GalleryPostResponse'
               type: object
         "400":
           description: Noto'g'ri so'rov, 3 tadan ortiq rasm yoki yaroqsiz fayl
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
         "401":
           description: Autentifikatsiya talab qilinadi
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
         "403":
           description: Faqat admin uchun
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
         "500":
           description: Ichki server xatosi
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
       security:
       - BearerAuth: []
       summary: Yangi galereya posti yaratish
@@ -686,23 +686,23 @@ paths:
         "200":
           description: Post o'chirildi
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
         "401":
           description: Autentifikatsiya talab qilinadi
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
         "403":
           description: Faqat admin uchun
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
         "404":
           description: Post topilmadi
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
         "500":
           description: Ichki server xatosi
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
       security:
       - BearerAuth: []
       summary: Galereya postini o'chirish
@@ -723,7 +723,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/http.CreateManualOrderRequest'
+          $ref: '#/definitions/internal_ordering_interfaces_http.CreateManualOrderRequest'
       produces:
       - application/json
       responses:
@@ -731,36 +731,36 @@ paths:
           description: Buyurtma yaratildi
           schema:
             allOf:
-            - $ref: '#/definitions/response.Envelope'
+            - $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
             - properties:
                 data:
-                  $ref: '#/definitions/http.OrderResponse'
+                  $ref: '#/definitions/internal_ordering_interfaces_http.OrderResponse'
               type: object
         "400":
           description: Noto'g'ri so'rov, bo'sh ro'yxat yoki noto'g'ri holat/manzil/telefon
             qiymati
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
         "401":
           description: Autentifikatsiya talab qilinadi
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
         "403":
           description: Faqat admin uchun
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
         "404":
           description: Mahsulot topilmadi
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
         "409":
           description: Mahsulot uchun yetarli zaxira yo'q
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
         "500":
           description: Ichki server xatosi
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
       security:
       - BearerAuth: []
       summary: Qo'lda buyurtma yaratish (offline savdo)
@@ -785,37 +785,75 @@ paths:
           description: Bekor qilingan buyurtma
           schema:
             allOf:
-            - $ref: '#/definitions/response.Envelope'
+            - $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
             - properties:
                 data:
-                  $ref: '#/definitions/http.OrderResponse'
+                  $ref: '#/definitions/internal_ordering_interfaces_http.OrderResponse'
               type: object
         "401":
           description: Autentifikatsiya talab qilinadi
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
         "403":
           description: Faqat admin uchun
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
         "404":
           description: Buyurtma topilmadi
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
         "409":
           description: Courier'ga topshirilgan yoki yetkazilgan buyurtmani bekor qilib
             bo'lmaydi
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
         "500":
           description: Ichki server xatosi
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
       security:
       - BearerAuth: []
       summary: Buyurtmani bekor qilish
       tags:
       - orders
+  /admin/reviews/{id}:
+    delete:
+      description: Istalgan foydalanuvchi yozgan sharhni butunlay o'chiradi (moderatsiya).
+        Faqat admin uchun.
+      parameters:
+      - description: Sharh ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Sharh o'chirildi
+          schema:
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
+        "401":
+          description: Autentifikatsiya talab qilinadi
+          schema:
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
+        "403":
+          description: Faqat admin uchun
+          schema:
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
+        "404":
+          description: Sharh topilmadi
+          schema:
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
+        "500":
+          description: Ichki server xatosi
+          schema:
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
+      security:
+      - BearerAuth: []
+      summary: Sharhni o'chirish
+      tags:
+      - reviews
   /auth/login:
     post:
       consumes:
@@ -827,7 +865,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/http.LoginRequest'
+          $ref: '#/definitions/internal_identity_interfaces_http.LoginRequest'
       produces:
       - application/json
       responses:
@@ -835,23 +873,23 @@ paths:
           description: Tokenlar muvaffaqiyatli berildi
           schema:
             allOf:
-            - $ref: '#/definitions/response.Envelope'
+            - $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
             - properties:
                 data:
-                  $ref: '#/definitions/http.TokenResponse'
+                  $ref: '#/definitions/internal_identity_interfaces_http.TokenResponse'
               type: object
         "400":
           description: Noto'g'ri so'rov tanasi
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
         "401":
           description: Email yoki parol noto'g'ri
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
         "500":
           description: Ichki server xatosi
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
       summary: Tizimga kirish
       tags:
       - auth
@@ -868,19 +906,19 @@ paths:
           description: Foydalanuvchi
           schema:
             allOf:
-            - $ref: '#/definitions/response.Envelope'
+            - $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
             - properties:
                 data:
-                  $ref: '#/definitions/application.GetMeOutput'
+                  $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_internal_identity_application.GetMeOutput'
               type: object
         "401":
           description: Token yaroqsiz yoki mavjud emas
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
         "500":
           description: Ichki server xatosi
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
       security:
       - BearerAuth: []
       summary: Joriy foydalanuvchini olish
@@ -898,7 +936,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/http.RefreshRequest'
+          $ref: '#/definitions/internal_identity_interfaces_http.RefreshRequest'
       produces:
       - application/json
       responses:
@@ -906,23 +944,23 @@ paths:
           description: Yangi tokenlar
           schema:
             allOf:
-            - $ref: '#/definitions/response.Envelope'
+            - $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
             - properties:
                 data:
-                  $ref: '#/definitions/http.TokenResponse'
+                  $ref: '#/definitions/internal_identity_interfaces_http.TokenResponse'
               type: object
         "400":
           description: Noto'g'ri so'rov tanasi
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
         "401":
           description: Refresh token yaroqsiz yoki muddati o'tgan
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
         "500":
           description: Ichki server xatosi
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
       summary: Tokenni yangilash
       tags:
       - auth
@@ -937,7 +975,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/http.RegisterRequest'
+          $ref: '#/definitions/internal_identity_interfaces_http.RegisterRequest'
       produces:
       - application/json
       responses:
@@ -945,23 +983,23 @@ paths:
           description: Foydalanuvchi yaratildi
           schema:
             allOf:
-            - $ref: '#/definitions/response.Envelope'
+            - $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
             - properties:
                 data:
-                  $ref: '#/definitions/http.RegisterResponse'
+                  $ref: '#/definitions/internal_identity_interfaces_http.RegisterResponse'
               type: object
         "400":
           description: Noto'g'ri so'rov yoki email formati
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
         "409":
           description: Email allaqachon band
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
         "500":
           description: Ichki server xatosi
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
       summary: Yangi foydalanuvchi ro'yxatdan o'tkazish
       tags:
       - auth
@@ -972,15 +1010,15 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/response.Envelope'
+            - $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
             - properties:
                 data:
-                  $ref: '#/definitions/application.CartView'
+                  $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_internal_cart_application.CartView'
               type: object
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
       security:
       - BearerAuth: []
       summary: Get current user's cart
@@ -994,24 +1032,24 @@ paths:
         name: input
         required: true
         schema:
-          $ref: '#/definitions/http.addItemRequest'
+          $ref: '#/definitions/internal_cart_interfaces_http.addItemRequest'
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
       security:
       - BearerAuth: []
       summary: Add product to cart
@@ -1029,15 +1067,15 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
       security:
       - BearerAuth: []
       summary: Remove product from cart
@@ -1055,24 +1093,24 @@ paths:
         name: input
         required: true
         schema:
-          $ref: '#/definitions/http.updateItemQuantityRequest'
+          $ref: '#/definitions/internal_cart_interfaces_http.updateItemQuantityRequest'
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
       security:
       - BearerAuth: []
       summary: Update cart item quantity
@@ -1100,17 +1138,17 @@ paths:
           description: Kategoriyalar olish muvaffaqiyatli
           schema:
             allOf:
-            - $ref: '#/definitions/response.Envelope'
+            - $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
             - properties:
                 data:
                   items:
-                    $ref: '#/definitions/application.CategoryOutput'
+                    $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_internal_catalog_application.CategoryOutput'
                   type: array
               type: object
         "500":
           description: Ichki server xatosi
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
       summary: Kategoriyalarni olish
       tags:
       - categories
@@ -1146,19 +1184,19 @@ paths:
           description: Kategoriya yaratildi
           schema:
             allOf:
-            - $ref: '#/definitions/response.Envelope'
+            - $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
             - properties:
                 data:
-                  $ref: '#/definitions/application.CategoryOutput'
+                  $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_internal_catalog_application.CategoryOutput'
               type: object
         "400":
           description: Noto'g'ri so'rov tanasi yoki validatsiya xatosi
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
         "500":
           description: Ichki server xatosi
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
       security:
       - BearerAuth: []
       summary: Yangi kategoriya yaratish
@@ -1181,11 +1219,11 @@ paths:
         "200":
           description: Kategoriya o'chirish muvaffaqiyatli
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
         "500":
           description: Ichki server xatosi
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
       security:
       - BearerAuth: []
       summary: Kategoriyani o'chirish
@@ -1212,15 +1250,15 @@ paths:
           description: Kategoriya olish muvaffaqiyatli
           schema:
             allOf:
-            - $ref: '#/definitions/response.Envelope'
+            - $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
             - properties:
                 data:
-                  $ref: '#/definitions/application.CategoryOutput'
+                  $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_internal_catalog_application.CategoryOutput'
               type: object
         "500":
           description: Ichki server xatosi
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
       summary: Kategoriyani olish
       tags:
       - categories
@@ -1239,26 +1277,26 @@ paths:
         name: category
         required: true
         schema:
-          $ref: '#/definitions/application.UpdateCategoryInput'
+          $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_internal_catalog_application.UpdateCategoryInput'
       produces:
       - application/json
       responses:
         "200":
           description: Kategoriya yangilash muvaffaqiyatli
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
         "400":
           description: Validatsiya xatosi
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
         "404":
           description: Kategoriya topilmadi
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
         "500":
           description: Ichki server xatosi
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
       security:
       - BearerAuth: []
       summary: Kategoriyani yangilash
@@ -1288,23 +1326,23 @@ paths:
           description: Rasm yangilash muvaffaqiyatli
           schema:
             allOf:
-            - $ref: '#/definitions/response.Envelope'
+            - $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
             - properties:
                 data:
-                  $ref: '#/definitions/application.CategoryOutput'
+                  $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_internal_catalog_application.CategoryOutput'
               type: object
         "400":
           description: Noto'g'ri so'rov tanasi yoki validatsiya xatosi
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
         "404":
           description: Kategoriya topilmadi
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
         "500":
           description: Ichki server xatosi
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
       security:
       - BearerAuth: []
       summary: Kategoriya rasmini yangilash
@@ -1343,15 +1381,15 @@ paths:
           description: Mahsulotlar
           schema:
             allOf:
-            - $ref: '#/definitions/response.Envelope'
+            - $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
             - properties:
                 data:
-                  $ref: '#/definitions/response.PaginatedResult'
+                  $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.PaginatedResult'
               type: object
         "500":
           description: Ichki server xatosi
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
       summary: Kategoriya bo'yicha mahsulotlarni olish
       tags:
       - products
@@ -1373,17 +1411,17 @@ paths:
           description: Kategoriyalar olish muvaffaqiyatli
           schema:
             allOf:
-            - $ref: '#/definitions/response.Envelope'
+            - $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
             - properties:
                 data:
                   items:
-                    $ref: '#/definitions/application.CategoryOutputForAdmin'
+                    $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_internal_catalog_application.CategoryOutputForAdmin'
                   type: array
               type: object
         "500":
           description: Ichki server xatosi
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
       security:
       - BearerAuth: []
       summary: Kategoriyalarni olish - admin (o'chirilganlar bilan birga)
@@ -1402,7 +1440,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/http.CheckoutRequest'
+          $ref: '#/definitions/internal_ordering_interfaces_http.CheckoutRequest'
       produces:
       - application/json
       responses:
@@ -1410,31 +1448,31 @@ paths:
           description: Buyurtma yaratildi
           schema:
             allOf:
-            - $ref: '#/definitions/response.Envelope'
+            - $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
             - properties:
                 data:
-                  $ref: '#/definitions/http.OrderResponse'
+                  $ref: '#/definitions/internal_ordering_interfaces_http.OrderResponse'
               type: object
         "400":
           description: Noto'g'ri so'rov, bo'sh savat yoki yaroqsiz telefon/manzil
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
         "401":
           description: Autentifikatsiya talab qilinadi
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
         "404":
           description: Mahsulot topilmadi
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
         "409":
           description: Mahsulot uchun yetarli zaxira yo'q
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
         "500":
           description: Ichki server xatosi
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
       security:
       - BearerAuth: []
       summary: Savatni buyurtmaga aylantirish
@@ -1456,17 +1494,17 @@ paths:
           description: Eventlar
           schema:
             allOf:
-            - $ref: '#/definitions/response.Envelope'
+            - $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
             - properties:
                 data:
                   items:
-                    $ref: '#/definitions/application.EventOutput'
+                    $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_internal_catalog_application.EventOutput'
                   type: array
               type: object
         "500":
           description: Ichki server xatosi
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
       summary: Eventlarni olish
       tags:
       - events
@@ -1548,27 +1586,27 @@ paths:
           description: Event yaratildi
           schema:
             allOf:
-            - $ref: '#/definitions/response.Envelope'
+            - $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
             - properties:
                 data:
-                  $ref: '#/definitions/application.EventOutput'
+                  $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_internal_catalog_application.EventOutput'
               type: object
         "400":
           description: Noto'g'ri so'rov tanasi yoki validatsiya xatosi
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
         "401":
           description: Autentifikatsiyadan o'tilmagan
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
         "403":
           description: Huquq yetarli emas
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
         "500":
           description: Ichki server xatosi
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
       security:
       - BearerAuth: []
       summary: Yangi event (banner) yaratish
@@ -1589,15 +1627,15 @@ paths:
         "200":
           description: Event o'chirish muvaffaqiyatli
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
         "404":
           description: Event topilmadi
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
         "500":
           description: Ichki server xatosi
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
       security:
       - BearerAuth: []
       summary: Eventni o'chirish
@@ -1622,19 +1660,19 @@ paths:
           description: Event
           schema:
             allOf:
-            - $ref: '#/definitions/response.Envelope'
+            - $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
             - properties:
                 data:
-                  $ref: '#/definitions/application.EventOutput'
+                  $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_internal_catalog_application.EventOutput'
               type: object
         "404":
           description: Event topilmadi
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
         "500":
           description: Ichki server xatosi
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
       summary: Eventni olish
       tags:
       - events
@@ -1654,26 +1692,26 @@ paths:
         name: event
         required: true
         schema:
-          $ref: '#/definitions/application.UpdateEventInput'
+          $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_internal_catalog_application.UpdateEventInput'
       produces:
       - application/json
       responses:
         "200":
           description: Event yangilash muvaffaqiyatli
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
         "400":
           description: Validatsiya xatosi
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
         "404":
           description: Event topilmadi
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
         "500":
           description: Ichki server xatosi
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
       security:
       - BearerAuth: []
       summary: Eventni yangilash
@@ -1703,23 +1741,23 @@ paths:
           description: Rasm yangilash muvaffaqiyatli
           schema:
             allOf:
-            - $ref: '#/definitions/response.Envelope'
+            - $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
             - properties:
                 data:
-                  $ref: '#/definitions/application.EventOutput'
+                  $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_internal_catalog_application.EventOutput'
               type: object
         "400":
           description: Noto'g'ri so'rov tanasi yoki validatsiya xatosi
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
         "404":
           description: Event topilmadi
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
         "500":
           description: Ichki server xatosi
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
       security:
       - BearerAuth: []
       summary: Event rasmini yangilash
@@ -1735,17 +1773,17 @@ paths:
           description: Eventlar
           schema:
             allOf:
-            - $ref: '#/definitions/response.Envelope'
+            - $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
             - properties:
                 data:
                   items:
-                    $ref: '#/definitions/application.EventOutputForAdmin'
+                    $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_internal_catalog_application.EventOutputForAdmin'
                   type: array
               type: object
         "500":
           description: Ichki server xatosi
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
       security:
       - BearerAuth: []
       summary: Eventlarni olish - admin (o'chirilganlar bilan birga)
@@ -1771,15 +1809,15 @@ paths:
           description: Postlar ro'yxati
           schema:
             allOf:
-            - $ref: '#/definitions/response.Envelope'
+            - $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
             - properties:
                 data:
-                  $ref: '#/definitions/response.PaginatedResult'
+                  $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.PaginatedResult'
               type: object
         "500":
           description: Ichki server xatosi
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
       summary: Galereya postlari
       tags:
       - gallery
@@ -1794,21 +1832,21 @@ paths:
           description: Buyurtmalar ro'yxati
           schema:
             allOf:
-            - $ref: '#/definitions/response.Envelope'
+            - $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
             - properties:
                 data:
                   items:
-                    $ref: '#/definitions/http.OrderResponse'
+                    $ref: '#/definitions/internal_ordering_interfaces_http.OrderResponse'
                   type: array
               type: object
         "401":
           description: Autentifikatsiya talab qilinadi
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
         "500":
           description: Ichki server xatosi
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
       security:
       - BearerAuth: []
       summary: Mening buyurtmalarim
@@ -1831,27 +1869,27 @@ paths:
           description: Buyurtma
           schema:
             allOf:
-            - $ref: '#/definitions/response.Envelope'
+            - $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
             - properties:
                 data:
-                  $ref: '#/definitions/http.OrderResponse'
+                  $ref: '#/definitions/internal_ordering_interfaces_http.OrderResponse'
               type: object
         "401":
           description: Autentifikatsiya talab qilinadi
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
         "403":
           description: Bu buyurtmani ko'rish huquqi yo'q
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
         "404":
           description: Buyurtma topilmadi
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
         "500":
           description: Ichki server xatosi
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
       security:
       - BearerAuth: []
       summary: Buyurtma tafsilotlari
@@ -1874,7 +1912,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/http.UpdateDeliveryStatusRequest'
+          $ref: '#/definitions/internal_ordering_interfaces_http.UpdateDeliveryStatusRequest'
       produces:
       - application/json
       responses:
@@ -1882,35 +1920,35 @@ paths:
           description: Yangilangan buyurtma
           schema:
             allOf:
-            - $ref: '#/definitions/response.Envelope'
+            - $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
             - properties:
                 data:
-                  $ref: '#/definitions/http.OrderResponse'
+                  $ref: '#/definitions/internal_ordering_interfaces_http.OrderResponse'
               type: object
         "400":
           description: Noto'g'ri so'rov yoki noto'g'ri holat qiymati
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
         "401":
           description: Autentifikatsiya talab qilinadi
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
         "403":
           description: Faqat admin uchun
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
         "404":
           description: Buyurtma topilmadi
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
         "409":
           description: Holatni orqaga qaytarib bo'lmaydi
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
         "500":
           description: Ichki server xatosi
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
       security:
       - BearerAuth: []
       summary: Yetkazib berish holatini o'zgartirish
@@ -1933,7 +1971,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/http.UpdatePaymentStatusRequest'
+          $ref: '#/definitions/internal_ordering_interfaces_http.UpdatePaymentStatusRequest'
       produces:
       - application/json
       responses:
@@ -1941,31 +1979,31 @@ paths:
           description: Yangilangan buyurtma
           schema:
             allOf:
-            - $ref: '#/definitions/response.Envelope'
+            - $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
             - properties:
                 data:
-                  $ref: '#/definitions/http.OrderResponse'
+                  $ref: '#/definitions/internal_ordering_interfaces_http.OrderResponse'
               type: object
         "400":
           description: Noto'g'ri so'rov yoki noto'g'ri holat qiymati
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
         "401":
           description: Autentifikatsiya talab qilinadi
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
         "403":
           description: Faqat admin uchun
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
         "404":
           description: Buyurtma topilmadi
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
         "500":
           description: Ichki server xatosi
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
       security:
       - BearerAuth: []
       summary: To'lov holatini o'zgartirish
@@ -1982,25 +2020,25 @@ paths:
           description: Buyurtmalar ro'yxati
           schema:
             allOf:
-            - $ref: '#/definitions/response.Envelope'
+            - $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
             - properties:
                 data:
                   items:
-                    $ref: '#/definitions/http.OrderResponse'
+                    $ref: '#/definitions/internal_ordering_interfaces_http.OrderResponse'
                   type: array
               type: object
         "401":
           description: Autentifikatsiya talab qilinadi
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
         "403":
           description: Faqat admin uchun
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
         "500":
           description: Ichki server xatosi
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
       security:
       - BearerAuth: []
       summary: Barcha buyurtmalar (admin navbati)
@@ -2038,15 +2076,15 @@ paths:
           description: Mahsulotlar
           schema:
             allOf:
-            - $ref: '#/definitions/response.Envelope'
+            - $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
             - properties:
                 data:
-                  $ref: '#/definitions/response.PaginatedResult'
+                  $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.PaginatedResult'
               type: object
         "500":
           description: Ichki server xatosi
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
       summary: Mahsulotlarni olish
       tags:
       - products
@@ -2141,31 +2179,31 @@ paths:
           description: Mahsulot yaratildi
           schema:
             allOf:
-            - $ref: '#/definitions/response.Envelope'
+            - $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
             - properties:
                 data:
-                  $ref: '#/definitions/application.ProductOutput'
+                  $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_internal_catalog_application.ProductOutput'
               type: object
         "400":
           description: Noto'g'ri so'rov tanasi yoki validatsiya xatosi
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
         "401":
           description: Autentifikatsiyadan o'tilmagan
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
         "403":
           description: Huquq yetarli emas
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
         "409":
           description: Slug band
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
         "500":
           description: Ichki server xatosi
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
       security:
       - BearerAuth: []
       summary: Yangi mahsulot yaratish
@@ -2186,15 +2224,15 @@ paths:
         "200":
           description: Mahsulot o'chirish muvaffaqiyatli
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
         "404":
           description: Mahsulot topilmadi
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
         "500":
           description: Ichki server xatosi
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
       security:
       - BearerAuth: []
       summary: Mahsulotni o'chirish
@@ -2219,19 +2257,19 @@ paths:
           description: Mahsulot
           schema:
             allOf:
-            - $ref: '#/definitions/response.Envelope'
+            - $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
             - properties:
                 data:
-                  $ref: '#/definitions/application.ProductOutput'
+                  $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_internal_catalog_application.ProductOutput'
               type: object
         "404":
           description: Mahsulot topilmadi
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
         "500":
           description: Ichki server xatosi
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
       summary: Mahsulotni olish
       tags:
       - products
@@ -2252,30 +2290,30 @@ paths:
         name: product
         required: true
         schema:
-          $ref: '#/definitions/application.UpdateProductInput'
+          $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_internal_catalog_application.UpdateProductInput'
       produces:
       - application/json
       responses:
         "200":
           description: Mahsulot yangilash muvaffaqiyatli
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
         "400":
           description: Validatsiya xatosi
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
         "404":
           description: Mahsulot topilmadi
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
         "409":
           description: Slug band
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
         "500":
           description: Ichki server xatosi
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
       security:
       - BearerAuth: []
       summary: Mahsulotni yangilash
@@ -2305,23 +2343,23 @@ paths:
           description: Rasm(lar) qo'shildi
           schema:
             allOf:
-            - $ref: '#/definitions/response.Envelope'
+            - $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
             - properties:
                 data:
-                  $ref: '#/definitions/application.ProductOutput'
+                  $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_internal_catalog_application.ProductOutput'
               type: object
         "400":
           description: Noto'g'ri so'rov tanasi yoki validatsiya xatosi
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
         "404":
           description: Mahsulot topilmadi
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
         "500":
           description: Ichki server xatosi
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
       security:
       - BearerAuth: []
       summary: Mahsulotga rasm(lar) qo'shish
@@ -2350,24 +2388,24 @@ paths:
           description: Rasm o'chirildi
           schema:
             allOf:
-            - $ref: '#/definitions/response.Envelope'
+            - $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
             - properties:
                 data:
-                  $ref: '#/definitions/application.ProductOutput'
+                  $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_internal_catalog_application.ProductOutput'
               type: object
         "400":
           description: index noto'g'ri/mavjud emas, yoki mahsulotda yagona rasmni
             o'chirishga urinish
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
         "404":
           description: Mahsulot topilmadi
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
         "500":
           description: Ichki server xatosi
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
       security:
       - BearerAuth: []
       summary: Mahsulotning bitta rasmini o'chirish
@@ -2402,23 +2440,23 @@ paths:
           description: Rasm almashtirildi
           schema:
             allOf:
-            - $ref: '#/definitions/response.Envelope'
+            - $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
             - properties:
                 data:
-                  $ref: '#/definitions/application.ProductOutput'
+                  $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_internal_catalog_application.ProductOutput'
               type: object
         "400":
           description: Noto'g'ri so'rov tanasi, index noto'g'ri yoki validatsiya xatosi
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
         "404":
           description: Mahsulot topilmadi
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
         "500":
           description: Ichki server xatosi
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
       security:
       - BearerAuth: []
       summary: Mahsulotning bitta rasmini almashtirish
@@ -2449,15 +2487,15 @@ paths:
           description: Sharhlar ro'yxati
           schema:
             allOf:
-            - $ref: '#/definitions/response.Envelope'
+            - $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
             - properties:
                 data:
-                  $ref: '#/definitions/response.PaginatedResult'
+                  $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.PaginatedResult'
               type: object
         "500":
           description: Ichki server xatosi
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
       summary: Mahsulot sharhlari
       tags:
       - reviews
@@ -2489,15 +2527,15 @@ paths:
           description: Mahsulotlar
           schema:
             allOf:
-            - $ref: '#/definitions/response.Envelope'
+            - $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
             - properties:
                 data:
-                  $ref: '#/definitions/response.PaginatedResult'
+                  $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.PaginatedResult'
               type: object
         "500":
           description: Ichki server xatosi
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
       security:
       - BearerAuth: []
       summary: Mahsulotlarni olish - admin (o'chirilganlar bilan birga)
@@ -2523,19 +2561,19 @@ paths:
           description: Mahsulot
           schema:
             allOf:
-            - $ref: '#/definitions/response.Envelope'
+            - $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
             - properties:
                 data:
-                  $ref: '#/definitions/application.ProductOutput'
+                  $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_internal_catalog_application.ProductOutput'
               type: object
         "404":
           description: Mahsulot topilmadi
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
         "500":
           description: Ichki server xatosi
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
       summary: Mahsulotni slug bo'yicha olish
       tags:
       - products
@@ -2553,7 +2591,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/http.SubmitReviewRequest'
+          $ref: '#/definitions/internal_review_interfaces_http.SubmitReviewRequest'
       produces:
       - application/json
       responses:
@@ -2561,31 +2599,31 @@ paths:
           description: Sharh yaratildi
           schema:
             allOf:
-            - $ref: '#/definitions/response.Envelope'
+            - $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
             - properties:
                 data:
-                  $ref: '#/definitions/http.ReviewResponse'
+                  $ref: '#/definitions/internal_review_interfaces_http.ReviewResponse'
               type: object
         "400":
           description: Noto'g'ri so'rov yoki reyting 1-5 oralig'ida emas
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
         "401":
           description: Autentifikatsiya talab qilinadi
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
         "403":
           description: Bu mahsulot uchun sharh qoldirish huquqi yo'q
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
         "409":
           description: Bu mahsulot uchun sharh allaqachon qoldirilgan
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
         "500":
           description: Ichki server xatosi
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
       security:
       - BearerAuth: []
       summary: Mahsulotga sharh qoldirish
@@ -2598,10 +2636,10 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/response.Envelope'
+            - $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
             - properties:
                 data:
-                  $ref: '#/definitions/application.GetWishlistOutput'
+                  $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_internal_wishlist_application.GetWishlistOutput'
               type: object
       security:
       - BearerAuth: []
@@ -2620,11 +2658,11 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
       security:
       - BearerAuth: []
       summary: Remove product from wishlist
@@ -2641,15 +2679,15 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
         "409":
           description: Conflict
           schema:
-            $ref: '#/definitions/response.Envelope'
+            $ref: '#/definitions/github_com_JavascriptDev347_uzum-clone-with-ddd_git_pkg_response.Envelope'
       security:
       - BearerAuth: []
       summary: Add product to wishlist
