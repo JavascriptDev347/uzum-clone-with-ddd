@@ -45,7 +45,7 @@ func main() {
 	}
 	defer db.Close()
 
-	rdb, err := database.NewRedisClient(cfg.Redis.Host, cfg.Redis.Port)
+	rdb, err := database.NewRedisClient(cfg.Redis.Host, cfg.Redis.Port, cfg.Redis.Password)
 	if err != nil {
 		log.Fatalf("redis connection error: %v", err)
 	}

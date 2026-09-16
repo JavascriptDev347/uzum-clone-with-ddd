@@ -38,8 +38,9 @@ type DBConfig struct {
 }
 
 type RedisConfig struct {
-	Host string `env:"HOST" default:"localhost"`
-	Port string `env:"PORT" default:"6379"`
+	Host     string `env:"HOST" default:"localhost"`
+	Port     string `env:"PORT" default:"6379"`
+	Password string `env:"PASSWORD" default:""`
 }
 
 type JWTConfig struct {
