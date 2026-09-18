@@ -938,7 +938,7 @@ POST /api/v1/events
 | `is_root` | `"true"` / `"false"` | ❌ yo'q | Berilmasa `false` deb olinadi |
 | `image` | file | ✅ ha | Event rasmi — majburiy |
 
-**Rasm cheklovi:** maks. 3MB, formatlar `jpeg`/`png`/`webp` (categories/products bilan bir xil — [7-bo'lim](#7-fayl-yuklash-haqida-umumiy-qoidalar)ga qarang).
+**Rasm cheklovi:** maks. 3MB, formatlar `jpeg`/`png`/`webp` (categories/products bilan bir xil — [12-bo'lim](#12-fayl-yuklash-haqida-umumiy-qoidalar)ga qarang).
 
 **Muvaffaqiyatli javob — `201 Created`:** `{ "data": <Event obyekti — public shakl, lang=uz> }`
 
@@ -1140,9 +1140,658 @@ DELETE /api/v1/wishlist/items/{product_id}
 
 ---
 
-## 7. Fayl yuklash haqida umumiy qoidalar
+## 7. Savat (Cart)
 
-Categories, Products va Events — barchasida rasm quyidagi qoidalarga bo'ysunadi:
+Foydalanuvchining shaxsiy savati. Prefiks: **`/api/v1/cart`**
+
+🔒 **Barcha endpoint ham autentifikatsiya talab qiladi** (`customer` yoki `admin`, farqi yo'q). Har bir foydalanuvchining **faqat bitta** savati bo'ladi (token ichidagi `user_id` bo'yicha avtomatik topiladi/lazy-yaratiladi — frontend cart ID yubormaydi).
+
+> Muhim: savatdagi narxlar **snapshot emas** — `GET /cart` chaqirilganda narx har doim Catalog'dan **jonli (live)** o'qiladi. Ya'ni admin mahsulot narxini o'zgartirsa, foydalanuvchi savatini ochganda darhol yangi narxni ko'radi. Narx checkout paytidagina (buyurtmaga aylanganda) "surat" qilib saqlanadi — [8-bo'lim](#8-buyurtmalar-ordering)ga qarang.
+
+### Cart item obyekti
+
+```json
+{
+  "product_id": "uuid",
+  "product_name": "51 ta qizil atirgul",
+  "unit_price": 150000,
+  "discount_price": 120000,
+  "currency": "UZS",
+  "quantity": 2,
+  "subtotal": 240000,
+  "available": true
+}
+```
+
+- **`discount_price`** — bo'lsa, `subtotal` shundan hisoblanadi (`discount_price * quantity`); bo'lmasa (`omitempty`, javobda umuman ko'rinmaydi) `subtotal` = `unit_price * quantity`.
+- **`available`** — `false` bo'lsa, mahsulot o'chirilgan yoki topilmadi degani; bunday holatda `product_name`/`unit_price`/`currency`/`subtotal` bo'sh keladi, faqat `product_id` va `quantity` bor. Frontendda bunday item'larni "bu mahsulot endi mavjud emas, olib tashlang" tarzida alohida ko'rsating.
+
+---
+
+### 7.1 Savatni olish
+
+```
+GET /api/v1/cart
+```
+
+🔒 Autentifikatsiya talab qilinadi.
+
+- Foydalanuvchining hali savati yaratilmagan bo'lsa ham xato qaytmaydi — bo'sh `items` bilan `200 OK` qaytadi (wishlist bilan bir xil pattern).
+
+**Javob — `200 OK`:**
+```json
+{
+  "data": {
+    "items": [ { "product_id": "uuid", "product_name": "...", "unit_price": 150000, "quantity": 2, "subtotal": 300000, "currency": "UZS", "available": true } ],
+    "total_items": 2,
+    "total_price": 300000
+  }
+}
+```
+
+- `total_items` — barcha item'lar `quantity`sining yig'indisi (savat badge'i uchun).
+- `total_price` — barcha item'lar `subtotal`ining yig'indisi.
+
+**Xatoliklar:** `401` — token yo'q/noto'g'ri
+
+---
+
+### 7.2 Savatga mahsulot qo'shish
+
+```
+POST /api/v1/cart/items
+```
+
+🔒 Autentifikatsiya talab qilinadi.
+
+**Body:**
+```json
+{ "product_id": "uuid", "quantity": 2 }
+```
+
+> **Diqqat — upsert xulqi:** agar bu `product_id` savatda allaqachon bo'lsa, yuborilgan `quantity` mavjud miqdorning **ustiga qo'shiladi** (increment), ustidan yozilmaydi. Masalan savatda `quantity: 2` bo'lsa va yana `{"quantity": 3}` yuborilsa, natija `quantity: 5` bo'ladi. Miqdorni **aynan shu songa belgilash** kerak bo'lsa, o'rniga [7.3](#73-savatdagi-mahsulot-miqdorini-yangilash)dagi `PUT` endpointidan foydalaning.
+>
+> Stock tekshiruvi ham kumulyativ: savatdagi joriy miqdor + yangi yuborilgan miqdor mahsulotning `stock`idan oshsa, `409` qaytadi.
+
+**Javob — `200 OK`:**
+```json
+{ "data": "Mahsulot savatga qo'shildi" }
+```
+
+**Xatoliklar:**
+| Status | Sabab |
+|---|---|
+| 400 | `quantity` 0 yoki manfiy, `product_id` bo'sh |
+| 401 | token yo'q/noto'g'ri |
+| 404 | `product_id` bo'yicha mahsulot topilmadi (yoki o'chirilgan) |
+| 409 | (savatdagi joriy + yangi) miqdor mahsulot `stock`idan oshib ketadi |
+
+---
+
+### 7.3 Savatdagi mahsulot miqdorini yangilash
+
+```
+PUT /api/v1/cart/items/{product_id}
+```
+
+🔒 Autentifikatsiya talab qilinadi.
+
+**Body:**
+```json
+{ "quantity": 5 }
+```
+
+> 7.2'dan farqi: bu yerda `quantity` **absolyut qiymat** sifatida belgilanadi (eskisining ustiga qo'shilmaydi, to'g'ridan-to'g'ri almashtiriladi).
+
+**Javob — `200 OK`:**
+```json
+{ "data": "Savatdagi mahsulot miqdori yangilandi" }
+```
+
+**Xatoliklar:**
+| Status | Sabab |
+|---|---|
+| 400 | `quantity` 0 yoki manfiy |
+| 401 | token yo'q/noto'g'ri |
+| 404 | bu `product_id` savatda yo'q |
+
+---
+
+### 7.4 Savatdan mahsulotni o'chirish
+
+```
+DELETE /api/v1/cart/items/{product_id}
+```
+
+🔒 Autentifikatsiya talab qilinadi.
+
+**Javob — `200 OK`:**
+```json
+{ "data": "Mahsulot savatdan o'chirildi" }
+```
+
+**Xatoliklar:**
+| Status | Sabab |
+|---|---|
+| 401 | token yo'q/noto'g'ri |
+| 404 | bu `product_id` savatda yo'q |
+
+---
+
+## 8. Buyurtmalar (Ordering)
+
+Checkout (savatni buyurtmaga aylantirish), buyurtmalar tarixi va admin buyurtma boshqaruvi. **Uchta alohida prefiks** ostida: `/api/v1/checkout`, `/api/v1/orders`, `/api/v1/admin/orders` (Catalog bare `/api/v1`ni egallagani sabab, ordering context'i bitta router o'rniga uchta alohida router'ga bo'lingan — bu faqat backend ichki tuzilishi, frontend uchun ahamiyatsiz, shunchaki har uch prefiks ham mavjud ekanini bilib qo'ying).
+
+### Order obyekti
+
+```json
+{
+  "id": "uuid",
+  "user_id": "uuid",
+  "address": "Toshkent sh., Chilonzor tumani, ...",
+  "phone": "+998901234567",
+  "note": "Domofon kodi 1234",
+  "items": [
+    { "product_id": "uuid", "product_name": "51 ta qizil atirgul", "unit_price": 150000, "currency": "UZS", "quantity": 2 }
+  ],
+  "payment_status": "unpaid",
+  "delivery_status": "preparing",
+  "total_amount": 300000,
+  "total_currency": "UZS",
+  "created_at": "2026-09-01T10:00:00Z"
+}
+```
+
+- **`user_id`** — admin qo'lda yaratgan (cart'siz) buyurtmalarda `null`/`omitempty` bo'lishi mumkin (offline mijoz uchun user hisobi yo'q).
+- **`items`** — checkout/admin-order yaratish paytidagi mahsulot nomi va narxi **"surat" (snapshot) qilib saqlanadi** — keyinchalik mahsulot narxi yoki nomi o'zgarsa ham, eski buyurtmadagi qiymatlar o'zgarmaydi (Cart'dagi live-narx bilan bu yerning asosiy farqi shu).
+- **`payment_status`** — `"unpaid"` yoki `"paid"`.
+- **`delivery_status`** — `"preparing"` → `"handed_to_courier"` → `"delivered"`, yoki alohida terminal holat `"cancelled"`. Holat faqat **oldinga** qarab o'zgarishi mumkin (masalan `delivered`dan `preparing`ga qaytarib bo'lmaydi) — bekor qilish alohida endpoint orqali ([8.8](#88-buyurtmani-bekor-qilish)) va faqat `preparing` bosqichida mumkin.
+- **`note`** — ixtiyoriy, bo'sh bo'lishi mumkin (`omitempty`).
+- **`total_amount`/`total_currency`** — barcha `items`ning `unit_price * quantity` yig'indisi.
+
+---
+
+### 8.1 Checkout — savatni buyurtmaga aylantirish
+
+```
+POST /api/v1/checkout
+```
+
+🔒 Autentifikatsiya talab qilinadi.
+
+- Joriy foydalanuvchining **savatidagi** mahsulotlarni buyurtmaga aylantiradi: Catalog'dan joriy nom/narxni "surat" qiladi, zaxirani (`stock`) atomik ravishda kamaytiradi va savatni bo'shatadi.
+- Yangi buyurtma har doim `payment_status: "unpaid"`, `delivery_status: "preparing"` bilan boshlanadi.
+
+**Body:**
+```json
+{
+  "address": "Toshkent sh., Chilonzor tumani, ...",
+  "phone": "+998901234567",
+  "note": "Domofon kodi 1234"
+}
+```
+
+- `phone` — qat'iy formatda tekshiriladi: `+998` bilan boshlanib, keyin 9 ta raqam (`+998901234567`). Boshqa format `400` qaytaradi.
+- `address` — bo'sh bo'lishi mumkin emas.
+- `note` — ixtiyoriy.
+
+**Muvaffaqiyatli javob — `201 Created`:** `{ "data": <Order obyekti> }`
+
+**Xatoliklar:**
+| Status | Sabab |
+|---|---|
+| 400 | manzil bo'sh, telefon formati noto'g'ri, yoki savat bo'sh |
+| 401 | token yo'q |
+| 404 | savatdagi mahsulotlardan biri topilmadi (o'chirilgan) |
+| 409 | savatdagi mahsulotlardan biri uchun yetarli `stock` yo'q |
+| 500 | server xatosi |
+
+---
+
+### 8.2 Mening buyurtmalarim
+
+```
+GET /api/v1/orders
+```
+
+🔒 Autentifikatsiya talab qilinadi.
+
+- Joriy foydalanuvchining barcha buyurtmalari ro'yxati ("Mening buyurtmalarim" sahifasi uchun).
+
+**Javob — `200 OK`:** `{ "data": [ <Order obyekti>, ... ] }`
+
+**Xatoliklar:** `401`, `500`
+
+---
+
+### 8.3 Bitta buyurtma tafsilotlari
+
+```
+GET /api/v1/orders/{id}
+```
+
+🔒 Autentifikatsiya talab qilinadi.
+
+- Faqat buyurtma **egasi** yoki **admin** ko'ra oladi — boshqa foydalanuvchining buyurtmasini ochishga urinish `403` qaytaradi (ownership tekshiruvi backendda, frontendda alohida qilish shart emas).
+
+**Javob — `200 OK`:** `{ "data": <Order obyekti> }`
+
+**Xatoliklar:**
+| Status | Sabab |
+|---|---|
+| 401 | token yo'q |
+| 403 | bu buyurtma boshqa foydalanuvchiga tegishli |
+| 404 | buyurtma topilmadi |
+
+---
+
+### 8.4 Barcha buyurtmalar — admin navbati
+
+```
+GET /api/v1/orders/admin
+```
+
+🔒 **Faqat admin**
+
+- Barcha foydalanuvchilarning barcha buyurtmalari (admin panelidagi "buyurtmalar" jadvali uchun).
+
+**Javob — `200 OK`:** `{ "data": [ <Order obyekti>, ... ] }`
+
+**Xatoliklar:** `401`, `403`
+
+---
+
+### 8.5 To'lov holatini o'zgartirish
+
+```
+PATCH /api/v1/orders/{id}/payment-status
+```
+
+🔒 **Faqat admin**
+
+**Body:**
+```json
+{ "status": "paid" }
+```
+
+- `status` — `"unpaid"` yoki `"paid"` bo'lishi shart, boshqa qiymat `400` qaytaradi.
+
+**Javob — `200 OK`:** `{ "data": <yangilangan Order obyekti> }`
+
+**Xatoliklar:**
+| Status | Sabab |
+|---|---|
+| 400 | `status` `unpaid`/`paid`dan boshqa qiymat |
+| 401 | token yo'q |
+| 403 | admin emas |
+| 404 | buyurtma topilmadi |
+
+---
+
+### 8.6 Yetkazib berish holatini o'zgartirish
+
+```
+PATCH /api/v1/orders/{id}/delivery-status
+```
+
+🔒 **Faqat admin**
+
+**Body:**
+```json
+{ "status": "handed_to_courier" }
+```
+
+- `status` — `"preparing"`, `"handed_to_courier"` yoki `"delivered"` bo'lishi shart.
+- Faqat **oldinga** qarab o'zgarishi mumkin (masalan `delivered`dagi buyurtmani qayta `preparing`ga qaytarib bo'lmaydi) — orqaga urinish `409` qaytaradi.
+
+**Javob — `200 OK`:** `{ "data": <yangilangan Order obyekti> }`
+
+**Xatoliklar:**
+| Status | Sabab |
+|---|---|
+| 400 | `status` yaroqsiz qiymat |
+| 401 | token yo'q |
+| 403 | admin emas |
+| 404 | buyurtma topilmadi |
+| 409 | holatni orqaga qaytarishga urinish |
+
+---
+
+### 8.7 Qo'lda buyurtma yaratish (offline savdo)
+
+```
+POST /api/v1/admin/orders
+```
+
+🔒 **Faqat admin**
+
+- Cart'siz, to'g'ridan-to'g'ri buyurtma yaratadi — masalan telefon orqali qabul qilingan yoki do'kondagi offline savdo uchun. Checkout bilan bir xil mantiq: Catalog'dan nom/narxni "surat" qiladi, `stock`ni kamaytiradi.
+
+**Body:**
+```json
+{
+  "address": "Toshkent sh., ...",
+  "phone": "+998901234567",
+  "note": "Telefon orqali qabul qilindi",
+  "items": [
+    { "product_id": "uuid", "quantity": 2 },
+    { "product_id": "uuid-2", "quantity": 1 }
+  ],
+  "payment_status": "paid"
+}
+```
+
+- `items` — bo'sh bo'lishi mumkin emas. Bir xil `product_id` bir nechta marta kelsa, backend ularni **birlashtirib** (quantity'larini qo'shib) stock'dan bittagina marta kamaytiradi.
+- `payment_status` — `"unpaid"` yoki `"paid"` (offline savdo ko'pincha joyida to'langan bo'ladi, shu sabab bu yerda majburiy va boshlang'ich qiymat frontend tomonidan tanlanadi).
+
+**Muvaffaqiyatli javob — `201 Created`:** `{ "data": <Order obyekti> }`
+
+**Xatoliklar:**
+| Status | Sabab |
+|---|---|
+| 400 | manzil/telefon/`payment_status` noto'g'ri, `items` bo'sh |
+| 401 | token yo'q |
+| 403 | admin emas |
+| 404 | `items` ichidagi mahsulotlardan biri topilmadi |
+| 409 | mahsulotlardan biri uchun yetarli `stock` yo'q |
+| 500 | server xatosi |
+
+---
+
+### 8.8 Buyurtmani bekor qilish
+
+```
+PATCH /api/v1/admin/orders/{id}/cancel
+```
+
+🔒 **Faqat admin**
+
+- Buyurtmani bekor qiladi (`delivery_status: "cancelled"`) va checkout/qo'lda-yaratish paytida kamaytirilgan `stock`ni Catalog'ga **qaytaradi**.
+- Faqat **`preparing`** bosqichidagi buyurtmalar bekor qilinishi mumkin — courier'ga topshirilgan (`handed_to_courier`) yoki yetkazilgan (`delivered`) buyurtmani bu yo'l bilan bekor qilib bo'lmaydi.
+
+**Javob — `200 OK`:** `{ "data": <bekor qilingan Order obyekti> }`
+
+**Xatoliklar:**
+| Status | Sabab |
+|---|---|
+| 401 | token yo'q |
+| 403 | admin emas |
+| 404 | buyurtma topilmadi |
+| 409 | buyurtma `preparing` bosqichida emas (allaqachon courier'ga topshirilgan/yetkazilgan) |
+
+---
+
+## 9. Sharhlar (Reviews)
+
+Mahsulotga sharh (izoh + reyting) qoldirish. **Uchta alohida prefiks**: `/api/v1/reviews` (yaratish), `/api/v1/products/{id}/reviews` (o'qish), `/api/v1/admin/reviews` (moderatsiya) — sababi 8-bo'limdagidek, bare `/api/v1` Catalog'ga tegishli.
+
+> Muhim cheklov: foydalanuvchi sharh qoldirishi uchun shu mahsulotni sotib olib, buyurtmasi **yetkazilgan (`delivered`)** bo'lishi shart, va har bir foydalanuvchi bitta mahsulotga **faqat bitta marta** sharh qoldirishi mumkin. Frontendda "sharh qoldirish" tugmasini faqat shu shartlar bajarilganda ko'rsating (masalan foydalanuvchining shu mahsulot bo'yicha yetkazilgan buyurtmasi bor-yo'qligini `GET /orders`dan tekshirib).
+
+### Review obyekti
+
+```json
+{
+  "id": "uuid",
+  "user_id": "uuid",
+  "product_id": "uuid",
+  "order_id": "uuid",
+  "rating": 5,
+  "comment": "Juda chiroyli gullar, tavsiya qilaman!",
+  "created_at": "2026-09-05T10:00:00Z"
+}
+```
+
+- `rating` — 1 dan 5 gacha butun son.
+- `comment` — ixtiyoriy (`omitempty`).
+- `order_id` — sharh qaysi (yetkazilgan) buyurtma asosida qoldirilganini ko'rsatadi.
+
+---
+
+### 9.1 Mahsulotga sharh qoldirish
+
+```
+POST /api/v1/reviews
+```
+
+🔒 Autentifikatsiya talab qilinadi.
+
+**Body:**
+```json
+{ "product_id": "uuid", "rating": 5, "comment": "Juda chiroyli gullar!" }
+```
+
+**Muvaffaqiyatli javob — `201 Created`:** `{ "data": <Review obyekti> }`
+
+**Xatoliklar:**
+| Status | Sabab |
+|---|---|
+| 400 | `rating` 1–5 oralig'ida emas, `product_id` bo'sh |
+| 401 | token yo'q |
+| 403 | bu mahsulot uchun sharh qoldirish huquqi yo'q (yetkazilgan buyurtma yo'q) |
+| 409 | bu mahsulot uchun sharh allaqachon qoldirilgan |
+| 500 | server xatosi |
+
+---
+
+### 9.2 Mahsulot sharhlari
+
+```
+GET /api/v1/products/{id}/reviews?page=<son>&page_size=<son>
+```
+
+- Auth talab qilinmaydi (ochiq).
+- `page` — ixtiyoriy, default `1`.
+- `page_size` — ixtiyoriy, default `20`, maksimal `100`.
+
+**Javob — `200 OK`:**
+```json
+{
+  "data": {
+    "items": [ <Review obyekti>, ... ],
+    "pagination": { "page": 1, "page_size": 20, "total_items": 12, "total_pages": 1 }
+  }
+}
+```
+
+> Bu — [4.1-bo'limdagi](#41-mahsulotlar-royxatini-olish-public) `{ "items": [...], "pagination": {...} }` shakli bilan bir xil umumiy pagination formati (Gallery'da ham xuddi shunday, [10.1](#101-galereya-postlarini-olish)ga qarang).
+
+**Xatoliklar:** `500`
+
+---
+
+### 9.3 Sharhni o'chirish (moderatsiya)
+
+```
+DELETE /api/v1/admin/reviews/{id}
+```
+
+🔒 **Faqat admin**
+
+- Istalgan foydalanuvchi yozgan sharhni butunlay o'chiradi. Egalik tekshiruvi yo'q — bu endpoint faqat admin uchun ochiq, shu bilan cheklanadi.
+
+**Javob — `200 OK`:** `{ "data": "Sharh o'chirildi" }`
+
+**Xatoliklar:** `401`, `403`, `404` — sharh topilmadi, `500`
+
+---
+
+## 10. Galereya (Gallery)
+
+Bosh sahifadagi ilhom/portfolio postlari (masalan "Bizning ishlarimiz" bo'limi) — pricing/stock bilan bog'liq emas, eng oddiy context. Ikkita prefiks: `/api/v1/gallery` (ochiq o'qish), `/api/v1/admin/gallery` (yaratish/o'chirish).
+
+### GalleryPost obyekti
+
+```json
+{
+  "id": "uuid",
+  "image_urls": [
+    "https://your-bucket.s3.your-region.amazonaws.com/gallery-images/....jpg"
+  ],
+  "description": "Bahorgi buketlar to'plami",
+  "created_at": "2026-09-05T10:00:00Z"
+}
+```
+
+- `image_urls` — eng ko'pi bilan **3 ta** rasm, bo'sh massiv ham bo'lishi mumkin.
+- `description` — ixtiyoriy, bo'sh bo'lishi mumkin (`omitempty`).
+
+---
+
+### 10.1 Galereya postlarini olish
+
+```
+GET /api/v1/gallery?page=<son>&page_size=<son>
+```
+
+- Auth talab qilinmaydi.
+- `page` — ixtiyoriy, default `1`. `page_size` — ixtiyoriy, default `20`, maksimal `100`.
+
+**Javob — `200 OK`:**
+```json
+{
+  "data": {
+    "items": [ <GalleryPost obyekti>, ... ],
+    "pagination": { "page": 1, "page_size": 20, "total_items": 8, "total_pages": 1 }
+  }
+}
+```
+
+**Xatoliklar:** `500`
+
+---
+
+### 10.2 Yangi post yaratish
+
+```
+POST /api/v1/admin/gallery
+```
+
+🔒 **Faqat admin**
+
+**Content-Type:** `multipart/form-data`
+
+| Maydon | Turi | Majburiymi | Izoh |
+|---|---|---|---|
+| `images` | file (bir nechta) | ❌ yo'q | Eng ko'pi bilan **3 ta** rasm — `FormData.append('images', file)` bir necha marta |
+| `description` | string | ❌ yo'q | Post tavsifi |
+
+**Rasm cheklovi:** har biri maks. 3MB, formatlar `jpeg`/`png`/`webp` ([12-bo'lim](#12-fayl-yuklash-haqida-umumiy-qoidalar)ga qarang).
+
+**Muvaffaqiyatli javob — `201 Created`:** `{ "data": <GalleryPost obyekti> }`
+
+**Xatoliklar:**
+| Status | Sabab |
+|---|---|
+| 400 | 3 tadan ortiq rasm, rasm formati/hajmi noto'g'ri |
+| 401 | token yo'q |
+| 403 | admin emas |
+| 500 | server xatosi |
+
+---
+
+### 10.3 Postni o'chirish
+
+```
+DELETE /api/v1/admin/gallery/{id}
+```
+
+🔒 **Faqat admin**
+
+- Postni bazadan o'chiradi va rasmlarini S3'dan ham tozalaydi (soft delete emas — bu context'da alohida "o'chirilganlarni ko'rish" admin ro'yxati yo'q).
+
+**Javob — `200 OK`:** `{ "data": "Post o'chirildi" }`
+
+**Xatoliklar:** `401`, `403`, `404` — post topilmadi, `500`
+
+---
+
+## 11. Admin Dashboard
+
+Faqat-o'qish (read-only) statistika/hisobot paneli. Bounded context emas (biznes qoidasi yo'q, faqat agregatsiya) — shu sabab hech qanday `create`/`update`/`delete` yo'q, faqat 3 ta `GET`. Prefiks: **`/api/v1/admin/dashboard`**
+
+🔒 **Uchala endpoint ham faqat admin uchun.**
+
+> Diqqat: barcha summalar **bitta valyutada** hisoblanadi deb faraz qilinadi (loyihada amalda har doim `UZS`) — agar kelajakda ko'p valyuta qo'llab-quvvatlansa, bu endpointlar valyutalarni aralashtirib yuborishi mumkin (bu haqida `CLAUDE.md`da ochiq muammo sifatida qayd etilgan).
+
+### 11.1 Umumiy statistika
+
+```
+GET /api/v1/admin/dashboard/summary
+```
+
+**Javob — `200 OK`:**
+```json
+{
+  "data": {
+    "total_products": 42,
+    "total_units_sold": 310,
+    "total_revenue": 45600000
+  }
+}
+```
+
+- `total_products` — o'chirilmagan mahsulotlar soni.
+- `total_units_sold` / `total_revenue` — faqat **to'langan va bekor qilinmagan** (`payment_status = "paid" AND delivery_status <> "cancelled"`) buyurtmalar bo'yicha hisoblanadi.
+
+**Xatoliklar:** `401`, `403`, `500`
+
+---
+
+### 11.2 Daromad tarixi
+
+```
+GET /api/v1/admin/dashboard/revenue-history?period=<day|month>
+```
+
+- `period` — **majburiy**, faqat `"day"` yoki `"month"` qiymatini qabul qiladi. Boshqa qiymat `400` qaytaradi.
+
+**Javob — `200 OK`:**
+```json
+{
+  "data": [
+    { "period": "2026-09-01T00:00:00Z", "revenue": 1200000 },
+    { "period": "2026-09-02T00:00:00Z", "revenue": 3400000 }
+  ]
+}
+```
+
+- Grafik chizish uchun mo'ljallangan (masalan bar/line chart) — `summary`dagi bilan bir xil "to'langan va bekor qilinmagan" filtri qo'llaniladi.
+
+**Xatoliklar:**
+| Status | Sabab |
+|---|---|
+| 400 | `period` `day`/`month`dan boshqa qiymat (yoki berilmagan) |
+| 401 | token yo'q |
+| 403 | admin emas |
+| 500 | server xatosi |
+
+---
+
+### 11.3 Kam zaxirali mahsulotlar
+
+```
+GET /api/v1/admin/dashboard/low-stock
+```
+
+- Eng kam `stock`ga ega (o'chirilmagan) **top-5** mahsulot — admin panelida "tez orada tugaydi" ogohlantirishi uchun.
+
+**Javob — `200 OK`:**
+```json
+{
+  "data": [
+    { "id": "uuid", "name_uz": "51 ta qizil atirgul", "stock": 2 },
+    { "id": "uuid-2", "name_uz": "Bahorgi buket", "stock": 3 }
+  ]
+}
+```
+
+**Xatoliklar:** `401`, `403`, `500`
+
+---
+
+## 12. Fayl yuklash haqida umumiy qoidalar
+
+Categories, Products, Events va Gallery — barchasida rasm quyidagi qoidalarga bo'ysunadi:
 
 - **Maksimal hajm:** 3 MB (`multipart` form umumiy hajm chegarasi ham 10MB, lekin rasm faylining o'zi 3MB dan oshmasligi kerak)
 - **Ruxsat etilgan formatlar:** `image/jpeg`, `image/png`, `image/webp`
@@ -1150,18 +1799,18 @@ Categories, Products va Events — barchasida rasm quyidagi qoidalarga bo'ysunad
 
 ---
 
-## 8. Rollar (Roles)
+## 13. Rollar (Roles)
 
 | Rol | Qanday beriladi | Nima qila oladi |
 |---|---|---|
-| `customer` | Har bir yangi `register` shu rolda yaratiladi (default) | Public GET endpointlar (`/categories`, `/events`, `/auth/me`) + o'zining `/wishlist`'i (login qilgan bo'lsa) |
-| `admin` | Faqat DB orqali qo'lda beriladi, frontendda tanlash yo'q | Category/Product/Event yaratish-o'chirish-yangilash, `/categories/admin`, `/events/admin`, + o'zining `/wishlist`'i |
+| `customer` | Har bir yangi `register` shu rolda yaratiladi (default) | Public GET endpointlar (`/categories`, `/events`, `/products`, `/gallery`, `/auth/me`) + o'zining `/wishlist`'i, `/cart`'i, `/orders`'i + `/checkout` + `/reviews` (sharh qoldirish) |
+| `admin` | Faqat DB orqali qo'lda beriladi, frontendda tanlash yo'q | Category/Product/Event/Gallery yaratish-o'chirish-yangilash, `/categories/admin`, `/events/admin`, `/products/admin`, buyurtmalarni boshqarish (`/orders/admin`, `/admin/orders`, holat o'zgartirish), sharhlarni o'chirish (`/admin/reviews/{id}`), `/admin/dashboard`, + o'zining `/wishlist`'i va `/cart`'i |
 
 Frontendda: login qilingandan keyin `GET /auth/me` chaqirib, javobdagi `role` maydoniga qarab admin panelni ko'rsatish/yashirishni belgilang.
 
 ---
 
-## 9. Tezkor cheat-sheet
+## 14. Tezkor cheat-sheet
 
 | Endpoint | Method | Auth | Rol |
 |---|---|---|---|
@@ -1197,16 +1846,39 @@ Frontendda: login qilingandan keyin `GET /auth/me` chaqirib, javobdagi `role` ma
 | `/api/v1/wishlist` | GET | ✅ | har qanday |
 | `/api/v1/wishlist/items/{product_id}` | POST | ✅ | har qanday |
 | `/api/v1/wishlist/items/{product_id}` | DELETE | ✅ | har qanday |
+| `/api/v1/cart` | GET | ✅ | har qanday |
+| `/api/v1/cart/items` | POST | ✅ | har qanday |
+| `/api/v1/cart/items/{product_id}` | PUT | ✅ | har qanday |
+| `/api/v1/cart/items/{product_id}` | DELETE | ✅ | har qanday |
+| `/api/v1/checkout` | POST | ✅ | har qanday |
+| `/api/v1/orders` | GET | ✅ | har qanday |
+| `/api/v1/orders/{id}` | GET | ✅ | egasi yoki admin |
+| `/api/v1/orders/admin` | GET | ✅ | admin |
+| `/api/v1/orders/{id}/payment-status` | PATCH | ✅ | admin |
+| `/api/v1/orders/{id}/delivery-status` | PATCH | ✅ | admin |
+| `/api/v1/admin/orders` | POST | ✅ | admin |
+| `/api/v1/admin/orders/{id}/cancel` | PATCH | ✅ | admin |
+| `/api/v1/reviews` | POST | ✅ | har qanday |
+| `/api/v1/products/{id}/reviews` | GET | ❌ | — |
+| `/api/v1/admin/reviews/{id}` | DELETE | ✅ | admin |
+| `/api/v1/gallery` | GET | ❌ | — |
+| `/api/v1/admin/gallery` | POST | ✅ | admin |
+| `/api/v1/admin/gallery/{id}` | DELETE | ✅ | admin |
+| `/api/v1/admin/dashboard/summary` | GET | ✅ | admin |
+| `/api/v1/admin/dashboard/revenue-history` | GET | ✅ | admin |
+| `/api/v1/admin/dashboard/low-stock` | GET | ✅ | admin |
 
 ---
 
-## 10. Hali tayyor bo'lmagan (backendda yo'q) narsalar
+## 15. Hali tayyor bo'lmagan (backendda yo'q) narsalar
 
 Frontend ishini rejalashtirishda hisobga oling:
 
-- ❌ Mahsulotga izoh/sharh (comments) — foydalanuvchi sotib olgandan keyin izoh qoldirishi kelajakda qo'shiladi, hozircha yo'q
 - ❌ Kategoriya ierarxiyasi (parent/child daraxti) — kategoriyada `parent_id` degan maydon umuman yo'q, barcha kategoriyalar "flat" ro'yxat
-- ❌ Savat, buyurtma (order) — `internal/ordering` papkasi mavjud, lekin ichida hali HTTP endpoint yo'q
 - ❌ Parolni tiklash / o'zgartirish, logout endpointi
+- ❌ "Mening sharhlarim" (foydalanuvchining o'zi yozgan barcha sharhlari) — backendda use case bor (`GetUserReviewsUseCase`), lekin hali HTTP route ochilmagan
+- ❌ Gallery uchun tahrirlash (update) — faqat yaratish/ro'yxat/o'chirish bor, tavsifni yoki bitta rasmni almashtirish endpointi yo'q
+- ❌ Qidiruv va sahifalash `GET /categories`, `GET /products/admin`, `GET /categories/admin`, `GET /events`/`GET /events/admin` uchun to'liq emas — ba'zi admin ro'yxatlarida hali `page`/`page_size` yo'q (faqat Products/Reviews/Gallery ro'yxatlarida sahifalash bor)
+- ❌ Redis keshlash hali ishlatilmayapti (real trafik kutilmoqda)
 
-> Eslatma: rasmlarni yangilash endi mumkin — `PUT /categories/{id}/image` (3.6), mahsulotda `POST /products/{id}/images` (rasm qo'shish, 4.8) va `PUT /products/{id}/images/{index}` (bitta rasmni almashtirish, 4.9), hamda `PUT /events/{id}/image` (5.6) orqali. Sevimlilar (wishlist) ham endi tayyor — [6-bo'lim](#6-sevimlilar-wishlist)ga qarang.
+> Eslatma: endi tayyor bo'lgan narsalar — rasmlarni yangilash (`PUT /categories/{id}/image` — 3.6, `POST/PUT /products/{id}/images...` — 4.8/4.9, `PUT /events/{id}/image` — 5.6), Sevimlilar ([6-bo'lim](#6-sevimlilar-wishlist)), **Savat** ([7-bo'lim](#7-savat-cart)), **Buyurtma/checkout** ([8-bo'lim](#8-buyurtmalar-ordering)), **Mahsulot sharhlari** ([9-bo'lim](#9-sharhlar-reviews)), **Galereya** ([10-bo'lim](#10-galereya-gallery)) va **Admin statistika paneli** ([11-bo'lim](#11-admin-dashboard)).
